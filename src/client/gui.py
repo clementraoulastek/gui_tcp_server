@@ -115,10 +115,11 @@ class Gui:
             main_frame,
             placeholder_text="Tape message here",
         )
+        self.entry.configure(state="disabled")
         self.entry.pack(fill=tkinter.BOTH, expand=True)
 
         self.icon_send = get_scaled_icon(Icon.SEND.value)
-        send_button = customtkinter.CTkButton(
+        self.send_button = customtkinter.CTkButton(
             main_frame,
             text="Send message",
             command=functools.partial(self.send, 0),
@@ -128,7 +129,8 @@ class Gui:
             text_color = Color.GREY.value,
             font = ("Arial", 12, "bold")
         )
-        send_button.pack(fill=tkinter.BOTH, expand=True, pady=5)
+        self.send_button.configure(state="disabled")
+        self.send_button.pack(fill=tkinter.BOTH, expand=True, pady=5)
 
         self.client = Client(IP_SERVER, PORT_NB, title)
         self.update_login = False
@@ -250,6 +252,8 @@ class Gui:
         Thread(target=self.read, daemon=True).start()
         self.login_button.configure(state="disabled")
         self.logout_button.configure(state="normal")
+        self.send_button.configure(state="normal")
+        self.entry.configure(state="normal")
     
     def logout(self):
         """
@@ -257,6 +261,8 @@ class Gui:
         """
         self.logout_button.configure(state="disabled")
         self.login_button.configure(state="normal")
+        self.send_button.configure(state="disabled")
+        self.entry.configure(state="disabled")
         self.client.close_connection()
         
     def config(self):

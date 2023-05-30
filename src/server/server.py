@@ -3,6 +3,7 @@ import signal
 import socket
 from threading import Thread
 
+
 class Server:
     def __init__(self, host, port, conn_nb=2):
         # create a TCP/IP socket
@@ -52,7 +53,7 @@ class Server:
             elif chunk == b"\n":
                 break
             # In case of a client disconnecting, the response is empty
-            elif chunk == b"":
+            if chunk == b"":
                 raise ConnectionAbortedError
         return raw_data.decode('utf-8')
     
@@ -65,7 +66,7 @@ class Server:
             data (str): data to send
             is_from_server (bool, optional): if msg come from server. Defaults to False.
         """
-        message = f"from server{data}\n" if is_from_server else f"{data}\n"
+        message = f"from server:{data}\n" if is_from_server else f"{data}\n"
         conn.send(message.encode('utf-8'))
 
     def create_connection(self, conn, addr):
@@ -97,7 +98,7 @@ class Server:
                     self.send_data(self.conn_dict[address], outer_message, is_from_server=True)
                     break
 
-        logging.debug('Connected by', addr)
+        logging.debug(f'Connected by {addr}')
         # receive the data in small chunks and retransmit it
         try:
             while True:

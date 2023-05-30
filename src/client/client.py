@@ -1,7 +1,6 @@
 import logging
 import socket
 
-from other.constant import PROTOCOL_IN, PROTOCOL_OUT
 
 class Client:
     def __init__(self, host, port, name):
@@ -41,12 +40,12 @@ class Client:
                 raw_data+=chunk
             else:
                 break
-        message = raw_data.decode('utf-8')
-        from_server = "from server:" in message
+        str_message = raw_data.decode('utf-8')
+        from_server = "from server:" in str_message
         if from_server:
-            message = message.replace("from server:", "")
+            str_message = str_message.replace("from server:", "")
     
-        return message, from_server
+        return str_message, from_server
     
     def send_data(self, data:str, is_from_server=False):
         """
@@ -56,9 +55,7 @@ class Client:
             data (str): string data to send
             is_from_server (bool, optional): if msg coming from server. Defaults to False.
         """
-        message = PROTOCOL_IN
-        message += f"from server: {data}\n" if is_from_server else f"{self.user_name}: {data}\n"
-        message += PROTOCOL_OUT
+        message = f"from server:{data}\n" if is_from_server else f"{self.user_name}: {data}\n"
         
         logging.debug(message)
 
