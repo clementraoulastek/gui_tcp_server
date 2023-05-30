@@ -1,0 +1,3 @@
+PORT_NB = 9999
+IP_SERVER = "localhost"
+DEFAULT_CLIENT_NAME = "Client"

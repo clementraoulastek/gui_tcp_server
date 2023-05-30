@@ -1,46 +1,82 @@
+import logging
 import signal
 import socket
 from threading import Thread
 
+
 class Server:
-    def __init__(self, host, port):
+    def __init__(self, host, port, conn_nb=2):
         # create a TCP/IP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((host, port))
-        self.sock.listen(2)
+        self.sock.listen(conn_nb)
         self.conn_dict = {}
 
         signal.signal(signal.SIGTERM, self.close_connection)
         self.launch()
     
     def launch(self):
-        while True:
+        """
+            Launch the server
+        """
+        while "Server connected":
             conn, addr = self.sock.accept()
             conn_thread = Thread(target=self.create_connection, args=(conn, addr), daemon=True)
             conn_thread.start()
     
     def close_connection(self, *args):
+        """
+            Close the connection
+        """
         # close the socket
-        print("Server disconnected")
+        logging.debug("Server disconnected")
         self.sock.close()
         
     def read_data(self, conn):
-        line = b""
+        """
+            Read raw data from the client
+
+        Args:
+            conn (socket): socket of the client
+
+        Raises:
+            ConnectionAbortedError: raise error if the client disconnects
+
+        Returns:
+            str: return string of the received data
+        """
+        raw_data = b""
         while True:
-            part = conn.recv(1)
-            if part != b"\n":
-                line+=part
-            elif part == b"\n":
+            chunk = conn.recv(1)
+            if chunk != b"\n":
+                raw_data += chunk
+            elif chunk == b"\n":
                 break
-            if part == b"":
+            # In case of a client disconnecting, the response is empty
+            if chunk == b"":
                 raise ConnectionAbortedError
-        return line.decode('utf-8')
+        return raw_data.decode('utf-8')
     
     def send_data(self, conn, data:str, is_from_server=False):
-        message = f"from server{data}\n" if is_from_server else f"{data}\n"
+        """
+            Send data to the client
+
+        Args:
+            conn (socket): socket of the client
+            data (str): data to send
+            is_from_server (bool, optional): if msg come from server. Defaults to False.
+        """
+        message = f"from server:{data}\n" if is_from_server else f"{data}\n"
         conn.send(message.encode('utf-8'))
 
     def create_connection(self, conn, addr):
+        """
+            Create a new connection
+
+        Args:
+            conn (socket): Socket of the client
+            addr (str): address of the client
+        """
         already_connected = len(self.conn_dict) == 1
         self.conn_dict[addr] = conn
 
@@ -62,7 +98,7 @@ class Server:
                     self.send_data(self.conn_dict[address], outer_message, is_from_server=True)
                     break
 
-        print('Connected by', addr)
+        logging.debug(f'Connected by {addr}')
         # receive the data in small chunks and retransmit it
         try:
             while True:
@@ -76,12 +112,19 @@ class Server:
                 else:
                     return_message = "No client connected, please try again!"
                     self.send_data(self.conn_dict[addr], return_message, is_from_server=True)
-                print(f"Client {addr}: >> {data}")
+                logging.debug(f"Client {addr}: >> {data}")
         except ConnectionAbortedError:
             self._display_disconnection(conn, addr)
 
     def _display_disconnection(self, conn, addr):
-        print('Connection aborted by the client')
+        """
+            Display disconnection on gui
+
+        Args:
+            conn (socket): socket of the client
+            addr (str): socket address of the client
+        """
+        logging.debug('Connection aborted by the client')
         conn.close()
         self.conn_dict.pop(addr)
         already_connected = len(self.conn_dict) == 1
