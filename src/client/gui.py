@@ -2,12 +2,14 @@
 import contextlib
 import datetime
 import functools
+import logging
 import signal
 from threading import Thread
 import tkinter
-from client import Client
+from client.client import Client
 import customtkinter
-from utils import get_scaled_icon, Icon, Color
+from other.constant import PORT_NB, IP_SERVER
+from other.utils import get_scaled_icon, Icon, Color
 from datetime import datetime
 import time 
 
@@ -18,6 +20,8 @@ class Gui:
         self.root.title(title)
         self.root.geometry("300x600")
         self.root.resizable(False, False)
+        
+        # Init signal
         self.root.bind('<Return>', self.send)
         self.root.protocol('WM_DELETE_WINDOW', self.close_connection)
         self.root.bind('<Control-q>', self.close_connection)
@@ -126,23 +130,32 @@ class Gui:
         )
         send_button.pack(fill=tkinter.BOTH, expand=True, pady=5)
 
-        self.client = Client('localhost', 9999, title)
+        self.client = Client(IP_SERVER, PORT_NB, title)
         self.update_login = False
 
     def start(self):
         self.root.mainloop()
         
     def close_connection(self, *args):
+        """
+            Close the socket and destroy the gui
+        """
         # close the connection
         if hasattr(self.client, 'sock'):
             self.client.sock.close()
             # close the socket
-            print("Client disconnected")
+            logging.debug("Client disconnected")
         else:
-            print("GUI closed")
+            logging.debug("GUI closed")
         self.root.destroy()
                 
     def send(self, signal):
+        """
+            Send message to the server
+
+        Args:
+            signal (event): event coming from signal
+        """
         if message := self.entry.get():
             if self.update_login:
                 self._diplay_message_and_clear('Login updated: ', message, is_from_server=True)
@@ -151,22 +164,31 @@ class Gui:
                 self.root.title(message)
             else:
                 self.client.send_data(message, is_from_server=False)
-                now = datetime.now()
-                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+                date_time_now = datetime.now()
+                dt_string = date_time_now.strftime("%d/%m/%Y %H:%M:%S")
                 self._diplay_message_and_clear("Date: ", dt_string, is_from_server=False)
                 self._diplay_message_and_clear('me: ', message, is_from_server=False, doubleReturn=True)
 
-    def _diplay_message_and_clear(self, arg0, message, is_from_server, doubleReturn=False):
+    def _diplay_message_and_clear(self, id_sender, message, is_from_server, doubleReturn=False):
+        """
+            Display message on gui and clear the entry
+
+        Args:
+            id_sender (str): id from the sender
+            message (str): message to display
+            is_from_server (bool): is msg coming from server
+            doubleReturn (bool, optional): if double return needed. Defaults to False.
+        """
         self.scrolled_text.configure(state='normal')
-        if arg0 != 'Date: ':
+        if id_sender != 'Date: ':
             self.scrolled_text.insert(
                 tkinter.END,
-                f"{arg0}",
+                f"{id_sender}",
                 'id'
             )
         self.scrolled_text.insert(
             tkinter.END,
-            f"{message}"+"\n\n" if doubleReturn else f"{message}"+"\n",
+            f"{message}\n\n" if doubleReturn else f"{message}\n",
             'server' if is_from_server else 'client'
         )
         self.scrolled_text.see("end")
@@ -174,6 +196,14 @@ class Gui:
         self.scrolled_text.configure(state='disabled')
     
     def _display_message(self, message:str, is_from_server, doubleReturn=False):
+        """
+            Display message on gui and clear the entry
+
+        Args:
+            message (str): message to display
+            is_from_server (bool): is msg coming from server
+            doubleReturn (bool, optional): if double return needed. Defaults to False.
+        """
         self.scrolled_text.configure(state='normal')
         if ":" in message and "Date" not in message:
             id, message = message.split(":", 1)
@@ -191,6 +221,9 @@ class Gui:
         self.scrolled_text.configure(state='disabled')
    
     def read(self):
+        """
+            Read message comming from server
+        """
         with contextlib.suppress(Exception):
             while self.client.is_connected:
                 message, is_from_server = self.client.read_data()
@@ -202,22 +235,34 @@ class Gui:
                 time.sleep(0.1)
         
     def clear(self):
+        """
+            Clear the entry
+        """
         self.scrolled_text.configure(state='normal')
         self.scrolled_text.delete(1.0, tkinter.END)
         self.scrolled_text.configure(state='disabled')
     
     def login(self):
+        """
+            Init the connection to the server
+        """
         self.client.init_connection()
         Thread(target=self.read, daemon=True).start()
         self.login_button.configure(state="disabled")
         self.logout_button.configure(state="normal")
     
     def logout(self):
+        """
+            Disconnect the client
+        """
         self.logout_button.configure(state="disabled")
         self.login_button.configure(state="normal")
         self.client.close_connection()
         
     def config(self):
+        """
+            Display the config 
+        """
         self.scrolled_text.configure(state='normal')
         config = f"User name = '{self.client.user_name}'\nClient host = '{self.client.host}'\nClient port = '{self.client.port}'\n\n"
         

@@ -1,0 +1,5 @@
+PORT_NB = 9999
+IP_SERVER = "127.0.0.1"
+DEFAULT_CLIENT_NAME = "Client"
+PROTOCOL_IN = "?=start:"
+PROTOCOL_OUT = ":?=stop"
