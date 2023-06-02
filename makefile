@@ -4,3 +4,7 @@ virtualenv:
 
 requirements:	
 	pip install -r requirements.txt
+	pip install -e .
+
+test:
+	pytest -v -s

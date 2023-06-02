@@ -1,3 +1,5 @@
-/.venv
+.venv/
 *__pycache__
 *.log
+.DS_STORE
+monkeytype.sqlite3
