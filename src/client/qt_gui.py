@@ -289,8 +289,8 @@ class MainWindow(QMainWindow):
         """
         Display the config
         """
-        config = f"User name = '{self.client.user_name}'\nClient host = '{self.client.host}'\nClient port = '{self.client.port}'\n\n"
-        self.scroll_layout.addWidget(QLabel(config), Qt.AlignmentFlag.AlignLeft)
+        config = f"User name = '{self.client.user_name}'\nClient host = '{self.client.host}'\nClient port = '{self.client.port}'"
+        self.scroll_layout.addLayout(MessageLayout(config))
 
     def update_buttons(self):
         if self.client.is_connected:
