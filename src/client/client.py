@@ -50,7 +50,7 @@ class Client:
             if from_server:
                 str_message = str_message.replace("from server:", "")
             return str_message
-        
+
         except Exception as error:
             logging.error(error)
             self.sock.close()
@@ -66,9 +66,7 @@ class Client:
             data (str): string data to send
             is_from_server (bool, optional): if msg coming from server. Defaults to False.
         """
-        message = (
-            f"{self.user_name}: {data}\n"
-        )
+        message = f"{self.user_name}: {data}\n"
 
         logging.debug(message)
 

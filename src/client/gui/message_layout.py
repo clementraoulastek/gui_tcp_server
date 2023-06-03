@@ -7,7 +7,7 @@ class MessageLayout(QHBoxLayout):
         super(MessageLayout, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
-        self.setAlignment(Qt.AlignLeft|Qt.AlignCenter)
+        self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
         main_widget.setMinimumWidth(250)
         main_widget.setMaximumWidth(250)
@@ -17,11 +17,9 @@ class MessageLayout(QHBoxLayout):
             f"background-color: {Color.LIGHT_GREY.value};color: black;border-radius: 7px"
         )
         layout = QHBoxLayout(main_widget)
-        layout.setAlignment(Qt.AlignLeft|Qt.AlignCenter)
+        layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         layout.setContentsMargins(5, 0, 5, 0)
-        icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(
-            QSize(30, 30)
-        )
+        icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
         icon_label = QLabel("")
         icon_label.setMaximumWidth(80)
         message_label = QLabel(str_message)

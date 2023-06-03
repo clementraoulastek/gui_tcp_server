@@ -25,8 +25,8 @@ class Server:
                 conn_thread = Thread(
                     target=self.create_connection,
                     args=(conn, addr),
-                    name = f"{addr} thread",
-                    daemon=True
+                    name=f"{addr} thread",
+                    daemon=True,
                 )
                 conn_thread.start()
         except (KeyboardInterrupt, ConnectionAbortedError):
@@ -85,7 +85,7 @@ class Server:
             addr (str): address of the client
         """
         self.handle_new_connection(addr, conn)
-            
+
         logging.debug(f"Connected by {addr}")
         # receive the data in small chunks and retransmit it
         try:
@@ -100,14 +100,16 @@ class Server:
                             self.send_data(self.conn_dict[address], data)
                             break
                 else:
-                    return_message = "No client connected in the server, please try again!"
+                    return_message = (
+                        "No client connected in the server, please try again!"
+                    )
                     self.send_data(
                         self.conn_dict[addr], return_message, is_from_server=True
                     )
                 logging.debug(f"Client {addr}: >> {data}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
-            
+
     def handle_new_connection(self, addr, conn):
         already_connected = len(self.conn_dict) == 1
         self.conn_dict[addr] = conn

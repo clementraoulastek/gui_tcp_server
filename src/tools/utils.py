@@ -25,6 +25,7 @@ class Icon(Enum):
     STATUS = f"{ICON_PATH}/status.svg"
     MESSAGE = f"{ICON_PATH}/message.svg"
 
+
 @unique
 class Color(Enum):
     GREY = "#313338"

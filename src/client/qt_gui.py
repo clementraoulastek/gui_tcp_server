@@ -6,19 +6,33 @@ from threading import Thread
 from src.client.client import Client
 from src.client.gui.CustomQLineEdit import CustomQLineEdit
 from src.client.gui.CustomQPushButton import CustomQPushButton
-from src.client.qt_core import (QApplication, QHBoxLayout, QIcon, QLabel,
-                                QMainWindow, QScrollArea, QSize, Qt, QThread,
-                                QVBoxLayout, QWidget, Signal)
+from src.client.qt_core import (
+    QApplication,
+    QHBoxLayout,
+    QIcon,
+    QLabel,
+    QMainWindow,
+    QScrollArea,
+    QSize,
+    Qt,
+    QThread,
+    QVBoxLayout,
+    QWidget,
+    Signal,
+)
 from src.tools.constant import IP_SERVER, PORT_NB
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.gui.message_layout import MessageLayout
+
+
 class ReadWorker(QThread):
-    """ Tricks to update the GUI with deamon thread
+    """Tricks to update the GUI with deamon thread
 
     Args:
         QThread (QThread): Thread
     """
+
     signal = Signal()
 
     def __init__(self):
@@ -38,7 +52,9 @@ class ReadWorker(QThread):
         self.exit()
         self._is_running = False
 
+
 comming_msg = ""
+
 
 class QtGui:
     def __init__(self, title):
@@ -74,7 +90,7 @@ class MainWindow(QMainWindow):
     def set_header_gui(self):
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
-            f"background-color: {Color.LIGHT_GREY.value};color: black"
+            f"background-color: {Color.LIGHT_GREY.value};color: black;border-radius: 7px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
         self.status_server_layout.setContentsMargins(90, 0, 85, 0)
@@ -88,13 +104,18 @@ class MainWindow(QMainWindow):
         self.status_server_layout.addWidget(self.status_server_label)
         self.main_layout.addWidget(server_status_widget)
 
+    def scrollToBottom(self):
+            self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
+            
     def set_core_gui(self):
         self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignLeft|Qt.AlignTop)
+        self.scroll_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setObjectName("scroll layout")
 
         self.scroll_area = QScrollArea()
+        self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
+
         self.scroll_area.setContentsMargins(0, 0, 0, 0)
         self.scroll_area.setWidgetResizable(False)
         self.scroll_area.setMaximumHeight(400)
@@ -170,14 +191,11 @@ class MainWindow(QMainWindow):
         """
         Close the socket and destroy the gui
         """
-        # close the connection
         if hasattr(self.client, "sock"):
             self.client.sock.close()
-            # close the socket
             logging.debug("Client disconnected")
         else:
             logging.debug("GUI closed")
-            # destroy the gui
             self.destroy()
             sys.exit(0)
 
@@ -190,16 +208,9 @@ class MainWindow(QMainWindow):
         """
         if message := self.entry.text():
             self.client.send_data(message)
-            self._diplay_message_and_clear(
-                "me: ",
-                message
-            )
+            self._diplay_message_and_clear("me: ", message)
 
-    def _diplay_message_and_clear(
-        self,
-        id_sender: str,
-        message: str
-    ) -> None:
+    def _diplay_message_and_clear(self, id_sender: str, message: str) -> None:
         """
             Display message on gui and clear the entry
 
@@ -210,7 +221,7 @@ class MainWindow(QMainWindow):
             doubleReturn (bool, optional): if double return needed. Defaults to False.
         """
         self.scroll_layout.addLayout(MessageLayout(f"{id_sender}: {message}"))
-                
+
         self.entry.clear()
 
     def _display_message(self, message: str):
@@ -240,8 +251,7 @@ class MainWindow(QMainWindow):
         Read message comming from server
         """
         while self.client.is_connected:
-            message = self.client.read_data()
-            if message:
+            if message := self.client.read_data():
                 self._display_message(message)
             time.sleep(0.1)
 
