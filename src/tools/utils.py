@@ -5,8 +5,9 @@ from enum import Enum, unique
 
 from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
-from src.client.qt_core import QPixmap, QPainter, QColor, QIcon
+
 from resources.icon.icon_path import ICON_PATH
+from src.client.qt_core import QColor, QIcon, QPainter, QPixmap
 
 LM_USE_SVG = 1
 
@@ -22,6 +23,7 @@ class Icon(Enum):
     SEND = f"{ICON_PATH}/send.svg"
     CONFIG = f"{ICON_PATH}/config.svg"
     STATUS = f"{ICON_PATH}/status.svg"
+    MESSAGE = f"{ICON_PATH}/message.svg"
 
 @unique
 class Color(Enum):
@@ -29,6 +31,7 @@ class Color(Enum):
     LIGHT_GREY = "#B6BAC0"
     WHITE = "#FFFFFF"
     BLUE = "#4986F7"
+
 
 def image_from_svg(filename="", size=0):
     # open svg
@@ -77,6 +80,7 @@ def get_scaled_icon(iconfilename, size=20):
             logging.error(f"Error: {error}")
     return photo
 
+
 def QIcon_from_svg(svg_name, color=None):
     path = ICON_PATH
     pixmap = QPixmap(os.path.join(path, svg_name))
@@ -86,4 +90,3 @@ def QIcon_from_svg(svg_name, color=None):
         painter.fillRect(pixmap.rect(), QColor(color))
     painter.end()
     return QIcon(pixmap)
-

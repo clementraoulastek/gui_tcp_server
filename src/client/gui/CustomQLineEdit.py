@@ -1,7 +1,7 @@
 from src.client.qt_core import QLineEdit, Qt, Signal
 from src.tools.utils import Color
 
-style = '''
+style = """
 QLineEdit {{
 	background-color: {_bg_color};
 	border-radius: {_radius}px;
@@ -16,21 +16,21 @@ QLineEdit:focus {{
 	border: {_border_size}px solid {_context_color};
     background-color: {_bg_color_active};
 }}
-'''
+"""
+
 
 class CustomQLineEdit(QLineEdit):
-    
     def __init__(
         self,
-        text = "",
-        place_holder_text = "",
-        radius = 8,
-        border_size = 2,
-        color = "#FFF",
-        selection_color = "#FFF",
-        bg_color = Color.GREY.value,
-        bg_color_active = Color.GREY.value,
-        context_color = Color.BLUE.value
+        text="",
+        place_holder_text="",
+        radius=8,
+        border_size=2,
+        color="#FFF",
+        selection_color="#FFF",
+        bg_color=Color.GREY.value,
+        bg_color_active=Color.GREY.value,
+        context_color=Color.BLUE.value,
     ):
         super().__init__()
 
@@ -38,7 +38,7 @@ class CustomQLineEdit(QLineEdit):
             self.setText(text)
         if place_holder_text:
             self.setPlaceholderText(place_holder_text)
-            
+
         self.setFixedHeight(40)
 
         self.set_stylesheet(
@@ -48,7 +48,7 @@ class CustomQLineEdit(QLineEdit):
             selection_color,
             bg_color,
             bg_color_active,
-            context_color
+            context_color,
         )
 
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -61,16 +61,16 @@ class CustomQLineEdit(QLineEdit):
         selection_color,
         bg_color,
         bg_color_active,
-        context_color
+        context_color,
     ):
         # APPLY STYLESHEET
         style_format = style.format(
-            _radius = radius,
-            _border_size = border_size,
-            _color = color,
-            _selection_color = selection_color,
-            _bg_color = bg_color,
-            _bg_color_active = bg_color_active,
-            _context_color = context_color
+            _radius=radius,
+            _border_size=border_size,
+            _color=color,
+            _selection_color=selection_color,
+            _bg_color=bg_color,
+            _bg_color_active=bg_color_active,
+            _context_color=context_color,
         )
         self.setStyleSheet(style_format)
