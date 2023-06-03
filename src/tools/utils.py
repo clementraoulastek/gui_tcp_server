@@ -82,7 +82,7 @@ def get_scaled_icon(iconfilename, size=20):
     return photo
 
 
-def QIcon_from_svg(svg_name, color=None):
+def QIcon_from_svg(svg_name, color=Color.BLUE.value):
     path = ICON_PATH
     pixmap = QPixmap(os.path.join(path, svg_name))
     painter = QPainter(pixmap)

@@ -118,10 +118,10 @@ class Server:
         self.send_data(conn, "Welcome to the server 😀", is_from_server=True)
 
         if already_connected:
-            inner_message = "A client is already connected"
-            outer_message = "A new client has joined the server"
+            inner_message = "A client is already connected 😀"
+            outer_message = "A new client has joined the server 😀"
         else:
-            inner_message = "You're alone in the server"
+            inner_message = "You're alone in the server 😢"
             outer_message = None
 
         self.send_data(self.conn_dict[addr], inner_message, is_from_server=True)

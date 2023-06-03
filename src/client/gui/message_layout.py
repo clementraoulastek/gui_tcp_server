@@ -3,7 +3,8 @@ from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class MessageLayout(QHBoxLayout):
-    def __init__(self, str_message, parent=None):
+    MAX_CHAR = 30
+    def __init__(self, str_message: str, parent=None):
         super(MessageLayout, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
@@ -22,10 +23,25 @@ class MessageLayout(QHBoxLayout):
         icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
         icon_label = QLabel("")
         icon_label.setMaximumWidth(80)
+        
+        # Add /n for each n character in the message
+        
+        message_list = []
+        message = str_message
+        
+        while len(message) > self.MAX_CHAR:
+            message_list.append(str_message[:self.MAX_CHAR])
+            message = str_message[self.MAX_CHAR:]
+        message_list.append(message)
+                
+        str_message = "\n".join(message_list)
+        
+        layout.addWidget(icon_label)
         message_label = QLabel(str_message)
+
         message_label.setMinimumWidth(180)
         message_label.setMaximumWidth(180)
-        message_label.adjustSize()
+
         icon_label.setPixmap(icon)
         layout.addWidget(icon_label)
         layout.addWidget(message_label)
