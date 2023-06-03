@@ -1,11 +1,11 @@
-from src.client.qt_core import QLineEdit, Qt
+from src.client.qt_core import QLineEdit, Qt, Signal
 from src.tools.utils import Color
 
 style = '''
 QLineEdit {{
 	background-color: {_bg_color};
 	border-radius: {_radius}px;
-	border: {_border_size}px solid;
+	border: {_border_size}px solid {_context_color};
 	padding-left: 10px;
     padding-right: 5px;
 	selection-color: {_selection_color};
@@ -19,6 +19,7 @@ QLineEdit:focus {{
 '''
 
 class CustomQLineEdit(QLineEdit):
+    
     def __init__(
         self,
         text = "",

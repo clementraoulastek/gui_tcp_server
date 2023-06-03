@@ -5,7 +5,7 @@ style = '''
 QPushButton {{
 	background-color: {_bg_color};
 	border-radius: {_radius}px;
-	border: {_border_size}px solid;
+	border: {_border_size}px solid {_context_color};
 	padding-left: 10px;
     padding-right: 5px;
 	selection-color: {_selection_color};
@@ -13,12 +13,15 @@ QPushButton {{
     color: {_color};
 }}
 QPushButton:pressed {{
-	border: {_border_size}px solid {_context_color};
+	border: {_border_size}px solid {_bg_color_active};
     background-color: {_bg_color_active};
 }}
 '''
 
 class CustomQPushButton(QPushButton):
+    
+    signal = Signal()
+    
     def __init__(
         self,
         text = "",
@@ -66,3 +69,6 @@ class CustomQPushButton(QPushButton):
             _context_color = context_color
         )
         self.setStyleSheet(style_format)
+        
+    def clicked(self):
+        self.signal.emit()
