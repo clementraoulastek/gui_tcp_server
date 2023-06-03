@@ -3,3 +3,4 @@
 *.log
 .DS_STORE
 monkeytype.sqlite3
+reports/

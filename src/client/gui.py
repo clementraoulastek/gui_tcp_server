@@ -1,5 +1,4 @@
 # create a gui in tkinter
-import contextlib
 import datetime
 import functools
 import logging
