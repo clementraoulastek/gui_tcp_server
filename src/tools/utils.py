@@ -1,10 +1,11 @@
 import logging
+import os
 import re
 from enum import Enum, unique
 
 from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
-
+from src.client.qt_core import QPixmap, QPainter, QColor, QIcon
 from resources.icon.icon_path import ICON_PATH
 
 LM_USE_SVG = 1
@@ -22,14 +23,12 @@ class Icon(Enum):
     CONFIG = f"{ICON_PATH}/config.svg"
     STATUS = f"{ICON_PATH}/status.svg"
 
-
 @unique
 class Color(Enum):
     GREY = "#313338"
     LIGHT_GREY = "#B6BAC0"
     WHITE = "#FFFFFF"
     BLUE = "#4986F7"
-
 
 def image_from_svg(filename="", size=0):
     # open svg
@@ -77,3 +76,14 @@ def get_scaled_icon(iconfilename, size=20):
         except Exception as error:
             logging.error(f"Error: {error}")
     return photo
+
+def QIcon_from_svg(svg_name, color=None):
+    path = ICON_PATH
+    pixmap = QPixmap(os.path.join(path, svg_name))
+    painter = QPainter(pixmap)
+    painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+    if color:
+        painter.fillRect(pixmap.rect(), QColor(color))
+    painter.end()
+    return QIcon(pixmap)
+
