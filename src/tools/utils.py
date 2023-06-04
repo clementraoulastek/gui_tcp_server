@@ -36,22 +36,19 @@ class Color(Enum):
     GREEN = "#305C0A"
 
 def image_from_svg(filename="", size=0):
-    # open svg
-    if LM_USE_SVG == 1:
-        if size == 0:
-            # unscaled
-            svg2png(url=filename, write_to="/tmp/example_temp_image.png")
-        else:
-            svg2png(
-                url=filename,
-                write_to="/tmp/example_temp_image.png",
-                parent_width=size,
-                parent_height=size,
-            )
-        photo = Image.open("/tmp/example_temp_image.png")
+    if LM_USE_SVG != 1:
+        return Image.new("RGBA", [size, size])
+    if size == 0:
+        # unscaled
+        svg2png(url=filename, write_to="/tmp/example_temp_image.png")
     else:
-        photo = Image.new("RGBA", [size, size])
-    return photo
+        svg2png(
+            url=filename,
+            write_to="/tmp/example_temp_image.png",
+            parent_width=size,
+            parent_height=size,
+        )
+    return Image.open("/tmp/example_temp_image.png")
 
 
 def empty_photoimage(size=40):
@@ -75,7 +72,7 @@ def get_scaled_icon(iconfilename, size=20):
     ):
         photo.thumbnail(size=[size, size])
 
-    if not type(photo) is ImageTk.PhotoImage:
+    if type(photo) is not ImageTk.PhotoImage:
         try:
             photo = ImageTk.PhotoImage(photo)
         except Exception as error:

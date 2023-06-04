@@ -61,6 +61,7 @@ class QtGui:
     def __init__(self, title):
         self.app = QApplication([])
         self.main_window = MainWindow(title)
+        self.app.setWindowIcon(QIcon_from_svg(Icon.MESSAGE.value))
         self.main_window.show()
 
     def run(self):
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.LIGHT_GREY.value};color: black;border-radius: 7px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
-        self.status_server_layout.setContentsMargins(85, 0, 85, 0)
+        self.status_server_layout.setContentsMargins(85, 0, 80, 0)
         self.status_server_icon_on = QIcon(QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)).pixmap(
             QSize(30, 30)
         )
@@ -277,10 +278,15 @@ class MainWindow(QMainWindow):
         """
         Clear the entry
         """
-        for widget in self.scroll_layout.children():
-            self.scroll_layout.removeWidget(widget)
-            widget.deleteLater()
-
+        while self.scroll_layout.count():
+             item = self.scroll_layout.takeAt(0)
+             widget = item.widget()
+             if widget is not None:
+                 widget.setParent(None)
+             else:
+                self.clear()
+                self.scroll_layout.update()
+            
     def login(self) -> None:
         """
         Init the connection to the server

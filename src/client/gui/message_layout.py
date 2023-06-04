@@ -44,3 +44,4 @@ class MessageLayout(QHBoxLayout):
         icon_label.setPixmap(icon)
         layout.addWidget(icon_label)
         layout.addWidget(message_label)
+        
