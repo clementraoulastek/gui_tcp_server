@@ -1,17 +1,18 @@
+from datetime import datetime
 from src.client.qt_core import QHBoxLayout, QWidget, QIcon, QSize, QLabel, Qt
 from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class MessageLayout(QHBoxLayout):
-    MAX_CHAR = 29
+    MAX_CHAR = 40
     def __init__(self, str_message: str, parent=None):
         super(MessageLayout, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
-        main_widget.setMinimumWidth(250)
-        main_widget.setMaximumWidth(250)
+        main_widget.setMinimumWidth(260)
+        main_widget.setMaximumWidth(260)
         main_widget.setMinimumHeight(80)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
@@ -19,7 +20,7 @@ class MessageLayout(QHBoxLayout):
         )
         layout = QHBoxLayout(main_widget)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        layout.setContentsMargins(5, 0, 5, 0)
+        layout.setContentsMargins(5, 0, 0, 0)
         icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
         icon_label = QLabel("")
         icon_label.setMaximumWidth(80)
@@ -36,10 +37,12 @@ class MessageLayout(QHBoxLayout):
         str_message = "\n".join(message_list)
         
         layout.addWidget(icon_label)
+        time_label = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        str_message = "\n".join([time_label, str_message])
         message_label = QLabel(str_message)
 
-        message_label.setMinimumWidth(180)
-        message_label.setMaximumWidth(180)
+        message_label.setMinimumWidth(200)
+        message_label.setMaximumWidth(200)
 
         icon_label.setPixmap(icon)
         layout.addWidget(icon_label)

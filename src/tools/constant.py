@@ -1,3 +1,4 @@
 PORT_NB = 9999
 IP_SERVER = "localhost"
 DEFAULT_CLIENT_NAME = "Client"
+SOFT_VERSION = "0.0.1"

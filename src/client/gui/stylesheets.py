@@ -5,9 +5,10 @@ scroll_bar_vertical_stylesheet = """
     }
     QScrollBar:vertical {
         background: transparent;
+        width: 15px;
     }
     QScrollBar::handle:vertical {
-        background: #383A3F;
+        background: #171717;
         min-height: 25px;
         border-radius: 7px
     }

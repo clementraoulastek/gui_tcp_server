@@ -34,6 +34,7 @@ class Color(Enum):
     BLUE = "#4986F7"
     RED = "#811919"
     GREEN = "#305C0A"
+    BLACK = "#171717"
 
 def image_from_svg(filename="", size=0):
     if LM_USE_SVG != 1:

@@ -20,7 +20,7 @@ from src.client.qt_core import (
     QWidget,
     Signal,
 )
-from src.tools.constant import IP_SERVER, PORT_NB
+from src.tools.constant import IP_SERVER, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.gui.message_layout import MessageLayout
@@ -101,10 +101,10 @@ class MainWindow(QMainWindow):
     def set_header_gui(self):
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
-            f"background-color: {Color.LIGHT_GREY.value};color: black;border-radius: 7px"
+            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
-        self.status_server_layout.setContentsMargins(85, 0, 80, 0)
+        self.status_server_layout.setContentsMargins(10, 0, 60, 0)
         self.status_server_icon_on = QIcon(QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)).pixmap(
             QSize(30, 30)
         )
@@ -112,10 +112,12 @@ class MainWindow(QMainWindow):
             QSize(30, 30)
         )
         self.icon_label = QLabel("")
-        self.status_server_label = QLabel("Conn status")
+        self.status_server_label = QLabel(f"TCP Client - version: {SOFT_VERSION}")
         self.icon_label.setPixmap(self.status_server_icon_off)
         self.status_server_layout.addWidget(self.icon_label)
         self.status_server_layout.addWidget(self.status_server_label)
+        self.status_server_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                                            
         self.main_layout.addWidget(server_status_widget)
 
     def scrollToBottom(self):
@@ -136,7 +138,7 @@ class MainWindow(QMainWindow):
         self.scroll_area.setMinimumHeight(400)
         self.scroll_area.setMinimumWidth(250)
         self.scroll_widget = QWidget()
-        self.scroll_widget.setContentsMargins(0, 0, 280, 0)
+        self.scroll_widget.setContentsMargins(0, 0, 0, 0)
         self.scroll_area.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
@@ -150,9 +152,8 @@ class MainWindow(QMainWindow):
         self.scroll_widget.setLayout(self.scroll_layout)
         self.scroll_area.setWidget(self.scroll_widget)
 
-        self.main_layout.addWidget(
-            self.scroll_area, Qt.AlignmentFlag.AlignCenter, Qt.AlignmentFlag.AlignCenter
-        )
+        self.main_layout.addWidget(self.scroll_area)
+        self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
     def set_footer_gui(self):
         self.button_layout = QHBoxLayout()
