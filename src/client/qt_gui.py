@@ -81,6 +81,9 @@ class MainWindow(QMainWindow):
         self.check_client_connected_thread.start()
 
     def setup_gui(self):
+        """
+        Add elements to the main window
+        """
         self.main_widget = QWidget()
         self.setCentralWidget(self.main_widget)
         self.main_widget.setStyleSheet(f"background-color: {Color.DARK_GREY.value};")
@@ -93,12 +96,18 @@ class MainWindow(QMainWindow):
         self.set_footer_gui()
     
     def check_client_connected(self):
+        """
+        Update the icon color depending on the connection status
+        """
         if self.client.is_connected:
             self.icon_label.setPixmap(self.status_server_icon_on)
         else:
             self.icon_label.setPixmap(self.status_server_icon_off)
 
     def set_header_gui(self):
+        """ 
+        Update the header GUI
+        """
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
@@ -121,9 +130,15 @@ class MainWindow(QMainWindow):
         self.main_layout.addWidget(server_status_widget)
 
     def scrollToBottom(self):
-            self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
+        """
+        Update the scrollbar vertical position to the bottom
+        """
+        self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
             
     def set_core_gui(self):
+        """ 
+        Update the core GUI
+        """
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
@@ -156,6 +171,9 @@ class MainWindow(QMainWindow):
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
     def set_footer_gui(self):
+        """ 
+        Update the footer GUI
+        """
         self.button_layout = QHBoxLayout()
         self.button_layout.setObjectName("button layout")
         self.button_layout.setSpacing(5)
@@ -194,12 +212,12 @@ class MainWindow(QMainWindow):
         self.send_layout.setSpacing(5)
         
         self.entry = CustomQLineEdit(place_holder_text="Please login")
-        self.entry.returnPressed.connect(self.send)
+        self.entry.returnPressed.connect(self.send_messages)
         self.entry.setDisabled(True)
         self.send_layout.addWidget(self.entry)
 
         self.send_button = CustomQPushButton("")
-        self.send_button.clicked.connect(self.send)
+        self.send_button.clicked.connect(self.send_messages)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
@@ -219,7 +237,7 @@ class MainWindow(QMainWindow):
             self.destroy()
             sys.exit(0)
 
-    def send(self, *args) -> None:
+    def send_messages(self, *args) -> None:
         """
             Send message to the server
 
@@ -228,9 +246,9 @@ class MainWindow(QMainWindow):
         """
         if message := self.entry.text():
             self.client.send_data(message)
-            self._diplay_message_and_clear("me: ", message)
+            self._diplay_message_after_send("me: ", message)
 
-    def _diplay_message_and_clear(self, id_sender: str, message: str) -> None:
+    def _diplay_message_after_send(self, id_sender: str, message: str) -> None:
         """
             Display message on gui and clear the entry
 
@@ -244,7 +262,7 @@ class MainWindow(QMainWindow):
 
         self.entry.clear()
 
-    def _display_message(self, message: str):
+    def _display_message_after_read(self, message: str):
         """
             Display message on gui and clear the entry
 
@@ -266,13 +284,13 @@ class MainWindow(QMainWindow):
             self.scroll_layout.addLayout(MessageLayout(f"{comming_msg}"))
             comming_msg = ""
 
-    def read(self):
+    def read_messages(self):
         """
         Read message comming from server
         """
         while self.client.is_connected:
             if message := self.client.read_data():
-                self._display_message(message)
+                self._display_message_after_read(message)
             time.sleep(0.1)
 
     def clear(self):
@@ -297,11 +315,11 @@ class MainWindow(QMainWindow):
             self.read_worker = ReadWorker()
             self.read_worker.signal.connect(self.update_gui_with_input_messages)
             self.read_worker.start()
-            self.worker_thread = Thread(target=self.read, daemon=True)
+            self.worker_thread = Thread(target=self.read_messages, daemon=True)
             self.worker_thread.start()
             self.update_buttons()
         else:
-            self._display_message("Server off")
+            self._display_message_after_read("Server off")
 
     def logout(self) -> None:
         """
@@ -319,14 +337,13 @@ class MainWindow(QMainWindow):
 
     def update_buttons(self):
         if self.client.is_connected:
-            self.login_button.setDisabled(True)
-            self.logout_button.setDisabled(False)
-            self.send_button.setDisabled(False)
-            self.entry.setDisabled(False)
-            self.entry.setPlaceholderText("Enter your message")
+            self._set_buttons_status(True, False, "Enter your message")
         else:
-            self.login_button.setDisabled(False)
-            self.logout_button.setDisabled(True)
-            self.send_button.setDisabled(True)
-            self.entry.setDisabled(True)
-            self.entry.setPlaceholderText("Please login")
+            self._set_buttons_status(False, True, "Please login")
+
+    def _set_buttons_status(self, arg0, arg1, lock_message):
+        self.login_button.setDisabled(arg0)
+        self.logout_button.setDisabled(arg1)
+        self.send_button.setDisabled(arg1)
+        self.entry.setDisabled(arg1)
+        self.entry.setPlaceholderText(lock_message)
