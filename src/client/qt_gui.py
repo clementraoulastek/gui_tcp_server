@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self.set_header_gui()
         self.set_core_gui()
         self.set_footer_gui()
-    
+
     def check_client_connected(self):
         """
         Update the icon color depending on the connection status
@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
             self.icon_label.setPixmap(self.status_server_icon_off)
 
     def set_header_gui(self):
-        """ 
+        """
         Update the header GUI
         """
         server_status_widget = QWidget()
@@ -114,29 +114,31 @@ class MainWindow(QMainWindow):
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
         self.status_server_layout.setContentsMargins(10, 0, 60, 0)
-        self.status_server_icon_on = QIcon(QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)).pixmap(
-            QSize(30, 30)
-        )
-        self.status_server_icon_off = QIcon(QIcon_from_svg(Icon.STATUS.value, Color.RED.value)).pixmap(
-            QSize(30, 30)
-        )
+        self.status_server_icon_on = QIcon(
+            QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)
+        ).pixmap(QSize(30, 30))
+        self.status_server_icon_off = QIcon(
+            QIcon_from_svg(Icon.STATUS.value, Color.RED.value)
+        ).pixmap(QSize(30, 30))
         self.icon_label = QLabel("")
         self.status_server_label = QLabel(f"TCP Client - version: {SOFT_VERSION}")
         self.icon_label.setPixmap(self.status_server_icon_off)
         self.status_server_layout.addWidget(self.icon_label)
         self.status_server_layout.addWidget(self.status_server_label)
         self.status_server_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-                                            
+
         self.main_layout.addWidget(server_status_widget)
 
     def scrollToBottom(self):
         """
         Update the scrollbar vertical position to the bottom
         """
-        self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
-            
+        self.scroll_area.verticalScrollBar().setValue(
+            self.scroll_area.verticalScrollBar().maximum()
+        )
+
     def set_core_gui(self):
-        """ 
+        """
         Update the core GUI
         """
         self.scroll_layout = QVBoxLayout()
@@ -171,7 +173,7 @@ class MainWindow(QMainWindow):
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
     def set_footer_gui(self):
-        """ 
+        """
         Update the footer GUI
         """
         self.button_layout = QHBoxLayout()
@@ -206,11 +208,11 @@ class MainWindow(QMainWindow):
         self.button_layout.addWidget(self.config_button)
 
         self.main_layout.addLayout(self.button_layout)
-        
+
         self.send_layout = QHBoxLayout()
         self.send_layout.setObjectName("send layout")
         self.send_layout.setSpacing(5)
-        
+
         self.entry = CustomQLineEdit(place_holder_text="Please login")
         self.entry.returnPressed.connect(self.send_messages)
         self.entry.setDisabled(True)
@@ -298,14 +300,14 @@ class MainWindow(QMainWindow):
         Clear the entry
         """
         while self.scroll_layout.count():
-             item = self.scroll_layout.takeAt(0)
-             widget = item.widget()
-             if widget is not None:
-                 widget.setParent(None)
-             else:
+            item = self.scroll_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+            else:
                 self.clear()
                 self.scroll_layout.update()
-            
+
     def login(self) -> None:
         """
         Init the connection to the server
