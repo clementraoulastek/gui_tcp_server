@@ -3,7 +3,7 @@ from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class MessageLayout(QHBoxLayout):
-    MAX_CHAR = 30
+    MAX_CHAR = 29
     def __init__(self, str_message: str, parent=None):
         super(MessageLayout, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
@@ -15,7 +15,7 @@ class MessageLayout(QHBoxLayout):
         main_widget.setMinimumHeight(80)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
-            f"background-color: {Color.LIGHT_GREY.value};color: black;border-radius: 7px"
+            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
         )
         layout = QHBoxLayout(main_widget)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
@@ -23,15 +23,14 @@ class MessageLayout(QHBoxLayout):
         icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
         icon_label = QLabel("")
         icon_label.setMaximumWidth(80)
-        
-        # Add /n for each n character in the message
-        
+         
         message_list = []
         message = str_message
         
         while len(message) > self.MAX_CHAR:
-            message_list.append(str_message[:self.MAX_CHAR])
-            message = str_message[self.MAX_CHAR:]
+            message_list.append(message[:self.MAX_CHAR])
+            message = message[self.MAX_CHAR:]
+            print(message)
         message_list.append(message)
                 
         str_message = "\n".join(message_list)

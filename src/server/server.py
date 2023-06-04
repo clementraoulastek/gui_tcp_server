@@ -101,7 +101,7 @@ class Server:
                             break
                 else:
                     return_message = (
-                        "No client connected in the server, please try again!"
+                        "No client connected in the server, your message get nowhere"
                     )
                     self.send_data(
                         self.conn_dict[addr], return_message, is_from_server=True

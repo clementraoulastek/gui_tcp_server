@@ -25,14 +25,15 @@ class Icon(Enum):
     STATUS = f"{ICON_PATH}/status.svg"
     MESSAGE = f"{ICON_PATH}/message.svg"
 
-
 @unique
 class Color(Enum):
-    GREY = "#313338"
+    GREY = "#383A3F"
     LIGHT_GREY = "#B6BAC0"
+    DARK_GREY = "#313338"
     WHITE = "#FFFFFF"
     BLUE = "#4986F7"
-
+    RED = "#811919"
+    GREEN = "#305C0A"
 
 def image_from_svg(filename="", size=0):
     # open svg
@@ -82,7 +83,7 @@ def get_scaled_icon(iconfilename, size=20):
     return photo
 
 
-def QIcon_from_svg(svg_name, color=Color.BLUE.value):
+def QIcon_from_svg(svg_name, color=Color.LIGHT_GREY.value):
     path = ICON_PATH
     pixmap = QPixmap(os.path.join(path, svg_name))
     painter = QPainter(pixmap)

@@ -25,7 +25,7 @@ class CustomQLineEdit(QLineEdit):
         text="",
         place_holder_text="",
         radius=8,
-        border_size=2,
+        border_size=0,
         color="#FFF",
         selection_color="#FFF",
         bg_color=Color.GREY.value,

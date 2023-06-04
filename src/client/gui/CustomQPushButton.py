@@ -5,16 +5,20 @@ style = """
 QPushButton {{
 	background-color: {_bg_color};
 	border-radius: {_radius}px;
-	border: {_border_size}px solid {_context_color};
+	border: {_border_size}px solid {_bg_color_active};
 	padding-left: 10px;
     padding-right: 5px;
 	selection-color: {_selection_color};
 	selection-background-color: {_context_color};
     color: {_color};
 }}
-QPushButton:pressed {{
+QPushButton:hover {{
 	border: {_border_size}px solid {_bg_color_active};
     background-color: {_bg_color_active};
+}}
+QPushButton:disabled {{
+	border: {_border_size}px solid {_context_color};
+    background-color: #313338;
 }}
 """
 
@@ -26,11 +30,11 @@ class CustomQPushButton(QPushButton):
         self,
         text="",
         radius=8,
-        border_size=2,
-        color="#000",
+        border_size=1,
+        color=Color.LIGHT_GREY.value,
         selection_color="#000",
-        bg_color=Color.LIGHT_GREY.value,
-        bg_color_active=Color.BLUE.value,
+        bg_color=Color.DARK_GREY.value,
+        bg_color_active=Color.LIGHT_GREY.value,
         context_color=Color.GREY.value,
     ):
         super().__init__()

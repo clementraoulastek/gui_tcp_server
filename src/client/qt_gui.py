@@ -35,9 +35,10 @@ class ReadWorker(QThread):
 
     signal = Signal()
 
-    def __init__(self):
+    def __init__(self, polling_interval=0.01):
         super(ReadWorker, self).__init__()
         self._is_running = True
+        self.polling_interval = polling_interval
 
     def run(self):
         if not self._is_running:
@@ -45,7 +46,7 @@ class ReadWorker(QThread):
 
         while self._is_running:
             self.signal.emit()
-            time.sleep(0.01)
+            time.sleep(self.polling_interval)
 
     def stop(self):
         self.terminate()
@@ -74,18 +75,27 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
         self.setup_gui()
         self.client = Client(IP_SERVER, PORT_NB, title)
+        self.check_client_connected_thread = ReadWorker()
+        self.check_client_connected_thread.signal.connect(self.check_client_connected)
+        self.check_client_connected_thread.start()
 
     def setup_gui(self):
         self.main_widget = QWidget()
         self.setCentralWidget(self.main_widget)
-        self.main_widget.setStyleSheet("background-color: transparent;")
+        self.main_widget.setStyleSheet(f"background-color: {Color.DARK_GREY.value};")
         self.main_layout = QVBoxLayout()
-        self.main_layout.setContentsMargins(2, 2, 2, 2)
+        self.main_layout.setContentsMargins(5, 5, 5, 5)
         self.main_widget.setLayout(self.main_layout)
 
         self.set_header_gui()
         self.set_core_gui()
         self.set_footer_gui()
+    
+    def check_client_connected(self):
+        if self.client.is_connected:
+            self.icon_label.setPixmap(self.status_server_icon_on)
+        else:
+            self.icon_label.setPixmap(self.status_server_icon_off)
 
     def set_header_gui(self):
         server_status_widget = QWidget()
@@ -93,13 +103,16 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.LIGHT_GREY.value};color: black;border-radius: 7px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
-        self.status_server_layout.setContentsMargins(90, 0, 85, 0)
-        self.status_server_icon = QIcon(QIcon_from_svg(Icon.STATUS.value)).pixmap(
+        self.status_server_layout.setContentsMargins(85, 0, 85, 0)
+        self.status_server_icon_on = QIcon(QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)).pixmap(
+            QSize(30, 30)
+        )
+        self.status_server_icon_off = QIcon(QIcon_from_svg(Icon.STATUS.value, Color.RED.value)).pixmap(
             QSize(30, 30)
         )
         self.icon_label = QLabel("")
-        self.status_server_label = QLabel("Status Server")
-        self.icon_label.setPixmap(self.status_server_icon)
+        self.status_server_label = QLabel("Conn status")
+        self.icon_label.setPixmap(self.status_server_icon_off)
         self.status_server_layout.addWidget(self.icon_label)
         self.status_server_layout.addWidget(self.status_server_label)
         self.main_layout.addWidget(server_status_widget)
@@ -143,9 +156,9 @@ class MainWindow(QMainWindow):
     def set_footer_gui(self):
         self.button_layout = QHBoxLayout()
         self.button_layout.setObjectName("button layout")
-        self.button_layout.setSpacing(1)
+        self.button_layout.setSpacing(5)
 
-        self.clear_button = CustomQPushButton("Clear")
+        self.clear_button = CustomQPushButton("")
         self.clear_button.clicked.connect(self.clear)
         self.clear_icon = QIcon(QIcon_from_svg(Icon.CLEAR.value))
         self.clear_button.setIcon(self.clear_icon)
@@ -173,19 +186,24 @@ class MainWindow(QMainWindow):
         self.button_layout.addWidget(self.config_button)
 
         self.main_layout.addLayout(self.button_layout)
-
-        self.entry = CustomQLineEdit(place_holder_text="Enter your message")
+        
+        self.send_layout = QHBoxLayout()
+        self.send_layout.setObjectName("send layout")
+        self.send_layout.setSpacing(5)
+        
+        self.entry = CustomQLineEdit(place_holder_text="Please login")
         self.entry.returnPressed.connect(self.send)
         self.entry.setDisabled(True)
-        self.main_layout.addWidget(self.entry)
+        self.send_layout.addWidget(self.entry)
 
-        self.send_button = CustomQPushButton("Send message")
+        self.send_button = CustomQPushButton("")
         self.send_button.clicked.connect(self.send)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
 
-        self.main_layout.addWidget(self.send_button)
+        self.send_layout.addWidget(self.send_button)
+        self.main_layout.addLayout(self.send_layout)
 
     def close_connection(self, *args) -> None:
         """
@@ -289,7 +307,7 @@ class MainWindow(QMainWindow):
         """
         Display the config
         """
-        config = f"User name = '{self.client.user_name}'\nClient host = '{self.client.host}'\nClient port = '{self.client.port}'"
+        config = f"User name = '{self.client.user_name}' Client host = '{self.client.host}' Client port = '{self.client.port}'"
         self.scroll_layout.addLayout(MessageLayout(config))
 
     def update_buttons(self):
@@ -298,8 +316,10 @@ class MainWindow(QMainWindow):
             self.logout_button.setDisabled(False)
             self.send_button.setDisabled(False)
             self.entry.setDisabled(False)
+            self.entry.setPlaceholderText("Enter your message")
         else:
             self.login_button.setDisabled(False)
             self.logout_button.setDisabled(True)
             self.send_button.setDisabled(True)
             self.entry.setDisabled(True)
+            self.entry.setPlaceholderText("Please login")

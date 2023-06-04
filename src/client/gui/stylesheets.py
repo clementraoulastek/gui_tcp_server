@@ -7,7 +7,7 @@ scroll_bar_vertical_stylesheet = """
         background: transparent;
     }
     QScrollBar::handle:vertical {
-        background: #4986F7;
+        background: #383A3F;
         min-height: 25px;
         border-radius: 7px
     }
