@@ -42,7 +42,7 @@ class CustomQPushButton(QPushButton):
         self.setText(text)
         self.setFixedHeight(40)
         disabled_color = Color.BLACK.value
-        
+
         self.set_stylesheet(
             radius,
             border_size,
@@ -51,7 +51,7 @@ class CustomQPushButton(QPushButton):
             bg_color,
             bg_color_active,
             context_color,
-            disabled_color
+            disabled_color,
         )
 
     def set_stylesheet(
@@ -63,7 +63,7 @@ class CustomQPushButton(QPushButton):
         bg_color,
         bg_color_active,
         context_color,
-        disabled_color
+        disabled_color,
     ):
         # APPLY STYLESHEET
         style_format = style.format(

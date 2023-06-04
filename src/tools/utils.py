@@ -25,6 +25,7 @@ class Icon(Enum):
     STATUS = f"{ICON_PATH}/status.svg"
     MESSAGE = f"{ICON_PATH}/message.svg"
 
+
 @unique
 class Color(Enum):
     GREY = "#383A3F"
@@ -35,6 +36,7 @@ class Color(Enum):
     RED = "#811919"
     GREEN = "#305C0A"
     BLACK = "#171717"
+
 
 def image_from_svg(filename="", size=0):
     if LM_USE_SVG != 1:

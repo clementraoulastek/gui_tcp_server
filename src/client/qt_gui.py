@@ -26,7 +26,7 @@ from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.gui.message_layout import MessageLayout
 
 
-class ReadWorker(QThread):
+class Worker(QThread):
     """Tricks to update the GUI with deamon thread
 
     Args:
@@ -36,7 +36,7 @@ class ReadWorker(QThread):
     signal = Signal()
 
     def __init__(self, polling_interval=0.01):
-        super(ReadWorker, self).__init__()
+        super(Worker, self).__init__()
         self._is_running = True
         self.polling_interval = polling_interval
 
@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
         self.setup_gui()
         self.client = Client(IP_SERVER, PORT_NB, title)
-        self.check_client_connected_thread = ReadWorker()
+        self.check_client_connected_thread = Worker()
         self.check_client_connected_thread.signal.connect(self.check_client_connected)
         self.check_client_connected_thread.start()
 
@@ -312,7 +312,7 @@ class MainWindow(QMainWindow):
         """
         self.client.init_connection()
         if self.client.is_connected:
-            self.read_worker = ReadWorker()
+            self.read_worker = Worker()
             self.read_worker.signal.connect(self.update_gui_with_input_messages)
             self.read_worker.start()
             self.worker_thread = Thread(target=self.read_messages, daemon=True)
