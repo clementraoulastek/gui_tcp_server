@@ -1,10 +1,9 @@
-from src.client.gui import Gui
+from src.client.qt_gui import QtGui
 from src.tools.constant import DEFAULT_CLIENT_NAME
 from src.tools.logger import setup_logger
 
 if __name__ == "__main__":
     setup_logger("client.log")
-    gui = Gui(title=DEFAULT_CLIENT_NAME)
-
+    qt_gui = QtGui(title=DEFAULT_CLIENT_NAME)
     # Run the GUI Loop
-    gui.start()
+    qt_gui.run()

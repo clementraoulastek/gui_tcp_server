@@ -25,8 +25,8 @@ class Server:
                 conn_thread = Thread(
                     target=self.create_connection,
                     args=(conn, addr),
-                    name = f"{addr} thread",
-                    daemon=True
+                    name=f"{addr} thread",
+                    daemon=True,
                 )
                 conn_thread.start()
         except (KeyboardInterrupt, ConnectionAbortedError):
@@ -85,7 +85,7 @@ class Server:
             addr (str): address of the client
         """
         self.handle_new_connection(addr, conn)
-            
+
         logging.debug(f"Connected by {addr}")
         # receive the data in small chunks and retransmit it
         try:
@@ -100,14 +100,16 @@ class Server:
                             self.send_data(self.conn_dict[address], data)
                             break
                 else:
-                    return_message = "No client connected in the server, please try again!"
+                    return_message = (
+                        "No client connected in the server, your message get nowhere"
+                    )
                     self.send_data(
                         self.conn_dict[addr], return_message, is_from_server=True
                     )
                 logging.debug(f"Client {addr}: >> {data}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
-            
+
     def handle_new_connection(self, addr, conn):
         already_connected = len(self.conn_dict) == 1
         self.conn_dict[addr] = conn
@@ -116,10 +118,10 @@ class Server:
         self.send_data(conn, "Welcome to the server 😀", is_from_server=True)
 
         if already_connected:
-            inner_message = "A client is already connected"
-            outer_message = "A new client has joined the server"
+            inner_message = "A client is already connected 😀"
+            outer_message = "A new client has joined the server 😀"
         else:
-            inner_message = "You're alone in the server"
+            inner_message = "You're alone in the server 😢"
             outer_message = None
 
         self.send_data(self.conn_dict[addr], inner_message, is_from_server=True)
