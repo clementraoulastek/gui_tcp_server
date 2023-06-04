@@ -6,6 +6,10 @@ This project provide:
 
 100% Python project
 
+The TCP client (last updated on 4/06/2023):
+
+![ Client picture](resources/images/client_picture.png "client picture")
+
 ## Configuration
 create virtual env:
  - mkdir .venv
@@ -23,4 +27,5 @@ Launch the server:
 
 Launch a client (can launch 2 client at the same time):
 - python src/launch_client.py
+
 
