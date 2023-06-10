@@ -5,7 +5,7 @@ from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class MessageLayout(QHBoxLayout):
-    MAX_CHAR = 75
+    MAX_CHAR = 80
 
     def __init__(self, str_message: str, parent=None):
         super(MessageLayout, self).__init__()
@@ -38,7 +38,6 @@ class MessageLayout(QHBoxLayout):
 
         str_message = "\n".join(message_list)
 
-        layout.addWidget(icon_label)
         time_label = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         str_message = "\n".join([time_label, str_message])
         message_label = QLabel(str_message)

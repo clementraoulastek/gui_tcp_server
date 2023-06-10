@@ -6,6 +6,7 @@ from threading import Thread
 from src.client.client import Client
 from src.client.gui.CustomQLineEdit import CustomQLineEdit
 from src.client.gui.CustomQPushButton import CustomQPushButton
+from src.client.gui.login_layout import LoginLayout
 from src.client.gui.message_layout import MessageLayout
 from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.qt_core import (
@@ -215,6 +216,7 @@ class MainWindow(QMainWindow):
         self.clear_button.clicked.connect(self.clear)
         self.clear_icon = QIcon(QIcon_from_svg(Icon.CLEAR.value))
         self.clear_button.setIcon(self.clear_icon)
+        self.clear_button.setDisabled(True)
 
         self.login_button = CustomQPushButton("Login")
         self.login_button.clicked.connect(self.login)
@@ -339,8 +341,23 @@ class MainWindow(QMainWindow):
 
     def login(self) -> None:
         """
-        Init the connection to the server
+        Display the login form
         """
+        if not hasattr(self, "login_form"):
+            self.login_form = LoginLayout()
+            self.scroll_layout.addLayout(self.login_form)
+            self.login_form.send_button.clicked.connect(self.get_form)
+            self.login_form.register_button.clicked.connect(self.post_form)
+        
+        self.login_button.setDisabled(True)
+    
+    def get_form(self):
+        pass
+    
+    def post_form(self):
+        pass
+    
+    def connect_to_server(self):
         self.client.init_connection()
         if self.client.is_connected:
             self.read_worker = Worker()
