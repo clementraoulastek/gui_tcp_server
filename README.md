@@ -4,7 +4,7 @@ This project provide:
 - TCP server
 - GUI client
 
-100% Python project
+100% Python project in Qt for GUI
 
 The TCP client (last updated on 4/06/2023):
 
@@ -19,13 +19,13 @@ Activate the virtualenv:
 - source ./.venv/bin/activate
 
 for installating dependencies (need to be in the venv):
- - make makefile 
+ - pip install -r requirements.txt
  
 ## Launch project
 Launch the server:
 - python src/launch_server.py
 
-Launch a client (can launch 2 client at the same time):
+Launch a client:
 - python src/launch_client.py
 
 
