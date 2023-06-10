@@ -1,6 +1,6 @@
 import logging
-import signal
 import socket
+import sys
 from threading import Thread
 
 
@@ -12,7 +12,6 @@ class Server:
         self.sock.listen(conn_nb)
         self.conn_dict = {}
 
-        signal.signal(signal.SIGTERM, self.close_connection)
         Thread(target=self.launch).start()
 
     def launch(self):
@@ -30,7 +29,10 @@ class Server:
                 )
                 conn_thread.start()
         except (KeyboardInterrupt, ConnectionAbortedError):
-            self.close_connection()
+            Thread(
+                target=self.close_connection,
+                name="Close Connection thread, no deamon thread",
+            ).start()
 
     def close_connection(self, *args):
         """
@@ -39,6 +41,7 @@ class Server:
         # close the socket
         logging.info("Server disconnected")
         self.sock.close()
+        sys.exit(0)
 
     def read_data(self, conn):
         """
@@ -93,12 +96,11 @@ class Server:
                 data = self.read_data(conn)
                 if not data:
                     raise ConnectionAbortedError
-                already_connected = len(self.conn_dict) == 2
+                already_connected = len(self.conn_dict) >= 2
                 if already_connected:
                     for address in list(self.conn_dict.keys()):
                         if address != addr:
                             self.send_data(self.conn_dict[address], data)
-                            break
                 else:
                     return_message = (
                         "No client connected in the server, your message get nowhere"
@@ -111,7 +113,7 @@ class Server:
             self._display_disconnection(conn, addr)
 
     def handle_new_connection(self, addr, conn):
-        already_connected = len(self.conn_dict) == 1
+        already_connected = len(self.conn_dict) >= 1
         self.conn_dict[addr] = conn
 
         # send data to client
@@ -132,7 +134,6 @@ class Server:
                     self.send_data(
                         self.conn_dict[address], outer_message, is_from_server=True
                     )
-                    break
 
     def _display_disconnection(self, conn, addr):
         """
@@ -145,10 +146,9 @@ class Server:
         logging.debug("Connection aborted by the client")
         conn.close()
         self.conn_dict.pop(addr)
-        already_connected = len(self.conn_dict) == 1
+        already_connected = len(self.conn_dict) >= 1
         if already_connected:
             for address in list(self.conn_dict.keys()):
                 if address != addr:
                     data = "Other Client disconnected"
                     self.send_data(self.conn_dict[address], data, is_from_server=True)
-                    break

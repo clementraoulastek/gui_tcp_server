@@ -24,6 +24,7 @@ class Icon(Enum):
     CONFIG = f"{ICON_PATH}/config.svg"
     STATUS = f"{ICON_PATH}/status.svg"
     MESSAGE = f"{ICON_PATH}/message.svg"
+    USER_ICON = f"{ICON_PATH}/default_user_icon.svg"
 
 
 @unique

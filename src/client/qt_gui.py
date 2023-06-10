@@ -6,6 +6,8 @@ from threading import Thread
 from src.client.client import Client
 from src.client.gui.CustomQLineEdit import CustomQLineEdit
 from src.client.gui.CustomQPushButton import CustomQPushButton
+from src.client.gui.message_layout import MessageLayout
+from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.qt_core import (
     QApplication,
     QHBoxLayout,
@@ -22,8 +24,6 @@ from src.client.qt_core import (
 )
 from src.tools.constant import IP_SERVER, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, QIcon_from_svg
-from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
-from src.client.gui.message_layout import MessageLayout
 
 
 class Worker(QThread):
@@ -72,10 +72,10 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
         self.setFixedHeight(600)
-        self.setFixedWidth(300)
+        self.setFixedWidth(600)
         self.setWindowTitle(title)
+        self.client = Client(IP_SERVER, PORT_NB, "Default")
         self.setup_gui()
-        self.client = Client(IP_SERVER, PORT_NB, title)
         self.check_client_connected_thread = Worker()
         self.check_client_connected_thread.signal.connect(self.check_client_connected)
         self.check_client_connected_thread.start()
@@ -108,12 +108,22 @@ class MainWindow(QMainWindow):
         """
         Update the header GUI
         """
+
+        # --- Background
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
-        self.status_server_layout.setContentsMargins(10, 0, 60, 0)
+        self.status_server_layout.setSpacing(20)
+        self.status_server_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+
+        # --- Server information
+        self.server_info_widget = QWidget()
+        self.server_info_widget.setStyleSheet(
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
+        )
+        self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
         self.status_server_icon_on = QIcon(
             QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)
         ).pixmap(QSize(30, 30))
@@ -122,10 +132,30 @@ class MainWindow(QMainWindow):
         ).pixmap(QSize(30, 30))
         self.icon_label = QLabel("")
         self.status_server_label = QLabel(f"TCP Client - version: {SOFT_VERSION}")
+
         self.icon_label.setPixmap(self.status_server_icon_off)
-        self.status_server_layout.addWidget(self.icon_label)
-        self.status_server_layout.addWidget(self.status_server_label)
-        self.status_server_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+
+        # Adding widgets to the main layout
+        self.server_information_dashboard_layout.addWidget(self.icon_label)
+        self.server_information_dashboard_layout.addWidget(self.status_server_label)
+
+        # --- Client information
+        self.user_info_widget = QWidget()
+        self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
+        self.user_info_widget.setStyleSheet(
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
+        )
+        self.user_icon = QIcon(QIcon_from_svg(Icon.USER_ICON.value)).pixmap(
+            QSize(30, 30)
+        )
+        self.user_icon_label = QLabel("")
+        self.user_icon_label.setPixmap(self.user_icon)
+        self.label_user_name = QLabel(f"Username: {self.client.user_name}")
+        self.client_information_dashboard_layout.addWidget(self.user_icon_label)
+        self.client_information_dashboard_layout.addWidget(self.label_user_name)
+
+        self.status_server_layout.addWidget(self.server_info_widget)
+        self.status_server_layout.addWidget(self.user_info_widget)
 
         self.main_layout.addWidget(server_status_widget)
 
@@ -177,6 +207,7 @@ class MainWindow(QMainWindow):
         Update the footer GUI
         """
         self.button_layout = QHBoxLayout()
+        self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.button_layout.setObjectName("button layout")
         self.button_layout.setSpacing(5)
 

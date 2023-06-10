@@ -1,5 +1,6 @@
 from datetime import datetime
-from src.client.qt_core import QHBoxLayout, QWidget, QIcon, QSize, QLabel, Qt
+
+from src.client.qt_core import QHBoxLayout, QIcon, QLabel, QSize, Qt, QWidget
 from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
@@ -9,11 +10,11 @@ class MessageLayout(QHBoxLayout):
     def __init__(self, str_message: str, parent=None):
         super(MessageLayout, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setSpacing(0)
+        self.setSpacing(20)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
-        main_widget.setMinimumWidth(260)
-        main_widget.setMaximumWidth(260)
+        main_widget.setMinimumWidth(main_widget.width() - 50)
+        main_widget.setMaximumWidth(main_widget.width())
         main_widget.setMinimumHeight(80)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
