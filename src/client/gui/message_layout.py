@@ -5,17 +5,17 @@ from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class MessageLayout(QHBoxLayout):
-    MAX_CHAR = 40
+    MAX_CHAR = 75
 
     def __init__(self, str_message: str, parent=None):
-        super(MessageLayout, self).__init__(parent)
+        super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(20)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
-        main_widget.setMinimumWidth(main_widget.width() - 50)
-        main_widget.setMaximumWidth(main_widget.width())
-        main_widget.setMinimumHeight(80)
+        main_widget.setMinimumWidth(main_widget.width()-50)
+        main_widget.setMaximumWidth(main_widget.width()-50)
+        main_widget.setMinimumHeight(50)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
@@ -42,9 +42,6 @@ class MessageLayout(QHBoxLayout):
         time_label = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         str_message = "\n".join([time_label, str_message])
         message_label = QLabel(str_message)
-
-        message_label.setMinimumWidth(200)
-        message_label.setMaximumWidth(200)
 
         icon_label.setPixmap(icon)
         layout.addWidget(icon_label)

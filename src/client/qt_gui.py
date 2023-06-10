@@ -172,7 +172,7 @@ class MainWindow(QMainWindow):
         Update the core GUI
         """
         self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.scroll_layout.setAlignment(Qt.AlignTop)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setObjectName("scroll layout")
 
@@ -183,7 +183,7 @@ class MainWindow(QMainWindow):
         self.scroll_area.setWidgetResizable(False)
         self.scroll_area.setMaximumHeight(400)
         self.scroll_area.setMinimumHeight(400)
-        self.scroll_area.setMinimumWidth(250)
+
         self.scroll_widget = QWidget()
         self.scroll_widget.setContentsMargins(0, 0, 0, 0)
         self.scroll_area.verticalScrollBar().setStyleSheet(
@@ -279,7 +279,7 @@ class MainWindow(QMainWindow):
         """
         if message := self.entry.text():
             self.client.send_data(message)
-            self._diplay_message_after_send("me: ", message)
+            self._diplay_message_after_send("me", message)
 
     def _diplay_message_after_send(self, id_sender: str, message: str) -> None:
         """
