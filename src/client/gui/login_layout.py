@@ -28,8 +28,8 @@ class LoginLayout(QHBoxLayout):
         username_label = QLabel("Username: ")
         password_label = QLabel("Password: ")
         
-        username_entry = CustomQLineEdit(place_holder_text="Enter your username")
-        password_entry = CustomQLineEdit(place_holder_text="Enter your password")
+        self.username_entry = CustomQLineEdit(place_holder_text="Enter your username")
+        self.password_entry = CustomQLineEdit(place_holder_text="Enter your password")
         
         self.send_button = CustomQPushButton("")
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
@@ -40,9 +40,9 @@ class LoginLayout(QHBoxLayout):
         self.register_button.setIcon(self.register_icon)
 
         layout.addWidget(username_label)
-        layout.addWidget(username_entry)
+        layout.addWidget(self.username_entry)
         layout.addWidget(password_label)
-        layout.addWidget(password_entry)
+        layout.addWidget(self.password_entry)
         layout.addWidget(self.send_button)
         layout.addWidget(self.register_button)
     

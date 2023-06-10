@@ -343,18 +343,28 @@ class MainWindow(QMainWindow):
         """
         Display the login form
         """
-        if not hasattr(self, "login_form"):
+        if not hasattr(self, "login_form") or not self.login_form:
             self.login_form = LoginLayout()
             self.scroll_layout.addLayout(self.login_form)
-            self.login_form.send_button.clicked.connect(self.get_form)
-            self.login_form.register_button.clicked.connect(self.post_form)
+            self.login_form.send_button.clicked.connect(self.send_login_form)
+            self.login_form.register_button.clicked.connect(self.send_register_form)
         
         self.login_button.setDisabled(True)
     
-    def get_form(self):
-        pass
+    def send_login_form(self):
+        # TODO: create post request to login form
+        if username := self.login_form.username_entry.text():
+            self.client.user_name = username
+            self.label_user_name.setText(f"Username: {self.client.user_name}")
+            
+        # -- Update gui
+        self.clear()
+        self.login_form = None # clear login for next login session
+        self.connect_to_server()
+        self.clear_button.setDisabled(False)
     
-    def post_form(self):
+    def send_register_form(self):
+        # TODO: create post request to register form
         pass
     
     def connect_to_server(self):
