@@ -330,14 +330,12 @@ class MainWindow(QMainWindow):
         """
         Clear the entry
         """
-        while self.scroll_layout.count():
-            item = self.scroll_layout.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.setParent(None)
-            else:
-                self.clear()
-                self.scroll_layout.update()
+        for i in reversed(range(self.scroll_layout.count())):
+            layout = self.scroll_layout.itemAt(i).layout()
+            for j in reversed(range(layout.count())):
+                layout.itemAt(j).widget().deleteLater()
+        self.scroll_layout.update()
+        
 
     def login(self) -> None:
         """
