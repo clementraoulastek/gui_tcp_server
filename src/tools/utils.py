@@ -30,6 +30,7 @@ class Icon(Enum):
 @unique
 class Color(Enum):
     GREY = "#383A3F"
+    MIDDLE_GREY = "#2A2C2F"
     LIGHT_GREY = "#B6BAC0"
     DARK_GREY = "#313338"
     WHITE = "#FFFFFF"

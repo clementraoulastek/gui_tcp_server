@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
         # --- Background
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
+            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
         self.status_server_layout.setSpacing(20)
@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
         # --- Server information
         self.server_info_widget = QWidget()
         self.server_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
         self.status_server_icon_on = QIcon(
@@ -144,7 +144,7 @@ class MainWindow(QMainWindow):
         self.user_info_widget = QWidget()
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.user_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.USER_ICON.value)).pixmap(
             QSize(30, 30)
@@ -180,7 +180,7 @@ class MainWindow(QMainWindow):
         self.scroll_area = QScrollArea()
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
 
-        self.scroll_area.setContentsMargins(0, 0, 0, 0)
+        self.scroll_area.setContentsMargins(0, 0, 90, 0)
         self.scroll_area.setWidgetResizable(False)
         self.scroll_area.setMaximumHeight(400)
         self.scroll_area.setMinimumHeight(400)
@@ -337,36 +337,38 @@ class MainWindow(QMainWindow):
             for j in reversed(range(layout.count())):
                 layout.itemAt(j).widget().deleteLater()
         self.scroll_layout.update()
-        
 
     def login(self) -> None:
         """
         Display the login form
         """
+        self.clear()
         if not hasattr(self, "login_form") or not self.login_form:
             self.login_form = LoginLayout()
             self.scroll_layout.addLayout(self.login_form)
             self.login_form.send_button.clicked.connect(self.send_login_form)
             self.login_form.register_button.clicked.connect(self.send_register_form)
-        
+
         self.login_button.setDisabled(True)
-    
+        self.clear_button.setDisabled(True)
+        
+
     def send_login_form(self):
         # TODO: create post request to login form
         if username := self.login_form.username_entry.text():
             self.client.user_name = username
             self.label_user_name.setText(f"Username: {self.client.user_name}")
-            
+
         # -- Update gui
         self.clear()
-        self.login_form = None # clear login for next login session
+        self.login_form = None  # clear login for next login session
         self.connect_to_server()
         self.clear_button.setDisabled(False)
-    
+
     def send_register_form(self):
         # TODO: create post request to register form
         pass
-    
+
     def connect_to_server(self):
         self.client.init_connection()
         if self.client.is_connected:

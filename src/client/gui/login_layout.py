@@ -14,27 +14,26 @@ class LoginLayout(QHBoxLayout):
         self.setSpacing(20)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
-        main_widget.setMinimumWidth(main_widget.width()-50)
-        main_widget.setMaximumWidth(main_widget.width()-50)
+        main_widget.setMinimumWidth(main_widget.width() - 50)
+        main_widget.setMaximumWidth(main_widget.width() - 50)
         main_widget.setMinimumHeight(50)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 7px"
+            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         layout = QHBoxLayout(main_widget)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        layout.setContentsMargins(5, 0, 5, 0)
 
         username_label = QLabel("Username: ")
         password_label = QLabel("Password: ")
-        
+
         self.username_entry = CustomQLineEdit(place_holder_text="Enter your username")
         self.password_entry = CustomQLineEdit(place_holder_text="Enter your password")
-        
+
         self.send_button = CustomQPushButton("")
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
-        
+
         self.register_button = CustomQPushButton("")
         self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
         self.register_button.setIcon(self.register_icon)
@@ -45,4 +44,3 @@ class LoginLayout(QHBoxLayout):
         layout.addWidget(self.password_entry)
         layout.addWidget(self.send_button)
         layout.addWidget(self.register_button)
-    
