@@ -8,9 +8,10 @@ This project provide:
 
 The TCP client (last updated on 4/06/2023):
 
-![ Client picture](resources/images/client_picture.png "client picture")
 
-## Configuration
+![Capture d’écran 2023-06-11 à 21 46 32](https://github.com/clementraoulastek/server_tcp/assets/107399025/e37700b0-0fc7-496e-9c13-eda0a2b633a8)
+
+
 create virtual env:
  - mkdir .venv
  -  python3 -m venv .venv
