@@ -23,8 +23,9 @@ from src.client.qt_core import (
     QWidget,
     Signal,
 )
-from src.tools.constant import IP_SERVER, PORT_NB, SOFT_VERSION
+from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, QIcon_from_svg
+import requests
 
 
 class Worker(QThread):
@@ -351,23 +352,41 @@ class MainWindow(QMainWindow):
 
         self.login_button.setDisabled(True)
         self.clear_button.setDisabled(True)
-        
 
     def send_login_form(self):
-        # TODO: create post request to login form
-        if username := self.login_form.username_entry.text():
-            self.client.user_name = username
-            self.label_user_name.setText(f"Username: {self.client.user_name}")
+        username = self.login_form.username_entry.text()
+        password = self.login_form.password_entry.text()
 
-        # -- Update gui
-        self.clear()
-        self.login_form = None  # clear login for next login session
-        self.connect_to_server()
-        self.clear_button.setDisabled(False)
+        endpoint = f"http://{IP_API}:{PORT_API}/user/"
+
+        response = requests.get(
+            url=f"{endpoint}{username}?password={password}",
+        )
+        if response.status_code == 200:
+            if username := self.login_form.username_entry.text():
+                self.client.user_name = username
+                self.label_user_name.setText(f"Username: {self.client.user_name}")
+
+            # -- Update gui
+            self.clear()
+            self.login_form = None  # clear login for next login session
+            self.connect_to_server()
+            self.clear_button.setDisabled(False)
 
     def send_register_form(self):
-        # TODO: create post request to register form
-        pass
+        endpoint = f"http://{IP_API}:{PORT_API}/register"
+        data = {
+            "username": self.login_form.username_entry.text(),
+            "password": self.login_form.password_entry.text(),
+        }
+        header = {"Accept": "application/json"}
+        response = requests.post(url=endpoint, headers=header, json=data)
+        if response.status_code == 200:
+            # -- Update gui
+            self.clear()
+            self.login_form = None  # clear login for next login session
+            self.connect_to_server()
+            self.clear_button.setDisabled(False)
 
     def connect_to_server(self):
         self.client.init_connection()
