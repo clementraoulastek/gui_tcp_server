@@ -469,6 +469,7 @@ class MainWindow(QMainWindow):
         else:
             self._set_buttons_status(False, True, "Please login")
             self.user_name.setText("User disconnected")
+            self.user_picture.update_picture(path="")
 
     def _set_buttons_status(self, arg0, arg1, lock_message):
         self.custom_user_button.setDisabled(arg1)
