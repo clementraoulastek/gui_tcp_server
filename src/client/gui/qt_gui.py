@@ -27,7 +27,6 @@ from src.client.core.qt_core import (
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
-from PIL import Image
 
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
@@ -157,6 +156,10 @@ class MainWindow(QMainWindow):
         
         self.user_picture = RoundedLabel(content="")
         self.user_name = QLabel("User disconnected")
+        
+        self.user_name.setStyleSheet(
+            "font-weight: bold"
+        )
         
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.clicked.connect(self.send_user_icon)

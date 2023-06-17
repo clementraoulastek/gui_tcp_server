@@ -39,7 +39,6 @@ class MessageLayout(QHBoxLayout):
         left_widget.setMinimumWidth(80)
         left_widget.setMaximumHeight(60)
         left_widget.setMinimumHeight(60)
-        #left_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
@@ -77,11 +76,20 @@ class MessageLayout(QHBoxLayout):
         str_message = "\n".join(message_list)
 
         message_layout = QVBoxLayout()
+        upper_layout = QHBoxLayout()
         message_layout.setSpacing(5)
-        time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        message_label = QLabel(f"{sender_id}: {str_message}")
+        
+        #time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        sender_id_label = QLabel(sender_id)
+        sender_id_label.setStyleSheet(
+            "font-weight: bold"
+        )
+        message_label = QLabel(str_message)
 
-        message_layout.addWidget(time_label)
+        upper_layout.addWidget(sender_id_label)
+        #upper_layout.addWidget(time_label)
+        
+        message_layout.addLayout(upper_layout)
         message_layout.addWidget(message_label)
         right_layout.addLayout(message_layout)
         
