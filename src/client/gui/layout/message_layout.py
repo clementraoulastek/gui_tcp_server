@@ -24,7 +24,7 @@ class MessageLayout(QHBoxLayout):
         main_widget = QWidget()
         main_widget.setMinimumWidth(main_widget.width() - 50)
         main_widget.setMaximumWidth(main_widget.width() - 50)
-        main_widget.setMinimumHeight(60)
+        main_widget.setMinimumHeight(80)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};border-radius: 14px"
