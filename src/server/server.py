@@ -103,7 +103,7 @@ class Server:
                             self.send_data(self.conn_dict[address], data)
                 else:
                     return_message = (
-                        "No client connected in the server, your message get nowhere"
+                        "No client connected, your message go nowhere"
                     )
                     self.send_data(
                         self.conn_dict[addr], return_message, is_from_server=True

@@ -39,7 +39,10 @@ class Color(Enum):
     GREEN = "#305C0A"
     BLACK = "#171717"
 
-
+@unique
+class ImageAvatar(Enum):
+    SERVER = "./resources/images/server_picture.png"
+    
 def image_from_svg(filename="", size=0):
     if LM_USE_SVG != 1:
         return Image.new("RGBA", [size, size])

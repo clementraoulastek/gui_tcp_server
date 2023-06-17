@@ -26,7 +26,7 @@ from src.client.qt_core import (
     QFileDialog,
 )
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
-from src.tools.utils import Color, Icon, QIcon_from_svg
+from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 import requests
 from PIL import Image
 
@@ -392,7 +392,7 @@ class MainWindow(QMainWindow):
         path = QFileDialog.getOpenFileName(self)
         if not path:
             return
-        username = "admin"
+        username = self.client.user_name
         endpoint = f"http://{IP_API}:{PORT_API}/user/{username}"
 
         files = {'file': open(path[0], 'rb')}
@@ -408,10 +408,10 @@ class MainWindow(QMainWindow):
         response = requests.get(
             url=f"{endpoint}{self.client.user_name}/picture",
         )
-        if response.status_code == 200:
+        if response.status_code == 200 and response.content:
             picture = Image.open(io.BytesIO(response.content))
 
-            picture_path = "./resources/images/user_picture.png"
+            picture_path = f"./resources/images/{self.client.user_name}_user_picture.png"
 
             picture.save(picture_path)
             self.user_image_path = picture_path   
@@ -448,7 +448,7 @@ class MainWindow(QMainWindow):
         Display the config
         """
         config = f"User name = '{self.client.user_name}' Client host = '{self.client.host}' Client port = '{self.client.port}'"
-        self.scroll_layout.addLayout(MessageLayout(config))
+        self.scroll_layout.addLayout(MessageLayout(config, user_image_path=ImageAvatar.SERVER.value))
 
     def update_buttons(self):
         if self.client.is_connected:
@@ -457,6 +457,7 @@ class MainWindow(QMainWindow):
             self._set_buttons_status(False, True, "Please login")
 
     def _set_buttons_status(self, arg0, arg1, lock_message):
+        self.custom_user_button.setDisabled(arg1)
         self.login_button.setDisabled(arg0)
         self.logout_button.setDisabled(arg1)
         self.send_button.setDisabled(arg1)
