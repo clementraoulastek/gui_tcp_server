@@ -59,10 +59,7 @@ class Worker(QThread):
 # Global variable to handle worker
 comming_msg = {
     "id": "",
-    "message": "",
-}
-users_pict = {
-    "server": ImageAvatar.SERVER.value,
+    "message": ""
 }
 
 class QtGui:
@@ -84,6 +81,10 @@ class MainWindow(QMainWindow):
         self.setFixedWidth(600)
         self.setWindowTitle(title)
         
+        self.users_pict = {
+            "server": ImageAvatar.SERVER.value
+        }
+        
         # Create Client socket
         self.client = Client(IP_SERVER, PORT_NB, "Default")
         
@@ -92,9 +93,6 @@ class MainWindow(QMainWindow):
         
         # GUI settings
         self.setup_gui()
-        self.check_client_connected_thread = Worker()
-        self.check_client_connected_thread.signal.connect(self.check_client_connected)
-        self.check_client_connected_thread.start()
 
     def setup_gui(self):
         """
@@ -111,14 +109,6 @@ class MainWindow(QMainWindow):
         self.set_core_gui()
         self.set_footer_gui()
 
-    def check_client_connected(self):
-        """
-        Update the icon color depending on the connection status
-        """
-        if self.client.is_connected:
-            self.icon_label.setPixmap(self.status_server_icon_on)
-        else:
-            self.icon_label.setPixmap(self.status_server_icon_off)
 
     def set_header_gui(self):
         """
@@ -146,13 +136,9 @@ class MainWindow(QMainWindow):
         self.status_server_icon_off = QIcon(
             QIcon_from_svg(Icon.STATUS.value, Color.RED.value)
         ).pixmap(QSize(30, 30))
-        self.icon_label = QLabel("")
         self.status_server_label = QLabel(f"TCP Client - version: {SOFT_VERSION}")
 
-        self.icon_label.setPixmap(self.status_server_icon_off)
-
         # Adding widgets to the main layout
-        self.server_information_dashboard_layout.addWidget(self.icon_label)
         self.server_information_dashboard_layout.addWidget(self.status_server_label)
 
         # --- Client information
@@ -170,13 +156,15 @@ class MainWindow(QMainWindow):
         )
         
         self.user_picture = RoundedLabel(path="")
+        self.user_name = QLabel("User disconnected")
         
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.clicked.connect(self.send_user_icon)
         self.custom_user_button.setEnabled(False)
         self.client_information_dashboard_layout.addWidget(self.custom_user_button)
         self.client_information_dashboard_layout.addWidget(self.user_picture)
-
+        self.client_information_dashboard_layout.addWidget(self.user_name)
+        
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
 
@@ -317,8 +305,7 @@ class MainWindow(QMainWindow):
             "id": id_sender,
             "message": message
         }
-        global users_pict
-        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=users_pict[self.client.user_name]))
+        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=self.users_pict[self.client.user_name]))
 
         self.entry.clear()
 
@@ -341,11 +328,10 @@ class MainWindow(QMainWindow):
         Callback to update gui with input messages
         """
         global comming_msg
-        global users_pict
         if comming_msg["message"]:
             self.add_sender_picture(comming_msg["id"])
             self.scroll_layout.addLayout(
-                MessageLayout(comming_msg, user_image_path=users_pict[comming_msg["id"]])
+                MessageLayout(comming_msg, user_image_path=self.users_pict[comming_msg["id"]])
             )
             comming_msg["id"], comming_msg["message"] = "", ""
 
@@ -422,10 +408,9 @@ class MainWindow(QMainWindow):
             username = self.client.user_name
         if content := self.backend.get_user_icon(username):
             picture = Image.open(io.BytesIO(content))
-            picture_path = f"./resources/images/{self.client.user_name}_user_picture.png"
+            picture_path = f"./resources/images/{username}_user_picture.png"
             picture.save(picture_path)
-            global users_pict
-            users_pict[username] = picture_path
+            self.users_pict[username] = picture_path
             if update_avatar:
                 self.user_picture.update_picture(path=picture_path)
         
@@ -435,8 +420,7 @@ class MainWindow(QMainWindow):
         Args:
             sender_id (str): sender identifier
         """
-        global users_pict
-        if sender_id not in list(users_pict.keys()):
+        if sender_id not in list(self.users_pict.keys()):
             logging.info(True)
             self.get_user_icon(sender_id)
             
@@ -481,8 +465,10 @@ class MainWindow(QMainWindow):
     def update_buttons(self):
         if self.client.is_connected:
             self._set_buttons_status(True, False, "Enter your message")
+            self.user_name.setText(self.client.user_name)
         else:
             self._set_buttons_status(False, True, "Please login")
+            self.user_name.setText("User disconnected")
 
     def _set_buttons_status(self, arg0, arg1, lock_message):
         self.custom_user_button.setDisabled(arg1)
