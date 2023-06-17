@@ -16,7 +16,7 @@ class MessageLayout(QHBoxLayout):
     MAX_CHAR = 60
     background_bool = False
 
-    def __init__(self, str_message: str, user_image_path=None):
+    def __init__(self, coming_msg: dict, user_image_path=None):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(20)
@@ -65,7 +65,8 @@ class MessageLayout(QHBoxLayout):
             left_layout.addWidget(label)
 
         message_list = []
-        message = str_message
+        message = coming_msg["message"]
+        sender_id = coming_msg["id"]
 
         while len(message) > self.MAX_CHAR:
             message_list.append(message[: self.MAX_CHAR])
@@ -78,7 +79,7 @@ class MessageLayout(QHBoxLayout):
         message_layout = QVBoxLayout()
         message_layout.setSpacing(5)
         time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        message_label = QLabel(str_message)
+        message_label = QLabel(f"{sender_id}: {str_message}")
 
         message_layout.addWidget(time_label)
         message_layout.addWidget(message_label)

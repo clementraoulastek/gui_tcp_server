@@ -59,8 +59,10 @@ class Worker(QThread):
         self._is_running = False
 
 # Global variable to handle worker
-comming_msg = ""
-
+comming_msg = {
+    "id": "",
+    "message": "",
+}
 
 class QtGui:
     def __init__(self, title):
@@ -310,10 +312,12 @@ class MainWindow(QMainWindow):
         Args:
             id_sender (str): id from the sender
             message (str): message to display
-            is_from_server (bool): is msg coming from server
-            doubleReturn (bool, optional): if double return needed. Defaults to False.
         """
-        self.scroll_layout.addLayout(MessageLayout(f"{id_sender}: {message}", user_image_path=self.user_image_path))
+        comming_msg = {
+            "id": id_sender,
+            "message": message
+        }
+        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=self.user_image_path))
 
         self.entry.clear()
 
@@ -323,21 +327,21 @@ class MainWindow(QMainWindow):
 
         Args:
             message (str): message to display
-            is_from_server (bool): is msg coming from server
-            doubleReturn (bool, optional): if double return needed. Defaults to False.
         """
         global comming_msg
         if ":" in message:
-            id, message = message.split(":", 1)
-            comming_msg = f"{id}: {message}"
+            comming_msg["id"], comming_msg["message"] = message.split(":", 1)
         else:
-            comming_msg = message
+            comming_msg["id"], comming_msg["message"] = "unknown", message
 
     def update_gui_with_input_messages(self):
+        """
+        Callback to update gui with input messages
+        """
         global comming_msg
-        if comming_msg:
-            self.scroll_layout.addLayout(MessageLayout(f"{comming_msg}"))
-            comming_msg = ""
+        if comming_msg["message"]:
+            self.scroll_layout.addLayout(MessageLayout(comming_msg))
+            comming_msg["id"], comming_msg["message"] = "", ""
 
     def read_messages(self):
         """
@@ -447,7 +451,11 @@ class MainWindow(QMainWindow):
         Display the config
         """
         config = f"User name = '{self.client.user_name}' Client host = '{self.client.host}' Client port = '{self.client.port}'"
-        self.scroll_layout.addLayout(MessageLayout(config, user_image_path=ImageAvatar.SERVER.value))
+        comming_msg = {
+            "id": "server",
+            "message": config
+        }
+        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=ImageAvatar.SERVER.value))
 
     def update_buttons(self):
         if self.client.is_connected:

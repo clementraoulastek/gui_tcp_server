@@ -45,12 +45,7 @@ class Client:
                     raw_data += chunk
                 else:
                     break
-            str_message = raw_data.decode("utf-8")
-            from_server = "from server:" in str_message
-            if from_server:
-                str_message = str_message.replace("from server:", "")
-            return str_message
-
+            return raw_data.decode("utf-8")
         except Exception as error:
             logging.error(error)
             self.sock.close()
@@ -64,7 +59,6 @@ class Client:
 
         Args:
             data (str): string data to send
-            is_from_server (bool, optional): if msg coming from server. Defaults to False.
         """
         message = f"{self.user_name}: {data}\n"
 

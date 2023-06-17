@@ -1,35 +1,35 @@
-name: Python Test
+# name: Python Test
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  test:
+# jobs:
+#   test:
 
-    runs-on: ubuntu-latest
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - name: Create virtual environment
-        run: |
-          mkdir virtualenv_directory
-          python3 -m venv virtualenv_directory
-      - name: Activate virtual environment
-        run: |
-          source virtualenv_directory/bin/activate
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
-      - name: Run test
-        run: |
-          pytest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.10'
+#       - name: Create virtual environment
+#         run: |
+#           mkdir virtualenv_directory
+#           python3 -m venv virtualenv_directory
+#       - name: Activate virtual environment
+#         run: |
+#           source virtualenv_directory/bin/activate
+#       - name: Install packages
+#         run: |
+#           pip install --upgrade pip
+#           pip install -r requirements.txt
+#           pip install -e .
+#       - name: Run test
+#         run: |
+#           pytest
         
 

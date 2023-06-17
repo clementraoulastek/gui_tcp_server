@@ -76,7 +76,7 @@ class Server:
             data (str): data to send
             is_from_server (bool, optional): if msg come from server. Defaults to False.
         """
-        message = f"from server:{data}\n" if is_from_server else f"{data}\n"
+        message = f"server:{data}\n" if is_from_server else f"{data}\n"
         conn.send(message.encode("utf-8"))
 
     def create_connection(self, conn, addr):
