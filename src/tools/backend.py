@@ -20,13 +20,14 @@ class Backend:
         data = {
             "username": username,
             "password": password,
+            "picture": ""
         }
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
         return response.status_code == 200
             
-    def send_user_icon(self, username: str) -> bool:
-        path = QFileDialog.getOpenFileName(self.parent)
+    def send_user_icon(self, username: str, picture_path: str = None) -> bool:
+        path = picture_path or QFileDialog.getOpenFileName(self.parent)
         if not path:
             return
         endpoint = f"http://{self.ip}:{self.port}/user/{username}"

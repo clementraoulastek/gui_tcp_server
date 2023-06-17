@@ -393,14 +393,17 @@ class MainWindow(QMainWindow):
         password = self.login_form.password_entry.text()
         
         if self.backend.send_register_form(username, password):
+            if username:
+                self.client.user_name = username
+   
             self._clean_gui_and_connect()
             
-    def send_user_icon(self):
+    def send_user_icon(self, picture_path=None):
         """
         Backend request for sending user icon
         """
         username = self.client.user_name
-        if self.backend.send_user_icon(username):
+        if self.backend.send_user_icon(username, picture_path):
             self.get_user_icon(update_avatar=True)
             
     def get_user_icon(self, username=None, update_avatar=False):
@@ -413,7 +416,9 @@ class MainWindow(QMainWindow):
             self.users_pict[username] = content
             if update_avatar:
                 self.user_picture.update_picture(content=content)
-        
+        else:
+            self.users_pict[username] = ""
+
     def add_sender_picture(self, sender_id):
         """Add sender picture to the list of sender pictures
 
@@ -469,7 +474,7 @@ class MainWindow(QMainWindow):
         else:
             self._set_buttons_status(False, True, "Please login")
             self.user_name.setText("User disconnected")
-            self.user_picture.update_picture(path="")
+            self.user_picture.update_picture(content="")
 
     def _set_buttons_status(self, arg0, arg1, lock_message):
         self.custom_user_button.setDisabled(arg1)
