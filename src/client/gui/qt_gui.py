@@ -3,7 +3,6 @@ import logging
 import sys
 import time
 from threading import Thread
-import numpy as np
 from src.client.client import Client
 from src.client.gui.customWidget.CustomQLabel import RoundedLabel
 from src.client.gui.customWidget.CustomQLineEdit import CustomQLineEdit
@@ -28,7 +27,6 @@ from src.client.core.qt_core import (
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
-import requests
 from PIL import Image
 
 class Worker(QThread):
@@ -63,6 +61,9 @@ comming_msg = {
     "id": "",
     "message": "",
 }
+users_pict = {
+    "server": ImageAvatar.SERVER.value,
+}
 
 class QtGui:
     def __init__(self, title):
@@ -88,7 +89,6 @@ class MainWindow(QMainWindow):
         
         # Create backend conn
         self.backend = Backend(self, IP_API, PORT_API)
-        self.user_image_path = None # TODO: must not be set here
         
         # GUI settings
         self.setup_gui()
@@ -317,7 +317,8 @@ class MainWindow(QMainWindow):
             "id": id_sender,
             "message": message
         }
-        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=self.user_image_path))
+        global users_pict
+        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=users_pict[self.client.user_name]))
 
         self.entry.clear()
 
@@ -333,19 +334,24 @@ class MainWindow(QMainWindow):
             comming_msg["id"], comming_msg["message"] = message.split(":", 1)
         else:
             comming_msg["id"], comming_msg["message"] = "unknown", message
-
+            
+            
     def update_gui_with_input_messages(self):
         """
         Callback to update gui with input messages
         """
         global comming_msg
+        global users_pict
         if comming_msg["message"]:
-            self.scroll_layout.addLayout(MessageLayout(comming_msg))
+            self.add_sender_picture(comming_msg["id"])
+            self.scroll_layout.addLayout(
+                MessageLayout(comming_msg, user_image_path=users_pict[comming_msg["id"]])
+            )
             comming_msg["id"], comming_msg["message"] = "", ""
 
     def read_messages(self):
         """
-        Read message comming from server
+        Read message comming from serve
         """
         while self.client.is_connected:
             if message := self.client.read_data():
@@ -386,7 +392,7 @@ class MainWindow(QMainWindow):
         if self.backend.send_login_form(username, password):
             if username: # Check if username not empty
                 self.client.user_name = username
-                self.get_user_icon()
+                self.get_user_icon(update_avatar=True)
 
             self._clean_gui_and_connect()
             
@@ -406,20 +412,35 @@ class MainWindow(QMainWindow):
         """
         username = self.client.user_name
         if self.backend.send_user_icon(username):
-            self.get_user_icon()
+            self.get_user_icon(update_avatar=True)
             
-    def get_user_icon(self):
+    def get_user_icon(self, username=None, update_avatar=False):
         """
         Backend request for getting user icon
         """
-        username = self.client.user_name
+        if not username:
+            username = self.client.user_name
         if content := self.backend.get_user_icon(username):
             picture = Image.open(io.BytesIO(content))
             picture_path = f"./resources/images/{self.client.user_name}_user_picture.png"
             picture.save(picture_path)
-            self.user_image_path = picture_path
-            self.user_picture.update_picture(path=picture_path)
+            global users_pict
+            users_pict[username] = picture_path
+            if update_avatar:
+                self.user_picture.update_picture(path=picture_path)
+        
+    def add_sender_picture(self, sender_id):
+        """Add sender picture to the list of sender pictures
+
+        Args:
+            sender_id (str): sender identifier
+        """
+        global users_pict
+        if sender_id not in list(users_pict.keys()):
+            logging.info(True)
+            self.get_user_icon(sender_id)
             
+        
     def _clean_gui_and_connect(self):
         self.clear()
         self.login_form = None
