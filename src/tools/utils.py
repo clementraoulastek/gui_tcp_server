@@ -7,7 +7,7 @@ from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
 
 from resources.icon.icon_path import ICON_PATH
-from src.client.qt_core import QColor, QIcon, QPainter, QPixmap, QImage, QRect, Qt, QBrush, QWindow
+from src.client.core.qt_core import QColor, QIcon, QPainter, QPixmap, QImage, QRect, Qt, QBrush, QWindow
 
 LM_USE_SVG = 1
 

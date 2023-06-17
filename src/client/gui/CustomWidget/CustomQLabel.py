@@ -1,4 +1,4 @@
-from src.client.qt_core import Qt, QPixmap, QLabel, QPainter, QPainter, QPainterPath
+from src.client.core.qt_core import Qt, QPixmap, QLabel, QPainter, QPainter, QPainterPath
 
 class RoundedLabel(QLabel):
     def __init__(self, *args, path=None, antialiasing=True, **kwargs):

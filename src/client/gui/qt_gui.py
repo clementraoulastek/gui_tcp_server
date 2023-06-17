@@ -5,13 +5,13 @@ import time
 from threading import Thread
 import numpy as np
 from src.client.client import Client
-from src.client.gui.CustomQLabel import RoundedLabel
-from src.client.gui.CustomQLineEdit import CustomQLineEdit
-from src.client.gui.CustomQPushButton import CustomQPushButton
-from src.client.gui.login_layout import LoginLayout
-from src.client.gui.message_layout import MessageLayout
+from src.client.gui.CustomWidget.CustomQLabel import RoundedLabel
+from src.client.gui.CustomWidget.CustomQLineEdit import CustomQLineEdit
+from src.client.gui.CustomWidget.CustomQPushButton import CustomQPushButton
+from src.client.gui.layout.login_layout import LoginLayout
+from src.client.gui.layout.message_layout import MessageLayout
 from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
-from src.client.qt_core import (
+from src.client.core.qt_core import (
     QApplication,
     QHBoxLayout,
     QIcon,

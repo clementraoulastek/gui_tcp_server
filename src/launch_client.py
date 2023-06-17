@@ -1,4 +1,4 @@
-from src.client.qt_gui import QtGui
+from src.client.gui.qt_gui import QtGui
 from src.tools.constant import DEFAULT_CLIENT_NAME
 from src.tools.logger import setup_logger
 

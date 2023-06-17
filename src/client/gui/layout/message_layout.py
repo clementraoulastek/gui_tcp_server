@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.client.qt_core import (
+from src.client.core.qt_core import (
     QHBoxLayout,
     QIcon,
     QLabel,
@@ -10,7 +10,7 @@ from src.client.qt_core import (
     QVBoxLayout
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
-from src.client.gui.CustomQLabel import RoundedLabel
+from src.client.gui.CustomWidget.CustomQLabel import RoundedLabel
 
 class MessageLayout(QHBoxLayout):
     MAX_CHAR = 60
