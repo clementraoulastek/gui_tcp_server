@@ -16,7 +16,7 @@ class MessageLayout(QHBoxLayout):
     MAX_CHAR = 60
     background_bool = False
 
-    def __init__(self, coming_msg: dict, user_image_path=None):
+    def __init__(self, coming_msg: dict, content=None):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(20)
@@ -55,13 +55,13 @@ class MessageLayout(QHBoxLayout):
         right_layout.setSpacing(25)
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         
-        if not user_image_path:
+        if not content:
             icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
             icon_label = QLabel("")
             icon_label.setPixmap(icon)
             left_layout.addWidget(icon_label)
         else:
-            label = RoundedLabel(path=user_image_path)
+            label = RoundedLabel(content=content)
             left_layout.addWidget(label)
 
         message_list = []

@@ -1,21 +1,24 @@
-from src.client.core.qt_core import Qt, QPixmap, QLabel, QPainter, QPainter, QPainterPath
+from src.client.core.qt_core import Qt, QPixmap, QLabel, QPainter, QPainter, QPainterPath, QImage
 
 class RoundedLabel(QLabel):
-    def __init__(self, *args, path=None, antialiasing=True, **kwargs):
+    def __init__(self, *args, content=None, **kwargs):
         super(RoundedLabel, self).__init__(*args, **kwargs)
-        self.update_picture(path, antialiasing)
+        self.update_picture(content)
         
-    def update_picture(self, path, antialiasing=True):
+    def update_picture(self, content, antialiasing=True):
         self.Antialiasing = antialiasing
         self.setMaximumSize(50, 50)
         self.setMinimumSize(50, 50)
         self.radius = 25 
 
         self.target = QPixmap(self.size())  
-        self.target.fill(Qt.transparent)   
-
-        p = QPixmap(path).scaled(  
-            50, 50, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.target.fill(Qt.transparent)
+        if isinstance(content, str):
+            p = QPixmap(content)
+        else:
+            p = QPixmap()
+            p.loadFromData(content)
+        p=p.scaled(50, 50, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
 
         painter = QPainter(self.target)
         if self.Antialiasing:

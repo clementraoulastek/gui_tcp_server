@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
             "Update user picture",
         )
         
-        self.user_picture = RoundedLabel(path="")
+        self.user_picture = RoundedLabel(content="")
         self.user_name = QLabel("User disconnected")
         
         self.custom_user_button.setIcon(self.user_icon)
@@ -305,7 +305,7 @@ class MainWindow(QMainWindow):
             "id": id_sender,
             "message": message
         }
-        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=self.users_pict[self.client.user_name]))
+        self.scroll_layout.addLayout(MessageLayout(comming_msg, content=self.users_pict[self.client.user_name]))
 
         self.entry.clear()
 
@@ -331,7 +331,7 @@ class MainWindow(QMainWindow):
         if comming_msg["message"]:
             self.add_sender_picture(comming_msg["id"])
             self.scroll_layout.addLayout(
-                MessageLayout(comming_msg, user_image_path=self.users_pict[comming_msg["id"]])
+                MessageLayout(comming_msg, content=self.users_pict[comming_msg["id"]])
             )
             comming_msg["id"], comming_msg["message"] = "", ""
 
@@ -407,12 +407,9 @@ class MainWindow(QMainWindow):
         if not username:
             username = self.client.user_name
         if content := self.backend.get_user_icon(username):
-            picture = Image.open(io.BytesIO(content))
-            picture_path = f"./resources/images/{username}_user_picture.png"
-            picture.save(picture_path)
-            self.users_pict[username] = picture_path
+            self.users_pict[username] = content
             if update_avatar:
-                self.user_picture.update_picture(path=picture_path)
+                self.user_picture.update_picture(content=content)
         
     def add_sender_picture(self, sender_id):
         """Add sender picture to the list of sender pictures
@@ -460,7 +457,7 @@ class MainWindow(QMainWindow):
             "id": "server",
             "message": config
         }
-        self.scroll_layout.addLayout(MessageLayout(comming_msg, user_image_path=ImageAvatar.SERVER.value))
+        self.scroll_layout.addLayout(MessageLayout(comming_msg, content=ImageAvatar.SERVER.value))
 
     def update_buttons(self):
         if self.client.is_connected:
