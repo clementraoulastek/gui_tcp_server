@@ -5,9 +5,9 @@ import time
 from threading import Thread
 import numpy as np
 from src.client.client import Client
-from src.client.gui.CustomWidget.CustomQLabel import RoundedLabel
-from src.client.gui.CustomWidget.CustomQLineEdit import CustomQLineEdit
-from src.client.gui.CustomWidget.CustomQPushButton import CustomQPushButton
+from src.client.gui.customWidget.CustomQLabel import RoundedLabel
+from src.client.gui.customWidget.CustomQLineEdit import CustomQLineEdit
+from src.client.gui.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.gui.layout.login_layout import LoginLayout
 from src.client.gui.layout.message_layout import MessageLayout
 from src.client.gui.stylesheets import scroll_bar_vertical_stylesheet
@@ -23,9 +23,9 @@ from src.client.core.qt_core import (
     QThread,
     QVBoxLayout,
     QWidget,
-    Signal,
-    QFileDialog,
+    Signal
 )
+from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 import requests
@@ -58,7 +58,7 @@ class Worker(QThread):
         self.exit()
         self._is_running = False
 
-
+# Global variable to handle worker
 comming_msg = ""
 
 
@@ -76,11 +76,19 @@ class QtGui:
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
+        # GUI size
         self.setFixedHeight(600)
         self.setFixedWidth(600)
         self.setWindowTitle(title)
+        
+        # Create Client socket
         self.client = Client(IP_SERVER, PORT_NB, "Default")
+        
+        # Create backend conn
+        self.backend = Backend(self, IP_API, PORT_API)
         self.user_image_path = None # TODO: must not be set here
+        
+        # GUI settings
         self.setup_gui()
         self.check_client_connected_thread = Worker()
         self.check_client_connected_thread.signal.connect(self.check_client_connected)
@@ -364,65 +372,50 @@ class MainWindow(QMainWindow):
         self.login_button.setDisabled(True)
         self.clear_button.setDisabled(True)
 
-    
-    # --- Backend methods--------------------------------------------
     def send_login_form(self):
+        """
+        Backend request for login form
+        """
         username = self.login_form.username_entry.text()
         password = self.login_form.password_entry.text()
-
-        endpoint = f"http://{IP_API}:{PORT_API}/user/"
-        response = requests.get(
-            url=f"{endpoint}{username}?password={password}",
-        )
-
-        if response.status_code == 200:
-            if username := self.login_form.username_entry.text():
+        
+        if self.backend.send_login_form(username, password):
+            if username: # Check if username not empty
                 self.client.user_name = username
                 self.get_user_icon()
 
             self._clean_gui_and_connect()
-
+            
     def send_register_form(self):
-        endpoint = f"http://{IP_API}:{PORT_API}/register"
-        data = {
-            "username": self.login_form.username_entry.text(),
-            "password": self.login_form.password_entry.text(),
-        }
-        header = {"Accept": "application/json"}
-        response = requests.post(url=endpoint, headers=header, json=data)
-        if response.status_code == 200:
+        """
+        Backend request for register form
+        """
+        username = self.login_form.username_entry.text()
+        password = self.login_form.password_entry.text()
+        
+        if self.backend.send_register_form(username, password):
             self._clean_gui_and_connect()
             
     def send_user_icon(self):
-        path = QFileDialog.getOpenFileName(self)
-        if not path:
-            return
+        """
+        Backend request for sending user icon
+        """
         username = self.client.user_name
-        endpoint = f"http://{IP_API}:{PORT_API}/user/{username}"
-
-        files = {'file': open(path[0], 'rb')}
-        response = requests.put(
-            url=endpoint,
-            files=files
-        )
-        if response.status_code == 200:
+        if self.backend.send_user_icon(username):
             self.get_user_icon()
             
     def get_user_icon(self):
-        endpoint = f"http://{IP_API}:{PORT_API}/user/"
-        response = requests.get(
-            url=f"{endpoint}{self.client.user_name}/picture",
-        )
-        if response.status_code == 200 and response.content:
-            picture = Image.open(io.BytesIO(response.content))
-
+        """
+        Backend request for getting user icon
+        """
+        username = self.client.user_name
+        if content := self.backend.get_user_icon(username):
+            picture = Image.open(io.BytesIO(content))
             picture_path = f"./resources/images/{self.client.user_name}_user_picture.png"
-
             picture.save(picture_path)
             self.user_image_path = picture_path
             self.user_picture.update_picture(path=picture_path)
-    # ----------------------------------------------------------------
-    
+            
     def _clean_gui_and_connect(self):
         self.clear()
         self.login_form = None

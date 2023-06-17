@@ -10,7 +10,7 @@ from src.client.core.qt_core import (
     QVBoxLayout
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
-from src.client.gui.CustomWidget.CustomQLabel import RoundedLabel
+from src.client.gui.customWidget.CustomQLabel import RoundedLabel
 
 class MessageLayout(QHBoxLayout):
     MAX_CHAR = 60

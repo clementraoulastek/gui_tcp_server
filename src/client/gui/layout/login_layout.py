@@ -1,5 +1,5 @@
-from src.client.gui.CustomWidget.CustomQLineEdit import CustomQLineEdit
-from src.client.gui.CustomWidget.CustomQPushButton import CustomQPushButton
+from src.client.gui.customWidget.CustomQLineEdit import CustomQLineEdit
+from src.client.gui.customWidget.CustomQPushButton import CustomQPushButton
 
 from src.client.core.qt_core import QHBoxLayout, QLabel, Qt, QWidget, QIcon
 from src.tools.utils import Color, Icon, QIcon_from_svg
