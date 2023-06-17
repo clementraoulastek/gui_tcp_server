@@ -3,6 +3,9 @@ from src.client.qt_core import Qt, QPixmap, QLabel, QPainter, QPainter, QPainter
 class RoundedLabel(QLabel):
     def __init__(self, *args, path=None, antialiasing=True, **kwargs):
         super(RoundedLabel, self).__init__(*args, **kwargs)
+        self.update_picture(path, antialiasing)
+        
+    def update_picture(self, path, antialiasing=True):
         self.Antialiasing = antialiasing
         self.setMaximumSize(50, 50)
         self.setMinimumSize(50, 50)
@@ -25,4 +28,4 @@ class RoundedLabel(QLabel):
 
         painter.setClipPath(path)
         painter.drawPixmap(0, 0, p)
-        self.setPixmap(self.target)
+        self.setPixmap(self.target)    

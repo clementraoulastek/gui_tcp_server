@@ -5,6 +5,7 @@ import time
 from threading import Thread
 import numpy as np
 from src.client.client import Client
+from src.client.gui.CustomQLabel import RoundedLabel
 from src.client.gui.CustomQLineEdit import CustomQLineEdit
 from src.client.gui.CustomQPushButton import CustomQPushButton
 from src.client.gui.login_layout import LoginLayout
@@ -157,10 +158,14 @@ class MainWindow(QMainWindow):
         self.custom_user_button = CustomQPushButton(
             "Update user picture",
         )
+        
+        self.user_picture = RoundedLabel(path="")
+        
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.clicked.connect(self.send_user_icon)
         self.custom_user_button.setEnabled(False)
         self.client_information_dashboard_layout.addWidget(self.custom_user_button)
+        self.client_information_dashboard_layout.addWidget(self.user_picture)
 
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
@@ -189,8 +194,8 @@ class MainWindow(QMainWindow):
 
         self.scroll_area.setContentsMargins(0, 0, 90, 0)
         self.scroll_area.setWidgetResizable(False)
-        self.scroll_area.setMaximumHeight(400)
-        self.scroll_area.setMinimumHeight(400)
+        self.scroll_area.setMaximumHeight(380)
+        self.scroll_area.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
         self.scroll_widget.setContentsMargins(0, 0, 0, 0)
@@ -414,7 +419,8 @@ class MainWindow(QMainWindow):
             picture_path = f"./resources/images/{self.client.user_name}_user_picture.png"
 
             picture.save(picture_path)
-            self.user_image_path = picture_path   
+            self.user_image_path = picture_path
+            self.user_picture.update_picture(path=picture_path)
     # ----------------------------------------------------------------
     
     def _clean_gui_and_connect(self):
