@@ -7,16 +7,16 @@ from src.client.qt_core import (
     QSize,
     Qt,
     QWidget,
-    QVBoxLayout,
+    QVBoxLayout
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
-
+from src.client.gui.CustomQLabel import RoundedLabel
 
 class MessageLayout(QHBoxLayout):
     MAX_CHAR = 60
     background_bool = False
 
-    def __init__(self, str_message: str, coming_msg: str = None, parent=None):
+    def __init__(self, str_message: str, user_image_path=None):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(20)
@@ -39,7 +39,7 @@ class MessageLayout(QHBoxLayout):
         left_widget.setMinimumWidth(80)
         left_widget.setMaximumHeight(60)
         left_widget.setMinimumHeight(60)
-        left_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
+        #left_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
@@ -54,9 +54,15 @@ class MessageLayout(QHBoxLayout):
 
         right_layout.setSpacing(25)
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-
-        icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
-        icon_label = QLabel("")
+        
+        if not user_image_path:
+            icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
+            icon_label = QLabel("")
+            icon_label.setPixmap(icon)
+            left_layout.addWidget(icon_label)
+        else:
+            label = RoundedLabel(path=user_image_path)
+            left_layout.addWidget(label)
 
         message_list = []
         message = str_message
@@ -74,8 +80,7 @@ class MessageLayout(QHBoxLayout):
         time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         message_label = QLabel(str_message)
 
-        icon_label.setPixmap(icon)
-        left_layout.addWidget(icon_label)
         message_layout.addWidget(time_label)
         message_layout.addWidget(message_label)
         right_layout.addLayout(message_layout)
+        

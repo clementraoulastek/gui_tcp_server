@@ -1,8 +1,9 @@
+import io
 import logging
 import sys
 import time
 from threading import Thread
-
+import numpy as np
 from src.client.client import Client
 from src.client.gui.CustomQLineEdit import CustomQLineEdit
 from src.client.gui.CustomQPushButton import CustomQPushButton
@@ -22,11 +23,12 @@ from src.client.qt_core import (
     QVBoxLayout,
     QWidget,
     Signal,
+    QFileDialog,
 )
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, QIcon_from_svg
 import requests
-
+from PIL import Image
 
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
@@ -77,6 +79,7 @@ class MainWindow(QMainWindow):
         self.setFixedWidth(600)
         self.setWindowTitle(title)
         self.client = Client(IP_SERVER, PORT_NB, "Default")
+        self.user_image_path = None # TODO: must not be set here
         self.setup_gui()
         self.check_client_connected_thread = Worker()
         self.check_client_connected_thread.signal.connect(self.check_client_connected)
@@ -150,11 +153,14 @@ class MainWindow(QMainWindow):
         self.user_icon = QIcon(QIcon_from_svg(Icon.USER_ICON.value)).pixmap(
             QSize(30, 30)
         )
-        self.user_icon_label = QLabel("")
-        self.user_icon_label.setPixmap(self.user_icon)
-        self.label_user_name = QLabel(f"Username: {self.client.user_name}")
-        self.client_information_dashboard_layout.addWidget(self.user_icon_label)
-        self.client_information_dashboard_layout.addWidget(self.label_user_name)
+
+        self.custom_user_button = CustomQPushButton(
+            "Update user picture",
+        )
+        self.custom_user_button.setIcon(self.user_icon)
+        self.custom_user_button.clicked.connect(self.send_user_icon)
+        self.custom_user_button.setEnabled(False)
+        self.client_information_dashboard_layout.addWidget(self.custom_user_button)
 
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
@@ -294,7 +300,7 @@ class MainWindow(QMainWindow):
             is_from_server (bool): is msg coming from server
             doubleReturn (bool, optional): if double return needed. Defaults to False.
         """
-        self.scroll_layout.addLayout(MessageLayout(f"{id_sender}: {message}"))
+        self.scroll_layout.addLayout(MessageLayout(f"{id_sender}: {message}", user_image_path=self.user_image_path))
 
         self.entry.clear()
 
@@ -353,25 +359,23 @@ class MainWindow(QMainWindow):
         self.login_button.setDisabled(True)
         self.clear_button.setDisabled(True)
 
+    
+    # --- Backend methods--------------------------------------------
     def send_login_form(self):
         username = self.login_form.username_entry.text()
         password = self.login_form.password_entry.text()
 
         endpoint = f"http://{IP_API}:{PORT_API}/user/"
-
         response = requests.get(
             url=f"{endpoint}{username}?password={password}",
         )
+
         if response.status_code == 200:
             if username := self.login_form.username_entry.text():
                 self.client.user_name = username
-                self.label_user_name.setText(f"Username: {self.client.user_name}")
+                self.get_user_icon()
 
-            # -- Update gui
-            self.clear()
-            self.login_form = None  # clear login for next login session
-            self.connect_to_server()
-            self.clear_button.setDisabled(False)
+            self._clean_gui_and_connect()
 
     def send_register_form(self):
         endpoint = f"http://{IP_API}:{PORT_API}/register"
@@ -382,11 +386,43 @@ class MainWindow(QMainWindow):
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
         if response.status_code == 200:
-            # -- Update gui
-            self.clear()
-            self.login_form = None  # clear login for next login session
-            self.connect_to_server()
-            self.clear_button.setDisabled(False)
+            self._clean_gui_and_connect()
+            
+    def send_user_icon(self):
+        path = QFileDialog.getOpenFileName(self)
+        if not path:
+            return
+        username = "admin"
+        endpoint = f"http://{IP_API}:{PORT_API}/user/{username}"
+
+        files = {'file': open(path[0], 'rb')}
+        response = requests.put(
+            url=endpoint,
+            files=files
+        )
+        if response.status_code == 200:
+            self.get_user_icon()
+            
+    def get_user_icon(self):
+        endpoint = f"http://{IP_API}:{PORT_API}/user/"
+        response = requests.get(
+            url=f"{endpoint}{self.client.user_name}/picture",
+        )
+        if response.status_code == 200:
+            picture = Image.open(io.BytesIO(response.content))
+
+            picture_path = "./resources/images/user_picture.png"
+
+            picture.save(picture_path)
+            self.user_image_path = picture_path   
+    # ----------------------------------------------------------------
+    
+    def _clean_gui_and_connect(self):
+        self.clear()
+        self.login_form = None
+        self.connect_to_server()
+        self.clear_button.setDisabled(False)
+            
 
     def connect_to_server(self):
         self.client.init_connection()
@@ -399,7 +435,7 @@ class MainWindow(QMainWindow):
             self.update_buttons()
         else:
             self._display_message_after_read("Server off")
-
+    
     def logout(self) -> None:
         """
         Disconnect the client
