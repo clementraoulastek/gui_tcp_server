@@ -5,7 +5,7 @@ class RoundedLabel(QLabel):
         super(RoundedLabel, self).__init__(*args, **kwargs)
         self.update_picture(content)
         self.setStyleSheet(
-            "border-radius: 3px;" # not working
+            "border-radius: 40px;" # not working
         )
         
     def update_picture(self, content):

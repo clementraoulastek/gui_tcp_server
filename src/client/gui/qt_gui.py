@@ -384,9 +384,8 @@ class MainWindow(QMainWindow):
         if self.backend.send_login_form(username, password):
             if username: # Check if username not empty
                 self.client.user_name = username
-                self.get_user_icon(update_avatar=True)
-
-            self._clean_gui_and_connect()
+                
+            self._clean_gui_and_connect(update_avatar=True)
             
     def send_register_form(self):
         """
@@ -401,7 +400,7 @@ class MainWindow(QMainWindow):
             if username:
                 self.client.user_name = username
    
-            self._clean_gui_and_connect()
+            self._clean_gui_and_connect(update_avatar=False)
             
     def send_user_icon(self, picture_path=None):
         """
@@ -434,15 +433,15 @@ class MainWindow(QMainWindow):
             logging.info(True)
             self.get_user_icon(sender_id)
             
-        
-    def _clean_gui_and_connect(self):
-        self.clear()
-        self.login_form = None
-        self.connect_to_server()
-        self.clear_button.setDisabled(False)
+    def _clean_gui_and_connect(self, update_avatar: bool) -> None:
+        if self.connect_to_server():
+            self.login_form = None
+            self.clear_button.setDisabled(False)
+            self.clear()
+            self.get_user_icon(update_avatar=update_avatar)
             
 
-    def connect_to_server(self):
+    def connect_to_server(self) -> bool:
         self.client.init_connection()
         if self.client.is_connected:
             self.read_worker = Worker()
@@ -451,8 +450,10 @@ class MainWindow(QMainWindow):
             self.worker_thread = Thread(target=self.read_messages, daemon=True)
             self.worker_thread.start()
             self.update_buttons()
+            return True
         else:
             self._display_message_after_read("Server off")
+            return False
     
     def logout(self) -> None:
         """
