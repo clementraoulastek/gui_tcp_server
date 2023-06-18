@@ -315,17 +315,17 @@ class MainWindow(QMainWindow):
         self.send_layout.addWidget(self.send_button)
         self.main_layout.addLayout(self.send_layout)
 
-    def close_connection(self, *args) -> None:
+    def closeEvent(self, event) -> None:
         """
         Close the socket and destroy the gui
         """
         if hasattr(self.client, "sock"):
+            logging.debug("Client disconnecting...")
             self.client.close_connection()
             logging.debug("Client disconnected")
-        else:
-            logging.debug("GUI closed")
-            self.destroy()
-            sys.exit(0)
+        logging.debug("GUI closing ...")
+        self.destroy()
+        sys.exit(0)
 
     def send_messages(self, *args) -> None:
         """
