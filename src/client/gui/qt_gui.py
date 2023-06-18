@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
-
+        
         icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
         status_server_label = QLabel(f"version: {SOFT_VERSION}")
         
