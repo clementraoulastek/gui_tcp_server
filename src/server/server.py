@@ -102,9 +102,7 @@ class Server:
                         if address != addr:
                             self.send_data(self.conn_dict[address], data)
                 else:
-                    return_message = (
-                        "No client connected, your message go nowhere"
-                    )
+                    return_message = "No client connected, your message go nowhere"
                     self.send_data(
                         self.conn_dict[addr], return_message, is_from_server=True
                     )
@@ -113,27 +111,19 @@ class Server:
             self._display_disconnection(conn, addr)
 
     def handle_new_connection(self, addr, conn):
-        already_connected = len(self.conn_dict) >= 1
         self.conn_dict[addr] = conn
 
-        # send data to client
+        # Send data to new client
         self.send_data(conn, "Welcome to the server 😀", is_from_server=True)
 
-        if already_connected:
-            inner_message = "A client is already connected 😀"
-            outer_message = "A new client has joined the server 😀"
-        else:
-            inner_message = "You're alone in the server 😢"
-            outer_message = None
-
-        self.send_data(self.conn_dict[addr], inner_message, is_from_server=True)
-
-        if outer_message and already_connected:
-            for address in list(self.conn_dict.keys()):
-                if address != addr:
-                    self.send_data(
-                        self.conn_dict[address], outer_message, is_from_server=True
-                    )
+        # Send nb of conn
+        message = f"conn nb {len(self.conn_dict)}"
+  
+        # Send to all connected clients
+        for address in list(self.conn_dict.keys()):
+            self.send_data(
+                self.conn_dict[address], message, is_from_server=True
+            )
 
     def _display_disconnection(self, conn, addr):
         """
@@ -151,4 +141,6 @@ class Server:
             for address in list(self.conn_dict.keys()):
                 if address != addr:
                     data = "Other Client disconnected"
+                    message = f"conn nb {len(self.conn_dict)}"
                     self.send_data(self.conn_dict[address], data, is_from_server=True)
+                    self.send_data(self.conn_dict[address], message, is_from_server=True)

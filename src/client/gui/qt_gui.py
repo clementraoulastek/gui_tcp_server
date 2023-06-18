@@ -22,11 +22,12 @@ from src.client.core.qt_core import (
     QThread,
     QVBoxLayout,
     QWidget,
-    Signal
+    Signal,
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
+
 
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
@@ -55,11 +56,10 @@ class Worker(QThread):
         self.exit()
         self._is_running = False
 
+
 # Global variable to handle worker
-comming_msg = {
-    "id": "",
-    "message": ""
-}
+comming_msg = {"id": "", "message": ""}
+
 
 class QtGui:
     def __init__(self, title):
@@ -80,17 +80,15 @@ class MainWindow(QMainWindow):
         self.setFixedHeight(600)
         self.setFixedWidth(600)
         self.setWindowTitle(title)
-        
-        self.users_pict = {
-            "server": ImageAvatar.SERVER.value
-        }
-        
+
+        self.users_pict = {"server": ImageAvatar.SERVER.value}
+
         # Create Client socket
         self.client = Client(IP_SERVER, PORT_NB, "Default")
-        
+
         # Create backend conn
         self.backend = Backend(self, IP_API, PORT_API)
-        
+
         # GUI settings
         self.setup_gui()
 
@@ -108,9 +106,8 @@ class MainWindow(QMainWindow):
         self.set_header_gui()
         self.set_core_gui()
         self.set_footer_gui()
-        
-        self.login()
 
+        self.login()
 
     def set_header_gui(self):
         """
@@ -124,7 +121,7 @@ class MainWindow(QMainWindow):
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
         self.status_server_layout.setSpacing(20)
-        self.status_server_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        self.status_server_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
 
         # --- Server information
         self.server_info_widget = QWidget()
@@ -132,10 +129,10 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
-        
+
         icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
         status_server_label = QLabel(f"version: {SOFT_VERSION}")
-        
+
         # Adding widgets to the main layout
         self.server_information_dashboard_layout.addWidget(icon_soft)
         self.server_information_dashboard_layout.addWidget(status_server_label)
@@ -153,22 +150,20 @@ class MainWindow(QMainWindow):
         self.custom_user_button = CustomQPushButton(
             "Update user picture",
         )
-        
+
         self.user_picture = RoundedLabel(content="")
         self.user_name = QLabel("User disconnected")
-        
-        self.user_name.setStyleSheet(
-            "font-weight: bold"
-        )
-        
+
+        self.user_name.setStyleSheet("font-weight: bold")
+
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.clicked.connect(self.send_user_icon)
         self.custom_user_button.setEnabled(False)
-        
+
         self.client_information_dashboard_layout.addWidget(self.custom_user_button)
         self.client_information_dashboard_layout.addWidget(self.user_name)
         self.client_information_dashboard_layout.addWidget(self.user_picture)
-        
+
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
 
@@ -248,11 +243,17 @@ class MainWindow(QMainWindow):
         self.settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
         self.config_button.setFixedWidth(50)
         self.config_button.setIcon(self.settings_icon)
+        
+        self.nb_conn_label = QLabel("")
+        self.nb_conn_label.setStyleSheet(
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value}"
+        )
 
         self.button_layout.addWidget(self.clear_button)
         self.button_layout.addWidget(self.login_button)
         self.button_layout.addWidget(self.logout_button)
         self.button_layout.addWidget(self.config_button)
+        self.button_layout.addWidget(self.nb_conn_label)
 
         self.main_layout.addLayout(self.button_layout)
 
@@ -305,15 +306,14 @@ class MainWindow(QMainWindow):
             id_sender (str): id from the sender
             message (str): message to display
         """
-        comming_msg = {
-            "id": id_sender,
-            "message": message
-        }
-        self.scroll_layout.addLayout(MessageLayout(comming_msg, content=self.users_pict[self.client.user_name]))
+        comming_msg = {"id": id_sender, "message": message}
+        self.scroll_layout.addLayout(
+            MessageLayout(comming_msg, content=self.users_pict[self.client.user_name])
+        )
 
         self.entry.clear()
 
-    def _display_message_after_read(self, message: str):
+    def parse_coming_message(self, message: str):
         """
             Display message on gui and clear the entry
 
@@ -322,11 +322,14 @@ class MainWindow(QMainWindow):
         """
         global comming_msg
         if ":" in message:
+            if "conn nb" in message:
+                nb_of_users = message.split("conn nb")[1]
+                self.nb_conn_label.setText(f"Nb of users connected: {nb_of_users}")
+                return
             comming_msg["id"], comming_msg["message"] = message.split(":", 1)
         else:
             comming_msg["id"], comming_msg["message"] = "unknown", message
-            
-            
+
     def update_gui_with_input_messages(self):
         """
         Callback to update gui with input messages
@@ -341,11 +344,11 @@ class MainWindow(QMainWindow):
 
     def read_messages(self):
         """
-        Read message comming from serve
+        Read message comming from server
         """
         while self.client.is_connected:
             if message := self.client.read_data():
-                self._display_message_after_read(message)
+                self.parse_coming_message(message)
             time.sleep(0.1)
 
     def clear(self):
@@ -380,13 +383,13 @@ class MainWindow(QMainWindow):
         password = self.login_form.password_entry.text().replace(" ", "")
         if not username or not password:
             return
-        
+
         if self.backend.send_login_form(username, password):
-            if username: # Check if username not empty
+            if username:  # Check if username not empty
                 self.client.user_name = username
-                
+
             self._clean_gui_and_connect(update_avatar=True)
-            
+
     def send_register_form(self):
         """
         Backend request for register form
@@ -395,13 +398,13 @@ class MainWindow(QMainWindow):
         password = self.login_form.password_entry.text().replace(" ", "")
         if not username or not password:
             return
-        
+
         if self.backend.send_register_form(username, password):
             if username:
                 self.client.user_name = username
-   
+
             self._clean_gui_and_connect(update_avatar=False)
-            
+
     def send_user_icon(self, picture_path=None):
         """
         Backend request for sending user icon
@@ -409,7 +412,7 @@ class MainWindow(QMainWindow):
         username = self.client.user_name
         if self.backend.send_user_icon(username, picture_path):
             self.get_user_icon(update_avatar=True)
-            
+
     def get_user_icon(self, username=None, update_avatar=False):
         """
         Backend request for getting user icon
@@ -432,14 +435,13 @@ class MainWindow(QMainWindow):
         if sender_id not in list(self.users_pict.keys()):
             logging.info(True)
             self.get_user_icon(sender_id)
-            
+
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
         if self.connect_to_server():
             self.login_form = None
             self.clear_button.setDisabled(False)
             self.clear()
             self.get_user_icon(update_avatar=update_avatar)
-            
 
     def connect_to_server(self) -> bool:
         self.client.init_connection()
@@ -452,9 +454,9 @@ class MainWindow(QMainWindow):
             self.update_buttons()
             return True
         else:
-            self._display_message_after_read("Server off")
+            self.parse_coming_message("Server off")
             return False
-    
+
     def logout(self) -> None:
         """
         Disconnect the client
@@ -467,11 +469,10 @@ class MainWindow(QMainWindow):
         Display the config
         """
         config = f"User name = '{self.client.user_name}' Client host = '{self.client.host}' Client port = '{self.client.port}'"
-        comming_msg = {
-            "id": "server",
-            "message": config
-        }
-        self.scroll_layout.addLayout(MessageLayout(comming_msg, content=ImageAvatar.SERVER.value))
+        comming_msg = {"id": "server", "message": config}
+        self.scroll_layout.addLayout(
+            MessageLayout(comming_msg, content=ImageAvatar.SERVER.value)
+        )
 
     def update_buttons(self):
         if self.client.is_connected:
@@ -480,6 +481,7 @@ class MainWindow(QMainWindow):
         else:
             self._set_buttons_status(False, True, "Please login")
             self.user_name.setText("User disconnected")
+            self.nb_conn_label.setText("")
             self.user_picture.update_picture(content="")
 
     def _set_buttons_status(self, arg0, arg1, lock_message):

@@ -1,16 +1,25 @@
-virtualenv:
-	mkdir .venv
-	python3 -m venv /.venv
 
-requirements:	
+ACTIVATE := $(shell source .venv/bin/acticate)
+
+create-virtualenv:
+	python3 -m venv .venv
+
+activate-venv:
+	$(ACTIVATE)
+
+requirements:
+	$(ACTIVATE)
 	pip install -r requirements.txt
 	pip install -e .
 
 test:
+	$(ACTIVATE)
 	pytest -v -s
 
-launch server:
+launch-server:
+	$(ACTIVATE)
 	python src/launch_server.py
 
-launch client:
+launch-client:
+	$(ACTIVATE)
 	python src/launch_client.py

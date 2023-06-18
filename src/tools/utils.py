@@ -7,7 +7,17 @@ from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
 
 from resources.icon.icon_path import ICON_PATH
-from src.client.core.qt_core import QColor, QIcon, QPainter, QPixmap, QImage, QRect, Qt, QBrush, QWindow
+from src.client.core.qt_core import (
+    QColor,
+    QIcon,
+    QPainter,
+    QPixmap,
+    QImage,
+    QRect,
+    Qt,
+    QBrush,
+    QWindow,
+)
 
 LM_USE_SVG = 1
 
@@ -39,10 +49,12 @@ class Color(Enum):
     GREEN = "#305C0A"
     BLACK = "#171717"
 
+
 @unique
 class ImageAvatar(Enum):
     SERVER = "./resources/images/server_picture.png"
-    
+
+
 def image_from_svg(filename="", size=0):
     if LM_USE_SVG != 1:
         return Image.new("RGBA", [size, size])
@@ -98,7 +110,8 @@ def QIcon_from_svg(svg_name, color=Color.LIGHT_GREY.value):
     painter.end()
     return QIcon(pixmap)
 
-def mask_image(imgdata, imgtype='png', size=64):
+
+def mask_image(imgdata, imgtype="png", size=64):
     """Return a ``QPixmap`` from *imgdata* masked with a smooth circle.
 
     *imgdata* are the raw image bytes, *imgtype* denotes the image type.
@@ -127,13 +140,13 @@ def mask_image(imgdata, imgtype='png', size=64):
 
     # Create a texture brush and paint a circle with the original image onto
     # the output image:
-    brush = QBrush(image)        # Create texture brush
+    brush = QBrush(image)  # Create texture brush
     painter = QPainter(out_img)  # Paint the output image
-    painter.setBrush(brush)      # Use the image texture brush
-    painter.setPen(Qt.NoPen)     # Don't draw an outline
+    painter.setBrush(brush)  # Use the image texture brush
+    painter.setPen(Qt.NoPen)  # Don't draw an outline
     painter.setRenderHint(QPainter.Antialiasing, True)  # Use AA
     painter.drawEllipse(0, 0, imgsize, imgsize)  # Actually draw the circle
-    painter.end()                # We are done (segfault if you forget this)
+    painter.end()  # We are done (segfault if you forget this)
 
     # Convert the image to a pixmap and rescale it.  Take pixel ratio into
     # account to get a sharp image on retina displays:
