@@ -3,6 +3,7 @@ import logging
 import sys
 import time
 from threading import Thread
+from typing import Union
 from src.client.client import Client
 from src.client.gui.customWidget.CustomQLabel import RoundedLabel
 from src.client.gui.customWidget.CustomQLineEdit import CustomQLineEdit
@@ -184,15 +185,31 @@ class MainWindow(QMainWindow):
         Update the core GUI
         """
         self.core_layout = QHBoxLayout()
+        
+        # --- Left layout with scroll area
+        self.info_layout = QVBoxLayout()
+        self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
+        self.scroll_area_avatar = QScrollArea()
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width()/3 +13)
 
-        self.user_connected_widget = QWidget()
-        self.user_connected_widget.setFixedWidth(self.user_connected_widget.width() / 3)
-        self.user_connected_widget.setStyleSheet(
+        self.scroll_widget_avatar = QWidget()
+        self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 3)
+        self.scroll_widget_avatar.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 14px"
         )
+        
+        self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
+            scroll_bar_vertical_stylesheet
+        )
+        self.scroll_area_avatar.setStyleSheet("background-color: transparent;color: white")
+        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area_avatar.setWidgetResizable(True)
 
-        self.info_layout = QVBoxLayout(self.user_connected_widget)
-        self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
+        self.scroll_widget_avatar.setLayout(self.info_layout)
+        self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
+        
+        
         self.info_label = QLabel("Please login")
         self.info_label.setContentsMargins(10, 5, 10, 5)
         self.info_label.setStyleSheet(
@@ -200,8 +217,8 @@ class MainWindow(QMainWindow):
         )
         self.info_layout.addWidget(self.info_label)
 
-        self.core_layout.addWidget(self.user_connected_widget)
-
+        
+        # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.setAlignment(Qt.AlignTop)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
@@ -211,7 +228,6 @@ class MainWindow(QMainWindow):
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
 
         self.scroll_area.setContentsMargins(0, 0, 90, 0)
-        self.scroll_area.setWidgetResizable(False)
         self.scroll_area.setMaximumHeight(380)
         self.scroll_area.setMinimumHeight(380)
 
@@ -229,7 +245,8 @@ class MainWindow(QMainWindow):
 
         self.scroll_widget.setLayout(self.scroll_layout)
         self.scroll_area.setWidget(self.scroll_widget)
-
+        
+        self.core_layout.addWidget(self.scroll_area_avatar)
         self.core_layout.addWidget(self.scroll_area)
 
         self.main_layout.addLayout(self.core_layout)
@@ -303,7 +320,7 @@ class MainWindow(QMainWindow):
         Close the socket and destroy the gui
         """
         if hasattr(self.client, "sock"):
-            self.client.sock.close()
+            self.client.close_connection()
             logging.debug("Client disconnected")
         else:
             logging.debug("GUI closed")
@@ -359,6 +376,10 @@ class MainWindow(QMainWindow):
                 id_, _ = message.split(":", 1)
                 self.add_sender_picture(id_)
                 return
+            elif Commands.GOOD_BYE.value in message:
+                id_, _ = message.split(":", 1)
+                self.clear_avatar(f"{id_}_layout")
+                return
             comming_msg["id"], comming_msg["message"] = message.split(":", 1)
         else:
             comming_msg["id"], comming_msg["message"] = "unknown", message
@@ -383,8 +404,11 @@ class MainWindow(QMainWindow):
             "content"
         ]:  # and coming_user["username"] not in list(self.users_pict.keys()):
             user_layout = QHBoxLayout()
-            user_layout.addWidget(RoundedLabel(content=coming_user["content"]))
-            user_layout.addWidget(QLabel(coming_user["username"]))
+            username = coming_user["username"]
+            content = coming_user["content"]
+            user_layout.setObjectName(f"{username}_layout")
+            user_layout.addWidget(RoundedLabel(content=content))
+            user_layout.addWidget(QLabel(username))
             self.info_layout.addLayout(user_layout)
             coming_user["username"], coming_user["content"] = "", ""
 
@@ -407,14 +431,19 @@ class MainWindow(QMainWindow):
                 layout.itemAt(j).widget().deleteLater()
         self.scroll_layout.update()
 
-    def clear_avatar(self):
+    def clear_avatar(self, layout_name: Union[QHBoxLayout, None] = None):
         """
         Clear the entry
         """
         for i in reversed(range(self.info_layout.count())):
             if layout := self.info_layout.itemAt(i).layout():
-                for j in reversed(range(layout.count())):
-                    layout.itemAt(j).widget().deleteLater()
+                if (
+                    layout_name
+                    and layout_name == layout.objectName()
+                    or not layout_name
+                ):
+                    for j in reversed(range(layout.count())):
+                        layout.itemAt(j).widget().deleteLater()
         self.info_layout.update()
 
     def login(self) -> None:

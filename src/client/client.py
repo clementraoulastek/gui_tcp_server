@@ -30,6 +30,7 @@ class Client:
         """
         # close the connection
         logging.debug("Closing client connection")
+        self.send_data(Commands.GOOD_BYE.value)
         self.sock.close()
         self.is_connected = False
 

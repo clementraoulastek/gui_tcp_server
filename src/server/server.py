@@ -140,9 +140,7 @@ class Server:
         if already_connected:
             for address in list(self.conn_dict.keys()):
                 if address != addr:
-                    data = "Other Client disconnected"
                     message = f"{Commands.CONN_NB.value} {len(self.conn_dict)}"
-                    self.send_data(self.conn_dict[address], data, is_from_server=True)
                     self.send_data(
                         self.conn_dict[address], message, is_from_server=True
                     )
