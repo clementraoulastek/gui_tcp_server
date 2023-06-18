@@ -79,7 +79,10 @@ class MessageLayout(QHBoxLayout):
         upper_layout = QHBoxLayout()
         message_layout.setSpacing(5)
         
-        #time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        time_label.setStyleSheet(
+            "font-style: italic; font-size: 10px"
+        )
         sender_id_label = QLabel(sender_id)
         sender_id_label.setStyleSheet(
             "font-weight: bold"
@@ -87,9 +90,10 @@ class MessageLayout(QHBoxLayout):
         message_label = QLabel(str_message)
 
         upper_layout.addWidget(sender_id_label)
-        #upper_layout.addWidget(time_label)
         
         message_layout.addLayout(upper_layout)
         message_layout.addWidget(message_label)
+        message_layout.addWidget(time_label)
+        
         right_layout.addLayout(message_layout)
         

@@ -65,7 +65,8 @@ class QtGui:
     def __init__(self, title):
         self.app = QApplication([])
         self.main_window = MainWindow(title)
-        self.app.setWindowIcon(QIcon_from_svg(Icon.MESSAGE.value))
+        self.app.setWindowIcon(QIcon(ImageAvatar.SERVER.value))
+        self.app.setApplicationName(title)
         self.main_window.show()
 
     def run(self):
@@ -107,6 +108,8 @@ class MainWindow(QMainWindow):
         self.set_header_gui()
         self.set_core_gui()
         self.set_footer_gui()
+        
+        self.login()
 
 
     def set_header_gui(self):
@@ -129,16 +132,13 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
-        self.status_server_icon_on = QIcon(
-            QIcon_from_svg(Icon.STATUS.value, Color.GREEN.value)
-        ).pixmap(QSize(30, 30))
-        self.status_server_icon_off = QIcon(
-            QIcon_from_svg(Icon.STATUS.value, Color.RED.value)
-        ).pixmap(QSize(30, 30))
-        self.status_server_label = QLabel(f"TCP Client - version: {SOFT_VERSION}")
 
+        icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
+        status_server_label = QLabel(f"version: {SOFT_VERSION}")
+        
         # Adding widgets to the main layout
-        self.server_information_dashboard_layout.addWidget(self.status_server_label)
+        self.server_information_dashboard_layout.addWidget(icon_soft)
+        self.server_information_dashboard_layout.addWidget(status_server_label)
 
         # --- Client information
         self.user_info_widget = QWidget()
@@ -164,9 +164,10 @@ class MainWindow(QMainWindow):
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.clicked.connect(self.send_user_icon)
         self.custom_user_button.setEnabled(False)
+        
         self.client_information_dashboard_layout.addWidget(self.custom_user_button)
-        self.client_information_dashboard_layout.addWidget(self.user_picture)
         self.client_information_dashboard_layout.addWidget(self.user_name)
+        self.client_information_dashboard_layout.addWidget(self.user_picture)
         
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
@@ -375,8 +376,10 @@ class MainWindow(QMainWindow):
         """
         Backend request for login form
         """
-        username = self.login_form.username_entry.text()
-        password = self.login_form.password_entry.text()
+        username = self.login_form.username_entry.text().replace(" ", "")
+        password = self.login_form.password_entry.text().replace(" ", "")
+        if not username or not password:
+            return
         
         if self.backend.send_login_form(username, password):
             if username: # Check if username not empty
@@ -389,8 +392,10 @@ class MainWindow(QMainWindow):
         """
         Backend request for register form
         """
-        username = self.login_form.username_entry.text()
-        password = self.login_form.password_entry.text()
+        username = self.login_form.username_entry.text().replace(" ", "")
+        password = self.login_form.password_entry.text().replace(" ", "")
+        if not username or not password:
+            return
         
         if self.backend.send_register_form(username, password):
             if username:
