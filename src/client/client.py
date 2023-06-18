@@ -1,6 +1,8 @@
 import logging
 import socket
 
+from src.tools.commands import Commands
+
 
 class Client:
     def __init__(self, host: str, port: int, name: str) -> None:
@@ -16,6 +18,7 @@ class Client:
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.host, self.port))
+            self.send_data(Commands.HELLO_WORLD.value)
             self.is_connected = True
         except Exception as error:
             logging.error(error)

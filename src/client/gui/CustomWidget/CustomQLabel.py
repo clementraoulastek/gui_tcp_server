@@ -1,9 +1,4 @@
-from src.client.core.qt_core import (
-    QPixmap,
-    QLabel,
-    QIcon,
-    QSize
-)
+from src.client.core.qt_core import QPixmap, QLabel, QIcon, QSize
 
 
 class RoundedLabel(QLabel):

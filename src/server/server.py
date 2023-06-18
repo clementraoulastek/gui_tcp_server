@@ -3,6 +3,8 @@ import socket
 import sys
 from threading import Thread
 
+from src.tools.commands import Commands
+
 
 class Server:
     def __init__(self, host: str, port: int, conn_nb: int = 2):
@@ -101,7 +103,7 @@ class Server:
                     for address in list(self.conn_dict.keys()):
                         if address != addr:
                             self.send_data(self.conn_dict[address], data)
-                else:
+                elif Commands.HELLO_WORLD.value not in data:
                     return_message = "No client connected, your message go nowhere"
                     self.send_data(
                         self.conn_dict[addr], return_message, is_from_server=True
@@ -117,13 +119,11 @@ class Server:
         self.send_data(conn, "Welcome to the server 😀", is_from_server=True)
 
         # Send nb of conn
-        message = f"conn nb {len(self.conn_dict)}"
-  
+        message = f"{Commands.CONN_NB.value} {len(self.conn_dict)}"
+
         # Send to all connected clients
         for address in list(self.conn_dict.keys()):
-            self.send_data(
-                self.conn_dict[address], message, is_from_server=True
-            )
+            self.send_data(self.conn_dict[address], message, is_from_server=True)
 
     def _display_disconnection(self, conn, addr):
         """
@@ -141,6 +141,8 @@ class Server:
             for address in list(self.conn_dict.keys()):
                 if address != addr:
                     data = "Other Client disconnected"
-                    message = f"conn nb {len(self.conn_dict)}"
+                    message = f"{Commands.CONN_NB.value} {len(self.conn_dict)}"
                     self.send_data(self.conn_dict[address], data, is_from_server=True)
-                    self.send_data(self.conn_dict[address], message, is_from_server=True)
+                    self.send_data(
+                        self.conn_dict[address], message, is_from_server=True
+                    )

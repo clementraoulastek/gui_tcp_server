@@ -7,7 +7,7 @@ from src.client.core.qt_core import (
     QSize,
     Qt,
     QWidget,
-    QVBoxLayout
+    QVBoxLayout,
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.gui.customWidget.CustomQLabel import RoundedLabel
