@@ -379,6 +379,7 @@ class MainWindow(QMainWindow):
             elif Commands.GOOD_BYE.value in message:
                 id_, _ = message.split(":", 1)
                 self.clear_avatar(f"{id_}_layout")
+                self.users_pict.pop(id_)
                 return
             comming_msg["id"], comming_msg["message"] = message.split(":", 1)
         else:
@@ -444,6 +445,7 @@ class MainWindow(QMainWindow):
                 ):
                     for j in reversed(range(layout.count())):
                         layout.itemAt(j).widget().deleteLater()
+                                        
         self.info_layout.update()
 
     def login(self) -> None:
