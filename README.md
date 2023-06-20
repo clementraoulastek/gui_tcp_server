@@ -1,4 +1,5 @@
-# TCP Server
+
+# Hello 
 
 This project provide:
 - TCP server
@@ -6,10 +7,13 @@ This project provide:
 
 You Need the backend API, to register/connect to the app
 
-100% Python project in Qt for GUI
+100% Python project in Qt
 
 The TCP client (last updated on 17/06/2023):
 
+![Alt text](./resources/images/readme_pic.png?raw=true "Client GUI")
+
+# Clone the repository and ...
 
 create virtual env:
  - mkdir .venv
@@ -20,6 +24,7 @@ Activate the virtualenv:
 
 for installating dependencies (need to be in the venv):
  - pip install -r requirements.txt
+ - pip install -e .
  
 ## Launch project
 Launch the server:
