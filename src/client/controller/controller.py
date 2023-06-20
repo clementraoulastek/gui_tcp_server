@@ -8,6 +8,7 @@ from src.client.view.customWidget.CustomQLabel import RoundedLabel
 from src.client.view.layout.login_layout import LoginLayout
 from src.tools.utils import ImageAvatar
 
+
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
 
@@ -40,9 +41,11 @@ class Worker(QThread):
 comming_msg = {"id": "", "message": ""}
 coming_user = {"username": "", "content": ""}
 
+
 class Controller:
     def __init__(self, ui) -> None:
         self.ui = ui
+
     def send_messages(self, *args) -> None:
         """
             Send message to the server
@@ -64,7 +67,11 @@ class Controller:
         """
         comming_msg = {"id": id_sender, "message": message}
         self.ui.scroll_layout.addLayout(
-            MessageLayout(comming_msg, content=self.ui.users_pict[self.ui.client.user_name], reversed_=True)
+            MessageLayout(
+                comming_msg,
+                content=self.ui.users_pict[self.ui.client.user_name],
+                reversed_=True,
+            )
         )
 
         self.ui.entry.clear()
@@ -108,7 +115,9 @@ class Controller:
         global comming_msg
         if comming_msg["message"]:
             self.ui.scroll_layout.addLayout(
-                MessageLayout(comming_msg, content=self.ui.users_pict[comming_msg["id"]])
+                MessageLayout(
+                    comming_msg, content=self.ui.users_pict[comming_msg["id"]]
+                )
             )
             comming_msg["id"], comming_msg["message"] = "", ""
 
@@ -161,7 +170,7 @@ class Controller:
                 ):
                     for j in reversed(range(layout.count())):
                         layout.itemAt(j).widget().deleteLater()
-                                        
+
         self.ui.info_layout.update()
 
     def login(self) -> None:

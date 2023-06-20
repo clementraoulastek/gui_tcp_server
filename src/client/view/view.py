@@ -31,7 +31,6 @@ from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 from src.tools.commands import Commands
 
 
-
 class QtGui:
     def __init__(self, title):
         self.app = QApplication([])
@@ -53,7 +52,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
 
         self.users_pict = {"server": ImageAvatar.SERVER.value}
-        
+
         # Create Controller
         self.controller = Controller(self)
 
@@ -156,31 +155,32 @@ class MainWindow(QMainWindow):
         Update the core GUI
         """
         self.core_layout = QHBoxLayout()
-        
+
         # --- Left layout with scroll area
         self.info_layout = QVBoxLayout()
         self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width()/3 +13)
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 3 + 13)
 
         self.scroll_widget_avatar = QWidget()
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 3)
         self.scroll_widget_avatar.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 14px"
         )
-        
+
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
-        self.scroll_area_avatar.setStyleSheet("background-color: transparent;color: white")
+        self.scroll_area_avatar.setStyleSheet(
+            "background-color: transparent;color: white"
+        )
         self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
 
         self.scroll_widget_avatar.setLayout(self.info_layout)
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
-        
-        
+
         self.info_label = QLabel("Please login")
         self.info_label.setContentsMargins(10, 5, 10, 5)
         self.info_label.setStyleSheet(
@@ -188,7 +188,6 @@ class MainWindow(QMainWindow):
         )
         self.info_layout.addWidget(self.info_label)
 
-        
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.setAlignment(Qt.AlignTop)
@@ -216,7 +215,7 @@ class MainWindow(QMainWindow):
 
         self.scroll_widget.setLayout(self.scroll_layout)
         self.scroll_area.setWidget(self.scroll_widget)
-        
+
         self.core_layout.addWidget(self.scroll_area_avatar)
         self.core_layout.addWidget(self.scroll_area)
 

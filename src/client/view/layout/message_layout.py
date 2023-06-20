@@ -41,21 +41,20 @@ class MessageLayout(QHBoxLayout):
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
-        
 
         right_widget = QWidget()
         right_widget.setMinimumHeight(80)
         right_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
         right_layout = QHBoxLayout()
         right_widget.setLayout(right_layout)
-        
+
         if reversed_:
             main_layout.addWidget(right_widget)
             main_layout.addWidget(left_widget)
         else:
             main_layout.addWidget(left_widget)
             main_layout.addWidget(right_widget)
-            
+
         right_layout.setSpacing(25)
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
