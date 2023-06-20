@@ -10,14 +10,13 @@ from src.client.core.qt_core import (
     QVBoxLayout,
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
-from src.client.gui.customWidget.CustomQLabel import RoundedLabel
+from src.client.view.customWidget.CustomQLabel import RoundedLabel
 
 
 class MessageLayout(QHBoxLayout):
     MAX_CHAR = 60
-    background_bool = False
 
-    def __init__(self, coming_msg: dict, content=None):
+    def __init__(self, coming_msg: dict, content=None, reversed_=False):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setSpacing(20)
@@ -30,7 +29,6 @@ class MessageLayout(QHBoxLayout):
         main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
-        MessageLayout.background_bool = not MessageLayout.background_bool
 
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -43,15 +41,21 @@ class MessageLayout(QHBoxLayout):
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
-        main_layout.addWidget(left_widget)
+        
 
         right_widget = QWidget()
         right_widget.setMinimumHeight(80)
         right_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
         right_layout = QHBoxLayout()
         right_widget.setLayout(right_layout)
-        main_layout.addWidget(right_widget)
-
+        
+        if reversed_:
+            main_layout.addWidget(right_widget)
+            main_layout.addWidget(left_widget)
+        else:
+            main_layout.addWidget(left_widget)
+            main_layout.addWidget(right_widget)
+            
         right_layout.setSpacing(25)
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
