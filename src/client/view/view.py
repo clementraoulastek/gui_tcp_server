@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         # --- Server information
         self.server_info_widget = QWidget()
         self.server_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;font-weight: bold"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
 
@@ -125,7 +125,6 @@ class MainWindow(QMainWindow):
 
         self.user_picture = RoundedLabel(content="")
         self.user_name = QLabel("User disconnected")
-
         self.user_name.setStyleSheet("font-weight: bold")
 
         self.custom_user_button.setIcon(self.user_icon)

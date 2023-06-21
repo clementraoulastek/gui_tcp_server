@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from src.client.core.qt_core import (
     QHBoxLayout,
@@ -8,6 +9,7 @@ from src.client.core.qt_core import (
     Qt,
     QWidget,
     QVBoxLayout,
+    QFrame
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
@@ -19,15 +21,14 @@ class MessageLayout(QHBoxLayout):
     def __init__(self, coming_msg: dict, content=None, reversed_=False):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
-        self.setSpacing(20)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
+        
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
-
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -37,9 +38,25 @@ class MessageLayout(QHBoxLayout):
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
-
-        right_widget = QWidget()
-        right_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
+        
+        class Contener(QFrame):
+            def __init__(self):
+                super(Contener, self).__init__()
+            
+            def enterEvent(self, event) -> None:
+                self.setStyleSheet(
+                    "background-color: {background_color};".format(background_color=Color.DARK_GREY.value)
+                )
+            
+            def leaveEvent(self, event) -> None:
+                self.setStyleSheet(
+                    "background-color: {background_color};".format(background_color=Color.GREY.value)
+                )
+        right_widget = Contener()
+        
+        right_widget.setStyleSheet(
+            "background-color: {background_color};".format(background_color=Color.GREY.value)
+        )
         right_layout = QHBoxLayout()
         right_widget.setLayout(right_layout)
 
@@ -50,7 +67,6 @@ class MessageLayout(QHBoxLayout):
             main_layout.addWidget(left_widget)
             main_layout.addWidget(right_widget)
 
-        right_layout.setSpacing(25)
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
         if not content:
@@ -73,11 +89,6 @@ class MessageLayout(QHBoxLayout):
 
         str_message = "\n".join(message_list)
 
-        message_layout = QVBoxLayout()
-        upper_layout = QHBoxLayout()
-        message_layout.setSpacing(5)
-
         message_label = QLabel(str_message)
-        message_layout.addLayout(upper_layout)
-        message_layout.addWidget(message_label)
-        right_layout.addLayout(message_layout)
+        right_layout.addWidget(message_label)
+
