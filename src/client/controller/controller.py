@@ -181,6 +181,7 @@ class Controller:
         if not hasattr(self.ui, "login_form") or not self.ui.login_form:
             self.ui.login_form = LoginLayout()
             self.ui.scroll_layout.addLayout(self.ui.login_form)
+            self.ui.login_form.password_entry.returnPressed.connect(self.send_login_form)
             self.ui.login_form.send_button.clicked.connect(self.send_login_form)
             self.ui.login_form.register_button.clicked.connect(self.send_register_form)
 
