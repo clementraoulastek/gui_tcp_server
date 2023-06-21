@@ -66,7 +66,7 @@ class Controller:
             message (str): message to display
         """
         comming_msg = {"id": id_sender, "message": message}
-        self.ui.scroll_layout.addLayout(
+        self.ui.scroll_widget.layout().addLayout(
             MessageLayout(
                 comming_msg,
                 content=self.ui.users_pict[self.ui.client.user_name],

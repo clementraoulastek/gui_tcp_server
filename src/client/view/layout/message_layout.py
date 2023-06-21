@@ -22,9 +22,7 @@ class MessageLayout(QHBoxLayout):
         self.setSpacing(20)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
-        main_widget.setMinimumWidth(main_widget.width() - 50)
-        main_widget.setMaximumWidth(main_widget.width() - 50)
-        main_widget.setMinimumHeight(90)
+        main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};border-radius: 14px"
@@ -36,14 +34,11 @@ class MessageLayout(QHBoxLayout):
         left_widget = QWidget()
         left_widget.setMaximumWidth(80)
         left_widget.setMinimumWidth(80)
-        left_widget.setMaximumHeight(80)
-        left_widget.setMinimumHeight(80)
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
 
         right_widget = QWidget()
-        right_widget.setMinimumHeight(80)
         right_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
         right_layout = QHBoxLayout()
         right_widget.setLayout(right_layout)
@@ -59,7 +54,7 @@ class MessageLayout(QHBoxLayout):
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
         if not content:
-            icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(30, 30))
+            icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(15, 15))
             icon_label = QLabel("")
             icon_label.setPixmap(icon)
             left_layout.addWidget(icon_label)
@@ -69,7 +64,6 @@ class MessageLayout(QHBoxLayout):
 
         message_list = []
         message = coming_msg["message"]
-        sender_id = coming_msg["id"]
 
         while len(message) > self.MAX_CHAR:
             message_list.append(message[: self.MAX_CHAR])
@@ -83,16 +77,7 @@ class MessageLayout(QHBoxLayout):
         upper_layout = QHBoxLayout()
         message_layout.setSpacing(5)
 
-        time_label = QLabel(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        time_label.setStyleSheet("font-style: italic; font-size: 10px")
-        sender_id_label = QLabel(sender_id)
-        sender_id_label.setStyleSheet("font-weight: bold")
         message_label = QLabel(str_message)
-
-        upper_layout.addWidget(sender_id_label)
-
         message_layout.addLayout(upper_layout)
         message_layout.addWidget(message_label)
-        message_layout.addWidget(time_label)
-
         right_layout.addLayout(message_layout)

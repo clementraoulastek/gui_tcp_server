@@ -47,8 +47,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
         # GUI size
-        self.setFixedHeight(600)
-        self.setFixedWidth(850)
+        
         self.setWindowTitle(title)
 
         self.users_pict = {"server": ImageAvatar.SERVER.value}
@@ -190,15 +189,16 @@ class MainWindow(QMainWindow):
 
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignTop)
+        self.scroll_layout.setAlignment(Qt.AlignTop| Qt.AlignLeft)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setObjectName("scroll layout")
 
         self.scroll_area = QScrollArea()
+        self.scroll_area.setMinimumWidth(600)
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
 
         self.scroll_area.setContentsMargins(0, 0, 90, 0)
-        self.scroll_area.setMaximumHeight(380)
+        #self.scroll_area.setMaximumHeight(380)
         self.scroll_area.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
