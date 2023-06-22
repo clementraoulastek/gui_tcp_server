@@ -18,7 +18,7 @@ class Client:
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.host, self.port))
-            self.send_data(Commands.HELLO_WORLD.value)
+            self.send_data(Commands.HELLO_WORLD, "")
             self.is_connected = True
         except Exception as error:
             logging.error(error)
@@ -30,7 +30,7 @@ class Client:
         """
         # close the connection
         logging.debug("Closing client connection")
-        self.send_data(Commands.GOOD_BYE.value)
+        self.send_data(Commands.GOOD_BYE, "")
         self.sock.close()
         self.is_connected = False
 
@@ -49,23 +49,23 @@ class Client:
                     raw_data += chunk
                 else:
                     break
-            return raw_data.decode("utf-8")
+            header, payload = int(raw_data[0]), raw_data[1:].decode("utf-8")
+            return header, payload
         except Exception as error:
             logging.error(error)
             self.sock.close()
             logging.debug("Closing connection")
             self.is_connected = False
-            return False
+            return False, False
 
-    def send_data(self, data: str) -> None:
+    def send_data(self, header: Commands, payload: str) -> None:
         """
             Send data to the socket
 
         Args:
             data (str): string data to send
         """
-        message = f"{self.user_name}: {data}\n"
+        message = f"{self.user_name}: {payload}\n"
 
-        logging.debug(message)
-
-        self.sock.send(message.encode("utf-8"))
+        bytes_message = header.value.to_bytes(1, "big")+message.encode("utf-8")
+        self.sock.send(bytes_message)

@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
         # GUI size
-        
+
         self.setWindowTitle(title)
 
         self.users_pict = {"server": ImageAvatar.SERVER.value}
@@ -120,23 +120,30 @@ class MainWindow(QMainWindow):
         )
 
         self.custom_user_button = CustomQPushButton(
-            "Update user picture",
+            "Update",
         )
 
         self.user_picture = RoundedLabel(content="")
         self.user_name = QLabel("User disconnected")
         self.user_name.setStyleSheet("font-weight: bold")
 
+        self.logout_button = CustomQPushButton("Logout")
+        self.logout_button.clicked.connect(self.controller.logout)
+        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
+        self.logout_button.setIcon(self.logout_icon)
+        self.logout_button.setDisabled(True)
+
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.clicked.connect(self.controller.send_user_icon)
         self.custom_user_button.setEnabled(False)
 
-        self.client_information_dashboard_layout.addWidget(self.custom_user_button)
         self.client_information_dashboard_layout.addWidget(self.user_name)
         self.client_information_dashboard_layout.addWidget(self.user_picture)
+        self.client_information_dashboard_layout.addWidget(self.custom_user_button)
 
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
+        self.status_server_layout.addWidget(self.logout_button)
 
         self.main_layout.addWidget(server_status_widget)
 
@@ -188,7 +195,7 @@ class MainWindow(QMainWindow):
 
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignTop| Qt.AlignLeft)
+        self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setObjectName("scroll layout")
 
@@ -197,7 +204,6 @@ class MainWindow(QMainWindow):
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
 
         self.scroll_area.setContentsMargins(0, 0, 90, 0)
-        #self.scroll_area.setMaximumHeight(380)
         self.scroll_area.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
@@ -236,17 +242,6 @@ class MainWindow(QMainWindow):
         self.clear_button.setIcon(self.clear_icon)
         self.clear_button.setDisabled(True)
 
-        self.login_button = CustomQPushButton("Login")
-        self.login_button.clicked.connect(self.controller.login)
-        self.login_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
-        self.login_button.setIcon(self.login_icon)
-
-        self.logout_button = CustomQPushButton("Logout")
-        self.logout_button.clicked.connect(self.controller.logout)
-        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
-        self.logout_button.setIcon(self.logout_icon)
-        self.logout_button.setDisabled(True)
-
         self.config_button = CustomQPushButton("")
         self.config_button.clicked.connect(self.controller.config)
         self.settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
@@ -259,8 +254,6 @@ class MainWindow(QMainWindow):
         )
 
         self.button_layout.addWidget(self.clear_button)
-        self.button_layout.addWidget(self.login_button)
-        self.button_layout.addWidget(self.logout_button)
         self.button_layout.addWidget(self.config_button)
         self.button_layout.addWidget(info_widget)
 

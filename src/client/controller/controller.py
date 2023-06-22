@@ -1,3 +1,4 @@
+import logging
 from threading import Thread
 import time
 from typing import Union
@@ -54,7 +55,7 @@ class Controller:
             signal (event): event coming from signal
         """
         if message := self.ui.entry.text():
-            self.ui.client.send_data(message)
+            self.ui.client.send_data(Commands.MESSAGE, message)
             self._diplay_message_after_send(self.ui.client.user_name, message)
 
     def _diplay_message_after_send(self, id_sender: str, message: str) -> None:
@@ -76,7 +77,7 @@ class Controller:
 
         self.ui.entry.clear()
 
-    def parse_coming_message(self, message: str):
+    def parse_coming_message(self, header: int, payload: str):
         """
             Display message on gui and clear the entry
 
@@ -84,29 +85,31 @@ class Controller:
             message (str): message to display
         """
         global comming_msg
-        if ":" in message:
-            if Commands.CONN_NB.value in message:
-                nb_of_users = message.split(Commands.CONN_NB.value)[1]
+        logging.info(f"header: {header}")
+        logging.info(f"payload: {payload}")
+        if ":" in payload:
+            if header == Commands.CONN_NB.value:
+                nb_of_users = payload.split(":")[1]
                 self.ui.info_label.setText(f"Nb of users connected: {nb_of_users}")
                 return
-            elif Commands.HELLO_WORLD.value in message:
-                id_, _ = message.split(":", 1)
+            elif header == Commands.HELLO_WORLD.value:
+                id_, _ = payload.split(":", 1)
                 self.add_sender_picture(id_)
                 # Return welcome to hello world
-                self.ui.client.send_data(Commands.WELCOME.value)
+                self.ui.client.send_data(Commands.WELCOME, "")
                 return
-            elif Commands.WELCOME.value in message:
-                id_, _ = message.split(":", 1)
+            elif header == Commands.WELCOME.value:
+                id_, _ = payload.split(":", 1)
                 self.add_sender_picture(id_)
                 return
-            elif Commands.GOOD_BYE.value in message:
-                id_, _ = message.split(":", 1)
+            elif header == Commands.GOOD_BYE.value:
+                id_, _ = payload.split(":", 1)
                 self.clear_avatar(f"{id_}_layout")
                 self.ui.users_pict.pop(id_)
                 return
-            comming_msg["id"], comming_msg["message"] = message.split(":", 1)
+            comming_msg["id"], comming_msg["message"] = payload.split(":", 1)
         else:
-            comming_msg["id"], comming_msg["message"] = "unknown", message
+            comming_msg["id"], comming_msg["message"] = "unknown", payload
 
     def update_gui_with_input_messages(self):
         """
@@ -143,8 +146,9 @@ class Controller:
         Read message comming from server
         """
         while self.ui.client.is_connected:
-            if message := self.ui.client.read_data():
-                self.parse_coming_message(message)
+            header, payload = self.ui.client.read_data()
+            if payload:
+                self.parse_coming_message(header, payload)
             time.sleep(0.1)
 
     def clear(self):
@@ -181,11 +185,12 @@ class Controller:
         if not hasattr(self.ui, "login_form") or not self.ui.login_form:
             self.ui.login_form = LoginLayout()
             self.ui.scroll_layout.addLayout(self.ui.login_form)
-            self.ui.login_form.password_entry.returnPressed.connect(self.send_login_form)
+            self.ui.login_form.password_entry.returnPressed.connect(
+                self.send_login_form
+            )
             self.ui.login_form.send_button.clicked.connect(self.send_login_form)
             self.ui.login_form.register_button.clicked.connect(self.send_register_form)
 
-        self.ui.login_button.setDisabled(True)
         self.ui.clear_button.setDisabled(True)
 
     def send_login_form(self):
@@ -286,6 +291,7 @@ class Controller:
         self.update_buttons()
         self.clear_avatar()
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.login()
 
     def config(self):
         """
@@ -309,7 +315,6 @@ class Controller:
 
     def _set_buttons_status(self, arg0, arg1, lock_message):
         self.ui.custom_user_button.setDisabled(arg1)
-        self.ui.login_button.setDisabled(arg0)
         self.ui.logout_button.setDisabled(arg1)
         self.ui.send_button.setDisabled(arg1)
         self.ui.entry.setDisabled(arg1)

@@ -58,18 +58,19 @@ class Server:
         Returns:
             str: return string of the received data
         """
-        raw_data = b""
-
+        raw_data: bytes = b""
+        header, payload = None, None
         while "Empty message":
             chunk = conn.recv(1)
             if chunk not in [b"\n", b""]:
                 raw_data += chunk
             else:
                 break
+        if raw_data:
+            header, payload = raw_data[0], raw_data[1:].decode("utf-8")
+        return header, payload
 
-        return raw_data.decode("utf-8")
-
-    def send_data(self, conn, data: str, is_from_server=False):
+    def send_data(self, conn, header: Commands, payload: str, is_from_server=False):
         """
             Send data to the client
 
@@ -78,8 +79,10 @@ class Server:
             data (str): data to send
             is_from_server (bool, optional): if msg come from server. Defaults to False.
         """
-        message = f"server:{data}\n" if is_from_server else f"{data}\n"
-        conn.send(message.encode("utf-8"))
+        message = f"server:{payload}\n" if is_from_server else f"{payload}\n"
+        
+        bytes_message = header.value.to_bytes(1, "big")+message.encode("utf-8")
+        conn.send(bytes_message)
 
     def create_connection(self, conn, addr):
         """
@@ -95,20 +98,21 @@ class Server:
         # receive the data in small chunks and retransmit it
         try:
             while "Client connected":
-                data = self.read_data(conn)
-                if not data:
+                header, payload = self.read_data(conn)
+                logging.info(header)
+                if not payload:
                     raise ConnectionAbortedError
                 already_connected = len(self.conn_dict) >= 2
                 if already_connected:
                     for address in list(self.conn_dict.keys()):
                         if address != addr:
-                            self.send_data(self.conn_dict[address], data)
-                elif Commands.HELLO_WORLD.value not in data:
+                            self.send_data(self.conn_dict[address], Commands(header), payload)
+                elif header != Commands.HELLO_WORLD.value:
                     return_message = "No client connected, your message go nowhere"
                     self.send_data(
-                        self.conn_dict[addr], return_message, is_from_server=True
+                        self.conn_dict[addr], Commands.MESSAGE, return_message, is_from_server=True
                     )
-                logging.debug(f"Client {addr}: >> {data}")
+                logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
 
@@ -116,14 +120,14 @@ class Server:
         self.conn_dict[addr] = conn
 
         # Send data to new client
-        self.send_data(conn, "Welcome to the server 😀", is_from_server=True)
+        self.send_data(conn, Commands.MESSAGE, "Welcome to the server 😀", is_from_server=True)
 
         # Send nb of conn
-        message = f"{Commands.CONN_NB.value} {len(self.conn_dict)}"
+        message = f"{len(self.conn_dict)}"
 
         # Send to all connected clients
         for address in list(self.conn_dict.keys()):
-            self.send_data(self.conn_dict[address], message, is_from_server=True)
+            self.send_data(self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True)
 
     def _display_disconnection(self, conn, addr):
         """
@@ -140,7 +144,7 @@ class Server:
         if already_connected:
             for address in list(self.conn_dict.keys()):
                 if address != addr:
-                    message = f"{Commands.CONN_NB.value} {len(self.conn_dict)}"
+                    message = f"{len(self.conn_dict)}"
                     self.send_data(
-                        self.conn_dict[address], message, is_from_server=True
+                        self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True
                     )

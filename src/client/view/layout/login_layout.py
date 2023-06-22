@@ -23,13 +23,9 @@ class LoginLayout(QHBoxLayout):
         layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
         username_label = QLabel("Username: ")
-        username_label.setStyleSheet(
-            "font-weight: bold"
-        )
+        username_label.setStyleSheet("font-weight: bold")
         password_label = QLabel("Password: ")
-        password_label.setStyleSheet(
-            "font-weight: bold"
-        )
+        password_label.setStyleSheet("font-weight: bold")
 
         self.username_entry = CustomQLineEdit(place_holder_text="Enter your username")
         self.password_entry = CustomQLineEdit(place_holder_text="Enter your password")

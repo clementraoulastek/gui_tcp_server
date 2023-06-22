@@ -9,7 +9,7 @@ from src.client.core.qt_core import (
     Qt,
     QWidget,
     QVBoxLayout,
-    QFrame
+    QFrame,
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
@@ -23,7 +23,7 @@ class MessageLayout(QHBoxLayout):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         main_widget = QWidget()
-        
+
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
@@ -38,24 +38,31 @@ class MessageLayout(QHBoxLayout):
         left_layout = QHBoxLayout()
         left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
-        
+
         class Contener(QFrame):
             def __init__(self):
                 super(Contener, self).__init__()
-            
+
             def enterEvent(self, event) -> None:
                 self.setStyleSheet(
-                    "background-color: {background_color};".format(background_color=Color.DARK_GREY.value)
+                    "background-color: {background_color};".format(
+                        background_color=Color.DARK_GREY.value
+                    )
                 )
-            
+
             def leaveEvent(self, event) -> None:
                 self.setStyleSheet(
-                    "background-color: {background_color};".format(background_color=Color.GREY.value)
+                    "background-color: {background_color};".format(
+                        background_color=Color.GREY.value
+                    )
                 )
+
         right_widget = Contener()
-        
+
         right_widget.setStyleSheet(
-            "background-color: {background_color};".format(background_color=Color.GREY.value)
+            "background-color: {background_color};".format(
+                background_color=Color.GREY.value
+            )
         )
         right_layout = QHBoxLayout()
         right_widget.setLayout(right_layout)
@@ -91,4 +98,3 @@ class MessageLayout(QHBoxLayout):
 
         message_label = QLabel(str_message)
         right_layout.addWidget(message_label)
-
