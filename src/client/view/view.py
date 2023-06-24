@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
         self.client = Client(IP_SERVER, PORT_NB, "Default")
 
         # Create backend conn
-        self.backend = Backend(self, IP_API, PORT_API)
+        self.backend = Backend(IP_API, PORT_API, self)
 
         # GUI settings
         self.setup_gui()
@@ -163,6 +163,7 @@ class MainWindow(QMainWindow):
 
         # --- Left layout with scroll area
         self.info_layout = QVBoxLayout()
+        self.info_layout.setSpacing(10)
         self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 3 + 13)

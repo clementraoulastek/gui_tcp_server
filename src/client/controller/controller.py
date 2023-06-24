@@ -70,8 +70,8 @@ class Controller:
         self.ui.scroll_widget.layout().addLayout(
             MessageLayout(
                 comming_msg,
-                content=self.ui.users_pict[self.ui.client.user_name],
-                reversed_=True,
+                content=self.ui.users_pict[id_sender],
+                reversed_=self.ui.client.user_name == id_sender,
             )
         )
 
@@ -229,9 +229,11 @@ class Controller:
         """
         username = self.ui.client.user_name
         if self.ui.backend.send_user_icon(username, picture_path):
-            self.get_user_icon(update_avatar=True)
+            self.get_user_icon(update_personal_avatar=True)
 
-    def get_user_icon(self, username=None, update_avatar=False):
+    def get_user_icon(
+        self, username=None, update_personal_avatar=False, update_list_avatar=True
+    ):
         """
         Backend request for getting user icon
         """
@@ -239,28 +241,47 @@ class Controller:
             username = self.ui.client.user_name
         if content := self.ui.backend.get_user_icon(username):
             self.ui.users_pict[username] = content
-            if update_avatar:
+            if update_personal_avatar:
                 self.ui.user_picture.update_picture(content=content)
             global coming_user
-            coming_user["username"], coming_user["content"] = username, content
+            if update_list_avatar:
+                coming_user["username"], coming_user["content"] = username, content
         else:
             self.ui.users_pict[username] = ""
 
-    def add_sender_picture(self, sender_id):
+    def get_older_messages(self):
+        """
+        Create backend request to get older users messages
+        """
+        sender_list: list = []
+        older_messages: dict = self.ui.backend.get_older_messages()
+        messages_list = older_messages["messages"]
+        for message in messages_list:
+            sender, message = message["sender"], message["message"]
+            if sender not in sender_list:
+                sender_list.append(sender)
+            self.add_sender_picture(sender, update_list_avatar=False)
+            self._diplay_message_after_send(sender, message)
+        # Reset dict to handle new avatar images from conn
+        for sender in sender_list:
+            self.ui.users_pict.pop(sender)
+
+    def add_sender_picture(self, sender_id, update_list_avatar=True):
         """Add sender picture to the list of sender pictures
 
         Args:
             sender_id (str): sender identifier
         """
         if sender_id not in list(self.ui.users_pict.keys()):
-            self.get_user_icon(sender_id)
+            self.get_user_icon(sender_id, update_list_avatar=update_list_avatar)
 
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
         if self.connect_to_server():
             self.ui.login_form = None
             self.ui.clear_button.setDisabled(False)
             self.clear()
-            self.get_user_icon(update_avatar=update_avatar)
+            self.get_user_icon(update_personal_avatar=update_avatar)
+            self.get_older_messages()
 
     def connect_to_server(self) -> bool:
         self.ui.client.init_connection()

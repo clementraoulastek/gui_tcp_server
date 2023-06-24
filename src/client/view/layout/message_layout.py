@@ -97,4 +97,5 @@ class MessageLayout(QHBoxLayout):
         str_message = "\n".join(message_list)
 
         message_label = QLabel(str_message)
+        message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(message_label)

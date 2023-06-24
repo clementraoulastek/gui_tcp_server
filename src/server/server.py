@@ -2,13 +2,16 @@ import logging
 import socket
 import sys
 from threading import Thread
+from src.tools.backend import Backend
 
 from src.tools.commands import Commands
+from src.tools.constant import IP_API, PORT_API
 
 
 class Server:
     def __init__(self, host: str, port: int, conn_nb: int = 2):
         # create a TCP/IP socket
+        self.backend = Backend(IP_API, PORT_API)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((host, port))
         self.sock.listen(conn_nb)
@@ -80,8 +83,8 @@ class Server:
             is_from_server (bool, optional): if msg come from server. Defaults to False.
         """
         message = f"server:{payload}\n" if is_from_server else f"{payload}\n"
-        
-        bytes_message = header.value.to_bytes(1, "big")+message.encode("utf-8")
+
+        bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         conn.send(bytes_message)
 
     def create_connection(self, conn, addr):
@@ -106,11 +109,20 @@ class Server:
                 if already_connected:
                     for address in list(self.conn_dict.keys()):
                         if address != addr:
-                            self.send_data(self.conn_dict[address], Commands(header), payload)
+                            self.send_data(
+                                self.conn_dict[address], Commands(header), payload
+                            )
+                            if Commands(header) == Commands.MESSAGE:
+                                payload_list = payload.split(":")
+                                sender, message = payload_list[0], payload_list[1]
+                                self.backend.send_message(sender, message)
                 elif header != Commands.HELLO_WORLD.value:
                     return_message = "No client connected, your message go nowhere"
                     self.send_data(
-                        self.conn_dict[addr], Commands.MESSAGE, return_message, is_from_server=True
+                        self.conn_dict[addr],
+                        Commands.MESSAGE,
+                        return_message,
+                        is_from_server=True,
                     )
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
@@ -120,14 +132,18 @@ class Server:
         self.conn_dict[addr] = conn
 
         # Send data to new client
-        self.send_data(conn, Commands.MESSAGE, "Welcome to the server 😀", is_from_server=True)
+        self.send_data(
+            conn, Commands.MESSAGE, "Welcome to the server 😀", is_from_server=True
+        )
 
         # Send nb of conn
         message = f"{len(self.conn_dict)}"
 
         # Send to all connected clients
         for address in list(self.conn_dict.keys()):
-            self.send_data(self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True)
+            self.send_data(
+                self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True
+            )
 
     def _display_disconnection(self, conn, addr):
         """
@@ -146,5 +162,8 @@ class Server:
                 if address != addr:
                     message = f"{len(self.conn_dict)}"
                     self.send_data(
-                        self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True
+                        self.conn_dict[address],
+                        Commands.CONN_NB,
+                        message,
+                        is_from_server=True,
                     )

@@ -67,5 +67,5 @@ class Client:
         """
         message = f"{self.user_name}: {payload}\n"
 
-        bytes_message = header.value.to_bytes(1, "big")+message.encode("utf-8")
+        bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         self.sock.send(bytes_message)
