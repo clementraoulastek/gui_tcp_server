@@ -115,35 +115,25 @@ class MainWindow(QMainWindow):
         self.user_info_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
         )
-        self.user_icon = QIcon(QIcon_from_svg(Icon.USER_ICON.value)).pixmap(
-            QSize(30, 30)
-        )
+        self.user_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
 
-        self.custom_user_button = CustomQPushButton(
-            "Update",
-        )
+        self.custom_user_button = CustomQPushButton("")
 
         self.user_picture = RoundedLabel(content="")
         self.user_name = QLabel("User disconnected")
         self.user_name.setStyleSheet("font-weight: bold")
 
-        self.logout_button = CustomQPushButton("Logout")
-        self.logout_button.clicked.connect(self.controller.logout)
-        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
-        self.logout_button.setIcon(self.logout_icon)
-        self.logout_button.setDisabled(True)
-
         self.custom_user_button.setIcon(self.user_icon)
+        self.custom_user_button.setFixedWidth(50)
         self.custom_user_button.clicked.connect(self.controller.send_user_icon)
         self.custom_user_button.setEnabled(False)
 
-        self.client_information_dashboard_layout.addWidget(self.user_name)
         self.client_information_dashboard_layout.addWidget(self.user_picture)
+        self.client_information_dashboard_layout.addWidget(self.user_name)
         self.client_information_dashboard_layout.addWidget(self.custom_user_button)
 
         self.status_server_layout.addWidget(self.server_info_widget)
         self.status_server_layout.addWidget(self.user_info_widget)
-        self.status_server_layout.addWidget(self.logout_button)
 
         self.main_layout.addWidget(server_status_widget)
 
@@ -164,12 +154,12 @@ class MainWindow(QMainWindow):
         # --- Left layout with scroll area
         self.info_layout = QVBoxLayout()
         self.info_layout.setSpacing(10)
-        self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
+        self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 3 + 13)
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 13)
 
         self.scroll_widget_avatar = QWidget()
-        self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 3)
+        self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
         self.scroll_widget_avatar.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 14px"
         )
@@ -187,13 +177,16 @@ class MainWindow(QMainWindow):
         self.scroll_widget_avatar.setLayout(self.info_layout)
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
-        self.info_label = QLabel("Please login")
-        self.info_label.setContentsMargins(10, 5, 10, 5)
+        self.info_label = QLabel("Welcome")
+        self.message_label = QLabel("I'm Robom\nPlease login & enjoy")
+        self.info_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
         )
         self.info_layout.addWidget(self.info_label)
-
+        self.info_layout.addWidget(self.message_label)
+    
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -236,7 +229,20 @@ class MainWindow(QMainWindow):
         self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.button_layout.setObjectName("button layout")
         self.button_layout.setSpacing(5)
-
+        
+        self.close_button = CustomQPushButton("")
+        self.close_button.clicked.connect(self.controller.hide_left_layout)
+        self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
+        self.close_button.setIcon(self.close_icon)
+        self.close_button.setFixedWidth(50)
+        
+        self.show_button = CustomQPushButton("")
+        self.show_button.clicked.connect(self.controller.show_left_layout)
+        self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
+        self.show_button.setIcon(self.show_icon)
+        self.show_button.setFixedWidth(50)
+        self.show_button.hide()
+        
         self.clear_button = CustomQPushButton("")
         self.clear_button.clicked.connect(self.controller.clear)
         self.clear_icon = QIcon(QIcon_from_svg(Icon.CLEAR.value))
@@ -248,14 +254,22 @@ class MainWindow(QMainWindow):
         self.settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
         self.config_button.setFixedWidth(50)
         self.config_button.setIcon(self.settings_icon)
+        
+        self.logout_button = CustomQPushButton("Logout")
+        self.logout_button.clicked.connect(self.controller.logout)
+        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
+        self.logout_button.setIcon(self.logout_icon)
+        self.logout_button.setDisabled(True)
 
         info_widget = QWidget()
         info_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};border-radius: 14px"
         )
-
+        self.button_layout.addWidget(self.close_button)
+        self.button_layout.addWidget(self.show_button)
         self.button_layout.addWidget(self.clear_button)
         self.button_layout.addWidget(self.config_button)
+        self.button_layout.addWidget(self.logout_button)
         self.button_layout.addWidget(info_widget)
 
         self.main_layout.addLayout(self.button_layout)

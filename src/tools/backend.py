@@ -27,7 +27,7 @@ class Backend:
         path = picture_path or QFileDialog.getOpenFileName(
             self.parent
         )  # TODO: To remove from here
-        if not path:
+        if not path[0]:
             return
         endpoint = f"http://{self.ip}:{self.port}/user/{username}"
 

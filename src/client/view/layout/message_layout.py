@@ -64,7 +64,7 @@ class MessageLayout(QHBoxLayout):
                 background_color=Color.GREY.value
             )
         )
-        right_layout = QHBoxLayout()
+        right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
 
         if reversed_:
@@ -87,6 +87,7 @@ class MessageLayout(QHBoxLayout):
 
         message_list = []
         message = coming_msg["message"]
+        sender = coming_msg["id"]
 
         while len(message) > self.MAX_CHAR:
             message_list.append(message[: self.MAX_CHAR])
@@ -96,6 +97,13 @@ class MessageLayout(QHBoxLayout):
 
         str_message = "\n".join(message_list)
 
+        sender_label = QLabel(sender)
+        sender_label.setStyleSheet(
+            "font-weight: bold"
+        )
+        
         message_label = QLabel(str_message)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        
+        right_layout.addWidget(sender_label)
         right_layout.addWidget(message_label)

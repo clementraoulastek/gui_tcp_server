@@ -107,15 +107,12 @@ class Server:
                     raise ConnectionAbortedError
                 already_connected = len(self.conn_dict) >= 2
                 if already_connected:
+                    self.send_message_to_backend(header, payload)
                     for address in list(self.conn_dict.keys()):
                         if address != addr:
                             self.send_data(
                                 self.conn_dict[address], Commands(header), payload
                             )
-                            if Commands(header) == Commands.MESSAGE:
-                                payload_list = payload.split(":")
-                                sender, message = payload_list[0], payload_list[1]
-                                self.backend.send_message(sender, message)
                 elif header != Commands.HELLO_WORLD.value:
                     return_message = "No client connected, your message go nowhere"
                     self.send_data(
@@ -127,6 +124,12 @@ class Server:
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
+            
+    def send_message_to_backend(self, header: int, payload: str):
+        if Commands(header) == Commands.MESSAGE:
+            payload_list = payload.split(":")
+            sender, message = payload_list[0], payload_list[1]
+            self.backend.send_message(sender, message)
 
     def handle_new_connection(self, addr, conn):
         self.conn_dict[addr] = conn

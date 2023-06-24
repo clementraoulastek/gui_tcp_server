@@ -35,6 +35,8 @@ class Icon(Enum):
     STATUS = f"{ICON_PATH}/status.svg"
     MESSAGE = f"{ICON_PATH}/message.svg"
     USER_ICON = f"{ICON_PATH}/default_user_icon.svg"
+    LEFT_ARROW = f"{ICON_PATH}/left_arrow.svg"
+    RIGHT_ARROW = f"{ICON_PATH}/right_arrow.svg"
 
 
 @unique

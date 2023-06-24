@@ -4,7 +4,7 @@ import time
 from typing import Union
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
-from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal
+from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 from src.client.view.layout.login_layout import LoginLayout
 from src.tools.utils import ImageAvatar
@@ -90,7 +90,7 @@ class Controller:
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
-                self.ui.info_label.setText(f"Nb of users connected: {nb_of_users}")
+                self.ui.info_label.setText(f"Users inline - {nb_of_users}")
                 return
             elif header == Commands.HELLO_WORLD.value:
                 id_, _ = payload.split(":", 1)
@@ -131,8 +131,9 @@ class Controller:
         global coming_user
         if coming_user[
             "content"
-        ]:  # and coming_user["username"] not in list(self.ui.users_pict.keys()):
+        ]:  
             user_layout = QHBoxLayout()
+            user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
             username = coming_user["username"]
             content = coming_user["content"]
             user_layout.setObjectName(f"{username}_layout")
@@ -263,6 +264,8 @@ class Controller:
             self.add_sender_picture(sender, update_list_avatar=False)
             self._diplay_message_after_send(sender, message)
         # Reset dict to handle new avatar images from conn
+        if self.ui.client.user_name in sender_list:
+            sender_list.remove(self.ui.client.user_name)
         for sender in sender_list:
             self.ui.users_pict.pop(sender)
 
@@ -281,6 +284,7 @@ class Controller:
             self.ui.clear_button.setDisabled(False)
             self.clear()
             self.get_user_icon(update_personal_avatar=update_avatar)
+            self.ui.message_label.hide()
             self.get_older_messages()
 
     def connect_to_server(self) -> bool:
@@ -303,6 +307,16 @@ class Controller:
         else:
             self.ui.parse_coming_message("Server off")
             return False
+    
+    def hide_left_layout(self):
+        self.ui.scroll_area_avatar.hide()
+        self.ui.close_button.hide()
+        self.ui.show_button.show()
+        
+    def show_left_layout(self):
+        self.ui.scroll_area_avatar.show()
+        self.ui.show_button.hide()
+        self.ui.close_button.show()
 
     def logout(self) -> None:
         """
@@ -312,6 +326,7 @@ class Controller:
         self.update_buttons()
         self.clear_avatar()
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.ui.message_label.show()
         self.login()
 
     def config(self):
