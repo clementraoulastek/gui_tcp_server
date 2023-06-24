@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
 
         self.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.users_connected = {}
 
         # Create Controller
         self.controller = Controller(self)
@@ -152,9 +153,13 @@ class MainWindow(QMainWindow):
         self.core_layout = QHBoxLayout()
 
         # --- Left layout with scroll area
-        self.info_layout = QVBoxLayout()
-        self.info_layout.setSpacing(10)
-        self.info_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.user_inline_layout = QVBoxLayout()
+
+        self.user_inline = QVBoxLayout()
+        self.user_offline = QVBoxLayout()
+
+        self.user_inline_layout.setSpacing(10)
+        self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 13)
 
@@ -174,7 +179,7 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
 
-        self.scroll_widget_avatar.setLayout(self.info_layout)
+        self.scroll_widget_avatar.setLayout(self.user_inline_layout)
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("Welcome")
@@ -184,9 +189,20 @@ class MainWindow(QMainWindow):
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
         )
-        self.info_layout.addWidget(self.info_label)
-        self.info_layout.addWidget(self.message_label)
-    
+        self.user_inline.addWidget(self.info_label)
+        self.user_inline.addWidget(self.message_label)
+        self.user_inline_layout.addLayout(self.user_inline)
+
+        self.info_disconnected_label = QLabel("Users outline")
+        self.info_disconnected_label.hide()
+        self.info_disconnected_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
+        self.info_disconnected_label.setStyleSheet(
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
+        )
+        self.user_offline.addWidget(self.info_disconnected_label)
+        self.user_inline_layout.addLayout(self.user_offline)
+
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -229,20 +245,20 @@ class MainWindow(QMainWindow):
         self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.button_layout.setObjectName("button layout")
         self.button_layout.setSpacing(5)
-        
+
         self.close_button = CustomQPushButton("")
         self.close_button.clicked.connect(self.controller.hide_left_layout)
         self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
         self.close_button.setIcon(self.close_icon)
         self.close_button.setFixedWidth(50)
-        
+
         self.show_button = CustomQPushButton("")
         self.show_button.clicked.connect(self.controller.show_left_layout)
         self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
         self.show_button.setIcon(self.show_icon)
         self.show_button.setFixedWidth(50)
         self.show_button.hide()
-        
+
         self.clear_button = CustomQPushButton("")
         self.clear_button.clicked.connect(self.controller.clear)
         self.clear_icon = QIcon(QIcon_from_svg(Icon.CLEAR.value))
@@ -254,7 +270,7 @@ class MainWindow(QMainWindow):
         self.settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
         self.config_button.setFixedWidth(50)
         self.config_button.setIcon(self.settings_icon)
-        
+
         self.logout_button = CustomQPushButton("Logout")
         self.logout_button.clicked.connect(self.controller.logout)
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))

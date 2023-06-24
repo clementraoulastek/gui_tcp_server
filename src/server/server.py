@@ -124,7 +124,7 @@ class Server:
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
-            
+
     def send_message_to_backend(self, header: int, payload: str):
         if Commands(header) == Commands.MESSAGE:
             payload_list = payload.split(":")

@@ -98,12 +98,10 @@ class MessageLayout(QHBoxLayout):
         str_message = "\n".join(message_list)
 
         sender_label = QLabel(sender)
-        sender_label.setStyleSheet(
-            "font-weight: bold"
-        )
-        
+        sender_label.setStyleSheet("font-weight: bold")
+
         message_label = QLabel(str_message)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        
+
         right_layout.addWidget(sender_label)
         right_layout.addWidget(message_label)

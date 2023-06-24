@@ -40,7 +40,8 @@ class Worker(QThread):
 
 # Global variable to handle worker
 comming_msg = {"id": "", "message": ""}
-coming_user = {"username": "", "content": ""}
+coming_user = {}
+user_disconnect = {}
 
 
 class Controller:
@@ -84,9 +85,7 @@ class Controller:
         Args:
             message (str): message to display
         """
-        global comming_msg
-        logging.info(f"header: {header}")
-        logging.info(f"payload: {payload}")
+        global comming_msg, user_disconnect, coming_user
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
@@ -94,17 +93,26 @@ class Controller:
                 return
             elif header == Commands.HELLO_WORLD.value:
                 id_, _ = payload.split(":", 1)
+                self.ui.users_connected[id_] = True
+                if id_ in user_disconnect.keys():
+                    self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
                 self.add_sender_picture(id_)
                 # Return welcome to hello world
                 self.ui.client.send_data(Commands.WELCOME, "")
                 return
             elif header == Commands.WELCOME.value:
                 id_, _ = payload.split(":", 1)
+                self.ui.users_connected[id_] = True
+                if id_ in user_disconnect.keys():
+                    self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
                 self.add_sender_picture(id_)
                 return
             elif header == Commands.GOOD_BYE.value:
                 id_, _ = payload.split(":", 1)
-                self.clear_avatar(f"{id_}_layout")
+                self.ui.users_connected[id_] = False
+                self.clear_avatar("user_inline", f"{id_}_layout")
+                self.add_sender_picture(id_)
+                user_disconnect[id_] = [coming_user[id_][0], False]
                 self.ui.users_pict.pop(id_)
                 return
             comming_msg["id"], comming_msg["message"] = payload.split(":", 1)
@@ -129,18 +137,34 @@ class Controller:
         Callback to update gui with input avatar
         """
         global coming_user
-        if coming_user[
-            "content"
-        ]:  
-            user_layout = QHBoxLayout()
-            user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-            username = coming_user["username"]
-            content = coming_user["content"]
-            user_layout.setObjectName(f"{username}_layout")
-            user_layout.addWidget(RoundedLabel(content=content))
-            user_layout.addWidget(QLabel(username))
-            self.ui.info_layout.addLayout(user_layout)
-            coming_user["username"], coming_user["content"] = "", ""
+        for user, data in coming_user.items():
+            if data[1] == False:
+                user_layout = QHBoxLayout()
+                user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                username = user
+                content = data[0]
+                user_layout.setObjectName(f"{username}_layout")
+                user_layout.addWidget(RoundedLabel(content=content))
+                user_layout.addWidget(QLabel(username))
+                self.ui.user_inline.addLayout(user_layout)
+                coming_user[user] = [data[0], True]
+
+    def update_gui_with_outdated_avatar(self):
+        """
+        Callback to update gui with input avatar
+        """
+        global user_disconnect
+        for user, data in user_disconnect.items():
+            if data[1] == False:
+                user_layout = QHBoxLayout()
+                user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                username = user
+                content = data[0]
+                user_layout.setObjectName(f"{username}_layout_disconnected")
+                user_layout.addWidget(RoundedLabel(content=content))
+                user_layout.addWidget(QLabel(username))
+                self.ui.user_offline.addLayout(user_layout)
+                user_disconnect[user] = [data[0], True]
 
     def read_messages(self):
         """
@@ -162,12 +186,12 @@ class Controller:
                 layout.itemAt(j).widget().deleteLater()
         self.ui.scroll_layout.update()
 
-    def clear_avatar(self, layout_name: Union[QHBoxLayout, None] = None):
+    def clear_avatar(self, parent_layout, layout_name: Union[QHBoxLayout, None] = None):
         """
         Clear the entry
         """
-        for i in reversed(range(self.ui.info_layout.count())):
-            if layout := self.ui.info_layout.itemAt(i).layout():
+        for i in reversed(range(getattr(self.ui, parent_layout).count())):
+            if layout := getattr(self.ui, parent_layout).itemAt(i).layout():
                 if (
                     layout_name
                     and layout_name == layout.objectName()
@@ -176,7 +200,7 @@ class Controller:
                     for j in reversed(range(layout.count())):
                         layout.itemAt(j).widget().deleteLater()
 
-        self.ui.info_layout.update()
+        getattr(self.ui, parent_layout).update()
 
     def login(self) -> None:
         """
@@ -232,9 +256,7 @@ class Controller:
         if self.ui.backend.send_user_icon(username, picture_path):
             self.get_user_icon(update_personal_avatar=True)
 
-    def get_user_icon(
-        self, username=None, update_personal_avatar=False, update_list_avatar=True
-    ):
+    def get_user_icon(self, username=None, update_personal_avatar=False):
         """
         Backend request for getting user icon
         """
@@ -244,9 +266,16 @@ class Controller:
             self.ui.users_pict[username] = content
             if update_personal_avatar:
                 self.ui.user_picture.update_picture(content=content)
-            global coming_user
-            if update_list_avatar:
-                coming_user["username"], coming_user["content"] = username, content
+            if (
+                username in self.ui.users_connected.keys()
+                and self.ui.users_connected[username] == True
+            ):
+                global coming_user
+                coming_user[username] = [content, False]
+            else:
+                self.ui.users_connected["username"] = False
+                global user_disconnect
+                user_disconnect[username] = [content, False]
         else:
             self.ui.users_pict[username] = ""
 
@@ -261,7 +290,7 @@ class Controller:
             sender, message = message["sender"], message["message"]
             if sender not in sender_list:
                 sender_list.append(sender)
-            self.add_sender_picture(sender, update_list_avatar=False)
+            self.add_sender_picture(sender)
             self._diplay_message_after_send(sender, message)
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
@@ -269,22 +298,24 @@ class Controller:
         for sender in sender_list:
             self.ui.users_pict.pop(sender)
 
-    def add_sender_picture(self, sender_id, update_list_avatar=True):
+    def add_sender_picture(self, sender_id):
         """Add sender picture to the list of sender pictures
 
         Args:
             sender_id (str): sender identifier
         """
         if sender_id not in list(self.ui.users_pict.keys()):
-            self.get_user_icon(sender_id, update_list_avatar=update_list_avatar)
+            self.get_user_icon(sender_id)
 
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
+        self.ui.users_connected[self.ui.client.user_name] = True
         if self.connect_to_server():
             self.ui.login_form = None
             self.ui.clear_button.setDisabled(False)
             self.clear()
             self.get_user_icon(update_personal_avatar=update_avatar)
             self.ui.message_label.hide()
+            self.ui.info_disconnected_label.show()
             self.get_older_messages()
 
     def connect_to_server(self) -> bool:
@@ -300,6 +331,13 @@ class Controller:
             self.read_avatar_worker.signal.connect(self.update_gui_with_input_avatar)
             self.read_avatar_worker.start()
 
+            # Worker for outdated avatar
+            self.read_outdated_avatar_worker = Worker()
+            self.read_outdated_avatar_worker.signal.connect(
+                self.update_gui_with_outdated_avatar
+            )
+            self.read_outdated_avatar_worker.start()
+
             self.worker_thread = Thread(target=self.read_messages, daemon=True)
             self.worker_thread.start()
             self.update_buttons()
@@ -307,12 +345,12 @@ class Controller:
         else:
             self.ui.parse_coming_message("Server off")
             return False
-    
+
     def hide_left_layout(self):
         self.ui.scroll_area_avatar.hide()
         self.ui.close_button.hide()
         self.ui.show_button.show()
-        
+
     def show_left_layout(self):
         self.ui.scroll_area_avatar.show()
         self.ui.show_button.hide()
@@ -322,10 +360,15 @@ class Controller:
         """
         Disconnect the client
         """
+        global coming_user, user_disconnect
         self.ui.client.close_connection()
         self.update_buttons()
-        self.clear_avatar()
+        self.clear_avatar("user_inline")
+        coming_user.clear()
+        user_disconnect.clear()
+        self.clear_avatar("user_offline")
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.ui.users_connected.clear()
         self.ui.message_label.show()
         self.login()
 
