@@ -1,6 +1,5 @@
-from datetime import datetime
 import logging
-
+import datetime
 from src.client.core.qt_core import (
     QHBoxLayout,
     QIcon,
@@ -97,11 +96,18 @@ class MessageLayout(QHBoxLayout):
 
         str_message = "\n".join(message_list)
 
+        sender_layout = QHBoxLayout()
+        sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         sender_label = QLabel(sender)
-        sender_label.setStyleSheet("font-weight: bold")
-
+        sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
+        
+        date_time = str(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+        date_label = QLabel(date_time)
+        sender_layout.addWidget(sender_label)
+        sender_layout.addWidget(date_label)
+        
         message_label = QLabel(str_message)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
-        right_layout.addWidget(sender_label)
+        right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)

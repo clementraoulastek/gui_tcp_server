@@ -116,6 +116,7 @@ class Controller:
         self.ui.users_connected[id_] = True
         if id_ in user_disconnect.keys():
             self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
+            user_disconnect.pop(id_)
         self.add_sender_picture(id_)
 
     def update_gui_with_input_messages(self):
