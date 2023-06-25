@@ -135,14 +135,14 @@ class MainWindow(QMainWindow):
         self.user_offline = QVBoxLayout()
 
         self.user_inline_layout.setSpacing(10)
-        self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 13)
 
         self.scroll_widget_avatar = QWidget()
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
         self.scroll_widget_avatar.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 14px"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 14px;"
         )
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow):
 
         self.info_label = QLabel("Welcome")
         self.message_label = QLabel("I'm Robom\nPlease login & enjoy")
-        self.info_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
@@ -171,7 +171,7 @@ class MainWindow(QMainWindow):
 
         self.info_disconnected_label = QLabel("")
         self.info_disconnected_label.hide()
-        self.info_disconnected_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        self.info_disconnected_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
         self.info_disconnected_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
@@ -218,6 +218,7 @@ class MainWindow(QMainWindow):
         Update the footer GUI
         """
         self.button_layout = QHBoxLayout()
+        self.button_layout.setContentsMargins(5, 0, 0, 0)
         self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.button_layout.setObjectName("button layout")
         self.button_layout.setSpacing(5)
@@ -272,26 +273,37 @@ class MainWindow(QMainWindow):
         # --- Client information
         self.user_info_widget = QWidget()
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
+        self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
 
+        self.user_widget = QWidget()
+        self.user_widget.setStyleSheet(
+            f"border: 1px solid;border-color: {Color.GREY.value}"
+        )
         self.custom_user_button = CustomQPushButton("")
 
         self.user_picture = RoundedLabel(content="")
+        self.user_picture.setStyleSheet("border: 0px")
         self.user_name = QLabel("User disconnected")
-        self.user_name.setStyleSheet("font-weight: bold")
+        self.user_name.setStyleSheet("font-weight: bold; border: 0px")
 
         self.custom_user_button.setIcon(self.user_icon)
         self.custom_user_button.setFixedWidth(50)
-        self.custom_user_button.clicked.connect(self.controller.send_user_icon)
+        self.custom_user_button.clicked.connect(self.controller.update_user_icon)
         self.custom_user_button.setEnabled(False)
 
-        self.client_information_dashboard_layout.addWidget(self.user_picture)
-        self.client_information_dashboard_layout.addWidget(self.user_name)
-        self.client_information_dashboard_layout.addWidget(self.custom_user_button)
-        self.client_information_dashboard_layout.addWidget(self.logout_button)
+        avatar_layout = QHBoxLayout()
+        self.user_widget.setLayout(avatar_layout)
+        
+        avatar_layout.addWidget(self.user_picture)
+        avatar_layout.addWidget(self.user_name)
+        avatar_layout.addWidget(self.custom_user_button)
+        avatar_layout.addWidget(self.logout_button)
+        
+        self.client_information_dashboard_layout.addWidget(self.user_widget)
 
         self.entry = CustomQLineEdit(place_holder_text="Please login")
         self.entry.returnPressed.connect(self.controller.send_messages)

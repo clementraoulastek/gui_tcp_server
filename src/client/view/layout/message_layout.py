@@ -35,7 +35,7 @@ class MessageLayout(QHBoxLayout):
         left_widget.setMaximumWidth(80)
         left_widget.setMinimumWidth(80)
         left_layout = QHBoxLayout()
-        left_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        left_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
 
         class Contener(QFrame):
@@ -101,7 +101,7 @@ class MessageLayout(QHBoxLayout):
         sender_label = QLabel(sender)
         sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
         
-        date_time = str(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+        date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
         date_label = QLabel(date_time)
         sender_layout.addWidget(sender_label)
         sender_layout.addWidget(date_label)

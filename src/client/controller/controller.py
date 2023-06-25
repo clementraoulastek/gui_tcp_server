@@ -249,14 +249,15 @@ class Controller:
             if username:
                 self.ui.client.user_name = username
 
-            self._clean_gui_and_connect(update_avatar=False)
+            self._clean_gui_and_connect(update_avatar=True)
 
-    def send_user_icon(self, picture_path=None):
+    def update_user_icon(self, picture_path=None):
         """
         Backend request for sending user icon
         """
         username = self.ui.client.user_name
         if self.ui.backend.send_user_icon(username, picture_path):
+            self.clear_avatar("user_inline", f"{username}_layout")
             self.get_user_icon(update_personal_avatar=True)
 
     def get_user_icon(self, username=None, update_personal_avatar=False):
@@ -346,7 +347,6 @@ class Controller:
             self.update_buttons()
             return True
         else:
-            self.ui.parse_coming_message("Server off")
             return False
 
     def hide_left_layout(self):
@@ -380,7 +380,7 @@ class Controller:
         """
         Display the config
         """
-        config = f"User name = '{self.ui.client.user_name}' Client host = '{self.ui.client.host}' Client port = '{self.ui.client.port}'"
+        config = f"Client host = {self.ui.client.host} Client port = {self.ui.client.port}"
         comming_msg = {"id": "server", "message": config}
         self.ui.scroll_layout.addLayout(
             MessageLayout(comming_msg, content=ImageAvatar.SERVER.value)

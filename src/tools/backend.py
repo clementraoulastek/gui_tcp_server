@@ -18,7 +18,7 @@ class Backend:
 
     def send_register_form(self, username: str, password: str) -> bool:
         endpoint = f"http://{self.ip}:{self.port}/register"
-        data = {"username": username, "password": password, "picture": ""}
+        data = {"username": username, "password": password}
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
         return response.status_code == 200

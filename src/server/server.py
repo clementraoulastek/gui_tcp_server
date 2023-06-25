@@ -102,7 +102,6 @@ class Server:
         try:
             while "Client connected":
                 header, payload = self.read_data(conn)
-                logging.info(header)
                 if not payload:
                     raise ConnectionAbortedError
                 already_connected = len(self.conn_dict) >= 2
