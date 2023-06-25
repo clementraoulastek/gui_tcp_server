@@ -12,11 +12,6 @@ from src.client.core.qt_core import (
     QIcon,
     QPainter,
     QPixmap,
-    QImage,
-    QRect,
-    Qt,
-    QBrush,
-    QWindow,
 )
 
 LM_USE_SVG = 1
@@ -32,11 +27,13 @@ class Icon(Enum):
     LOGOUT = f"{ICON_PATH}/logout.svg"
     SEND = f"{ICON_PATH}/send.svg"
     CONFIG = f"{ICON_PATH}/config.svg"
-    STATUS = f"{ICON_PATH}/status.svg"
+    STATUS = f"{ICON_PATH}/status_user_conn.svg"
     MESSAGE = f"{ICON_PATH}/message.svg"
     USER_ICON = f"{ICON_PATH}/default_user_icon.svg"
     LEFT_ARROW = f"{ICON_PATH}/left_arrow.svg"
     RIGHT_ARROW = f"{ICON_PATH}/right_arrow.svg"
+    AVATAR = f"{ICON_PATH}/avatar_update.svg"
+    
 
 
 @unique

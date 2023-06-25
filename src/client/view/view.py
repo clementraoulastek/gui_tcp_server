@@ -98,18 +98,26 @@ class MainWindow(QMainWindow):
 
         # --- Server information
         self.server_info_widget = QWidget()
+        self.server_name_widget = QWidget()
+        self.server_name_widget.setStyleSheet(
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;font-weight: bold"
+        )
         self.server_info_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;font-weight: bold"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
+        self.server_name_layout = QHBoxLayout(self.server_name_widget)
 
         icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
+        name_server_label = QLabel("Robot Messenger")
         status_server_label = QLabel(f"version: {SOFT_VERSION}")
 
         # Adding widgets to the main layout
-        self.server_information_dashboard_layout.addWidget(icon_soft)
+        self.server_name_layout.addWidget(icon_soft)
+        self.server_name_layout.addWidget(name_server_label)
         self.server_information_dashboard_layout.addWidget(status_server_label)
 
+        self.status_server_layout.addWidget(self.server_name_widget)
         self.status_server_layout.addWidget(self.server_info_widget)
 
         self.main_layout.addWidget(server_status_widget)
@@ -130,11 +138,15 @@ class MainWindow(QMainWindow):
 
         # --- Left layout with scroll area
         self.user_inline_layout = QVBoxLayout()
-
+        self.user_inline_layout.setSpacing(25)
+        
         self.user_inline = QVBoxLayout()
+        self.user_inline.setSpacing(10)
+        
         self.user_offline = QVBoxLayout()
+        self.user_offline.setSpacing(10)
 
-        self.user_inline_layout.setSpacing(10)
+        #self.user_inline_layout.setSpacing(10)
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 13)
@@ -277,7 +289,7 @@ class MainWindow(QMainWindow):
         self.user_info_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;"
         )
-        self.user_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
+        self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
 
         self.user_widget = QWidget()
         self.user_widget.setStyleSheet(

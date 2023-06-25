@@ -32,7 +32,8 @@ class LoginLayout(QHBoxLayout):
         self.password_entry = CustomQLineEdit(place_holder_text="Enter your password")
         
         button_layout = QHBoxLayout()
-        button_layout.setSpacing(50)
+        button_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        button_layout.setSpacing(25)
         layout.addLayout(button_layout)
 
         self.send_button = CustomQPushButton("Login")
