@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
         self.user_inline.addWidget(self.message_label)
         self.user_inline_layout.addLayout(self.user_inline)
 
-        self.info_disconnected_label = QLabel("Users outline")
+        self.info_disconnected_label = QLabel("")
         self.info_disconnected_label.hide()
         self.info_disconnected_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)

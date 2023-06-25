@@ -1,9 +1,10 @@
-from src.client.core.qt_core import QPixmap, QLabel, QIcon, QSize
+from src.client.core.qt_core import QPixmap, QLabel, QIcon, QSize, QColor, Qt
 
 
 class RoundedLabel(QLabel):
-    def __init__(self, *args, content=None, height=40, width=40):
+    def __init__(self, *args, content=None, height=40, width=40, disabled=False):
         super(RoundedLabel, self).__init__(*args)
+        self.disabled = disabled
         self.height_ = height
         self.width_ = width
         self.update_picture(content)
@@ -17,3 +18,5 @@ class RoundedLabel(QLabel):
             pm.loadFromData(content)
             p = QIcon(pm).pixmap(QSize(self.height_, self.width_))
         self.setPixmap(p)
+
+        self.setDisabled(self.disabled)

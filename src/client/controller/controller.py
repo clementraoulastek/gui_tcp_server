@@ -92,20 +92,12 @@ class Controller:
                 self.ui.info_label.setText(f"Users inline - {nb_of_users}")
                 return
             elif header == Commands.HELLO_WORLD.value:
-                id_, _ = payload.split(":", 1)
-                self.ui.users_connected[id_] = True
-                if id_ in user_disconnect.keys():
-                    self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
-                self.add_sender_picture(id_)
+                self._add_sender_pict(payload, user_disconnect)
                 # Return welcome to hello world
                 self.ui.client.send_data(Commands.WELCOME, "")
                 return
             elif header == Commands.WELCOME.value:
-                id_, _ = payload.split(":", 1)
-                self.ui.users_connected[id_] = True
-                if id_ in user_disconnect.keys():
-                    self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
-                self.add_sender_picture(id_)
+                self._add_sender_pict(payload, user_disconnect)
                 return
             elif header == Commands.GOOD_BYE.value:
                 id_, _ = payload.split(":", 1)
@@ -118,6 +110,13 @@ class Controller:
             comming_msg["id"], comming_msg["message"] = payload.split(":", 1)
         else:
             comming_msg["id"], comming_msg["message"] = "unknown", payload
+
+    def _add_sender_pict(self, payload, user_disconnect):
+        id_, _ = payload.split(":", 1)
+        self.ui.users_connected[id_] = True
+        if id_ in user_disconnect.keys():
+            self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
+        self.add_sender_picture(id_)
 
     def update_gui_with_input_messages(self):
         """
@@ -161,10 +160,13 @@ class Controller:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
-                user_layout.addWidget(RoundedLabel(content=content))
+                user_layout.addWidget(RoundedLabel(content=content, disabled=True))
                 user_layout.addWidget(QLabel(username))
                 self.ui.user_offline.addLayout(user_layout)
                 user_disconnect[user] = [data[0], True]
+        self.ui.info_disconnected_label.setText(
+            f"Users outline - {len(user_disconnect)}"
+        )
 
     def read_messages(self):
         """
@@ -370,6 +372,7 @@ class Controller:
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
         self.ui.users_connected.clear()
         self.ui.message_label.show()
+        self.ui.info_disconnected_label.hide()
         self.login()
 
     def config(self):
@@ -389,7 +392,7 @@ class Controller:
         else:
             self._set_buttons_status(False, True, "Please login")
             self.ui.user_name.setText("User disconnected")
-            self.ui.info_label.setText("Please login")
+            self.ui.info_label.setText("Welcome")
             self.ui.user_picture.update_picture(content="")
 
     def _set_buttons_status(self, arg0, arg1, lock_message):
