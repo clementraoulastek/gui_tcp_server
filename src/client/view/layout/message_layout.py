@@ -9,7 +9,9 @@ from src.client.core.qt_core import (
     QWidget,
     QVBoxLayout,
     QFrame,
+    QSizePolicy
 )
+from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 
@@ -21,6 +23,10 @@ class MessageLayout(QHBoxLayout):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        
+        self.is_reacted = False
+        self.nb_react = 0
+        
         main_widget = QWidget()
 
         main_widget.setFixedHeight(main_widget.maximumHeight())
@@ -41,20 +47,12 @@ class MessageLayout(QHBoxLayout):
         class Contener(QFrame):
             def __init__(self):
                 super(Contener, self).__init__()
-
             def enterEvent(self, event) -> None:
-                self.setStyleSheet(
-                    "background-color: {background_color};".format(
-                        background_color=Color.DARK_GREY.value
-                    )
-                )
-
+                button : CustomQPushButton = self.findChildren(CustomQPushButton)[0]
+                button.show()
             def leaveEvent(self, event) -> None:
-                self.setStyleSheet(
-                    "background-color: {background_color};".format(
-                        background_color=Color.GREY.value
-                    )
-                )
+                button : CustomQPushButton = self.findChildren(CustomQPushButton)[0]
+                button.hide()
 
         right_widget = Contener()
 
@@ -101,13 +99,64 @@ class MessageLayout(QHBoxLayout):
         sender_label = QLabel(sender)
         sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
         
+        self.react_buttton = CustomQPushButton(" Add react", bg_color=Color.GREY.value)
+        self.react_buttton.clicked.connect(self.add_react)
+        sp_retain = self.react_buttton.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.react_buttton.setSizePolicy(sp_retain)
+        self.react_buttton.setAutoFillBackground(True)
+        self.react_buttton.setFixedHeight(25)
+        react_icon = QIcon(QIcon_from_svg(Icon.SMILEY.value))
+        self.react_buttton.setIcon(react_icon)
+        self.react_buttton.hide()
+        
+        emot_widget = QWidget()
+        emot_widget.setFixedWidth(50)
+        emot_layout = QHBoxLayout(emot_widget)
+        emot_layout.setSpacing(0)
+        emot_layout.setContentsMargins(0, 0, 0, 0)
+        self.react_emot = RoundedLabel(content=Icon.SMILEY.value, height=15, width=15, color=Color.LIGHT_GREY.value)
+        self.react_emot.hide()
+        self.react_emot.setStyleSheet("border: 0px")
+        self.react_nb = QLabel("1")
+        self.react_nb.hide()
+        self.react_emot.setAlignment(Qt.AlignLeft)
+        self.react_nb.setAlignment(Qt.AlignLeft)
+        self.react_nb.setStyleSheet("font-weight: bold; border: 0px")
+        emot_layout.addWidget(self.react_emot)
+        emot_layout.addWidget(self.react_nb)
+        
         date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
         date_label = QLabel(date_time)
         sender_layout.addWidget(sender_label)
         sender_layout.addWidget(date_label)
+        sender_layout.addWidget(self.react_buttton)
         
         message_label = QLabel(str_message)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
+        right_layout.addWidget(emot_widget)
+
+    def add_react(self):
+        if self.is_reacted:
+            self.nb_react -= 1
+            self.is_reacted = False
+            self.react_buttton.setText(" Add react")
+        else:
+            self.nb_react += 1
+            self.is_reacted = True
+            self.react_buttton.setText(" Remove react")
+            
+        self.react_nb.setText(f"{self.nb_react}")
+            
+        if self.nb_react == 0:
+            self.react_emot.hide()
+            self.react_nb.hide()
+        else:
+            self.react_emot.show()
+            self.react_nb.show()
+            
+        
+        
