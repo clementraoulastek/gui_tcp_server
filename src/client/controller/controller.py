@@ -89,7 +89,7 @@ class Controller:
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
-                self.ui.info_label.setText(f"Users inline - {nb_of_users}")
+                self.ui.info_label.setText(f"Users online - {nb_of_users}")
                 return
             elif header == Commands.HELLO_WORLD.value:
                 self._add_sender_pict(payload, user_disconnect)
@@ -165,7 +165,7 @@ class Controller:
                 self.ui.user_offline.addLayout(user_layout)
                 user_disconnect[user] = [data[0], True]
         self.ui.info_disconnected_label.setText(
-            f"Users outline - {len(user_disconnect)}"
+            f"Users offline - {len(user_disconnect)}"
         )
 
     def read_messages(self):

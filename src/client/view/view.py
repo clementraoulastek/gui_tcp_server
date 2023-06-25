@@ -110,31 +110,7 @@ class MainWindow(QMainWindow):
         self.server_information_dashboard_layout.addWidget(icon_soft)
         self.server_information_dashboard_layout.addWidget(status_server_label)
 
-        # --- Client information
-        self.user_info_widget = QWidget()
-        self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
-        self.user_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
-        )
-        self.user_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
-
-        self.custom_user_button = CustomQPushButton("")
-
-        self.user_picture = RoundedLabel(content="")
-        self.user_name = QLabel("User disconnected")
-        self.user_name.setStyleSheet("font-weight: bold")
-
-        self.custom_user_button.setIcon(self.user_icon)
-        self.custom_user_button.setFixedWidth(50)
-        self.custom_user_button.clicked.connect(self.controller.send_user_icon)
-        self.custom_user_button.setEnabled(False)
-
-        self.client_information_dashboard_layout.addWidget(self.user_picture)
-        self.client_information_dashboard_layout.addWidget(self.user_name)
-        self.client_information_dashboard_layout.addWidget(self.custom_user_button)
-
         self.status_server_layout.addWidget(self.server_info_widget)
-        self.status_server_layout.addWidget(self.user_info_widget)
 
         self.main_layout.addWidget(server_status_widget)
 
@@ -285,7 +261,6 @@ class MainWindow(QMainWindow):
         self.button_layout.addWidget(self.show_button)
         self.button_layout.addWidget(self.clear_button)
         self.button_layout.addWidget(self.config_button)
-        self.button_layout.addWidget(self.logout_button)
         self.button_layout.addWidget(info_widget)
 
         self.main_layout.addLayout(self.button_layout)
@@ -294,9 +269,34 @@ class MainWindow(QMainWindow):
         self.send_layout.setObjectName("send layout")
         self.send_layout.setSpacing(5)
 
+        # --- Client information
+        self.user_info_widget = QWidget()
+        self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
+        self.user_info_widget.setStyleSheet(
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;"
+        )
+        self.user_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
+
+        self.custom_user_button = CustomQPushButton("")
+
+        self.user_picture = RoundedLabel(content="")
+        self.user_name = QLabel("User disconnected")
+        self.user_name.setStyleSheet("font-weight: bold")
+
+        self.custom_user_button.setIcon(self.user_icon)
+        self.custom_user_button.setFixedWidth(50)
+        self.custom_user_button.clicked.connect(self.controller.send_user_icon)
+        self.custom_user_button.setEnabled(False)
+
+        self.client_information_dashboard_layout.addWidget(self.user_picture)
+        self.client_information_dashboard_layout.addWidget(self.user_name)
+        self.client_information_dashboard_layout.addWidget(self.custom_user_button)
+        self.client_information_dashboard_layout.addWidget(self.logout_button)
+
         self.entry = CustomQLineEdit(place_holder_text="Please login")
         self.entry.returnPressed.connect(self.controller.send_messages)
         self.entry.setDisabled(True)
+        self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
         self.send_button = CustomQPushButton("")
