@@ -2,7 +2,7 @@ import logging
 from threading import Thread
 import time
 from typing import Union
-from src.client.view.layout.message_layout import MessageLayout
+from src.client.view.layout.message_layout import EnumReact, MessageLayout
 from src.tools.commands import Commands
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
@@ -47,6 +47,8 @@ user_disconnect = {}
 class Controller:
     def __init__(self, ui) -> None:
         self.ui = ui
+        self.messages_list = {}
+        self.last_message_id: int = 0
 
     def send_messages(self, *args) -> None:
         """
@@ -57,9 +59,15 @@ class Controller:
         """
         if message := self.ui.entry.text():
             self.ui.client.send_data(Commands.MESSAGE, message)
-            self._diplay_message_after_send(self.ui.client.user_name, message)
+            self._diplay_message(self.ui.client.user_name, message)
 
-    def _diplay_message_after_send(self, id_sender: str, message: str) -> None:
+    def _diplay_message(
+        self,
+        id_sender: str,
+        message: str,
+        messsage_id: Union[int, None] = None,
+        nb_react=0,
+    ) -> None:
         """
             Display message on gui and clear the entry
 
@@ -68,14 +76,22 @@ class Controller:
             message (str): message to display
         """
         comming_msg = {"id": id_sender, "message": message}
-        self.ui.scroll_widget.layout().addLayout(
-            MessageLayout(
-                comming_msg,
-                content=self.ui.users_pict[id_sender],
-                reversed_=self.ui.client.user_name == id_sender,
-            )
-        )
+        if messsage_id:
+            self.last_message_id = messsage_id
+        else:
+            self.last_message_id += 1
 
+        message = MessageLayout(
+            self,
+            comming_msg,
+            content=self.ui.users_pict[id_sender],
+            reversed_=self.ui.client.user_name == id_sender,
+            message_id=self.last_message_id,
+            nb_react=nb_react,
+        )
+        self.ui.scroll_widget.layout().addLayout(message)
+
+        self.messages_list[self.last_message_id] = message
         self.ui.entry.clear()
 
     def parse_coming_message(self, header: int, payload: str):
@@ -107,6 +123,15 @@ class Controller:
                 user_disconnect[id_] = [coming_user[id_][0], False]
                 self.ui.users_pict.pop(id_)
                 return
+            elif (
+                header == Commands.ADD_REACT.value or header == Commands.RM_REACT.value
+            ):
+                payload = payload.split(":")[1].replace(" ", "")
+                payload_list = payload.split(";")
+                message_id, nb_reaction = payload_list[0], payload_list[1]
+                message: MessageLayout = self.messages_list[int(message_id)]
+                message.update_react(int(nb_reaction))
+                return
             comming_msg["id"], comming_msg["message"] = payload.split(":", 1)
         else:
             comming_msg["id"], comming_msg["message"] = "unknown", payload
@@ -125,11 +150,19 @@ class Controller:
         """
         global comming_msg
         if comming_msg["message"]:
-            self.ui.scroll_layout.addLayout(
-                MessageLayout(
-                    comming_msg, content=self.ui.users_pict[comming_msg["id"]]
-                )
+            if comming_msg["id"] != "server":
+                self.last_message_id += 1
+            message = MessageLayout(
+                self,
+                comming_msg,
+                content=self.ui.users_pict[comming_msg["id"]],
+                message_id=self.last_message_id
+                if comming_msg["id"] != "server"
+                else None,
             )
+            if comming_msg["id"] != "server":
+                self.messages_list[self.last_message_id] = message
+            self.ui.scroll_layout.addLayout(message)
             comming_msg["id"], comming_msg["message"] = "", ""
 
     def update_gui_with_input_avatar(self):
@@ -251,6 +284,12 @@ class Controller:
 
             self._clean_gui_and_connect(update_avatar=True)
 
+    def send_emot_react(self, cmd: Commands, messageId, react_nb):
+        """
+        Send emot message to the server
+        """
+        self.ui.client.send_data(cmd, ";".join([str(messageId), str(react_nb)]))
+
     def update_user_icon(self, picture_path=None):
         """
         Backend request for sending user icon
@@ -291,11 +330,18 @@ class Controller:
         older_messages: dict = self.ui.backend.get_older_messages()
         messages_list = older_messages["messages"]
         for message in messages_list:
-            sender, message = message["sender"], message["message"]
+            message_id, sender, message, reaction_nb = (
+                message["message_id"],
+                message["sender"],
+                message["message"],
+                message["reaction_nb"],
+            )
             if sender not in sender_list:
                 sender_list.append(sender)
             self.add_sender_picture(sender)
-            self._diplay_message_after_send(sender, message)
+            self._diplay_message(
+                sender, message, messsage_id=message_id, nb_react=int(reaction_nb)
+            )
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
             sender_list.remove(self.ui.client.user_name)
@@ -380,10 +426,12 @@ class Controller:
         """
         Display the config
         """
-        config = f"Client host = {self.ui.client.host} Client port = {self.ui.client.port}"
+        config = (
+            f"Client host = {self.ui.client.host} Client port = {self.ui.client.port}"
+        )
         comming_msg = {"id": "server", "message": config}
         self.ui.scroll_layout.addLayout(
-            MessageLayout(comming_msg, content=ImageAvatar.SERVER.value)
+            MessageLayout(self, comming_msg, content=ImageAvatar.SERVER.value)
         )
 
     def update_buttons(self):

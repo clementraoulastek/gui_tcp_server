@@ -104,22 +104,12 @@ class Server:
                 header, payload = self.read_data(conn)
                 if not payload:
                     raise ConnectionAbortedError
-                already_connected = len(self.conn_dict) >= 2
-                if already_connected:
-                    self.send_message_to_backend(header, payload)
-                    for address in list(self.conn_dict.keys()):
-                        if address != addr:
-                            self.send_data(
-                                self.conn_dict[address], Commands(header), payload
-                            )
-                elif header != Commands.HELLO_WORLD.value:
-                    return_message = "No client connected, your message go nowhere"
-                    self.send_data(
-                        self.conn_dict[addr],
-                        Commands.MESSAGE,
-                        return_message,
-                        is_from_server=True,
-                    )
+                self.send_message_to_backend(header, payload)
+                for address in list(self.conn_dict.keys()):
+                    if address != addr:
+                        self.send_data(
+                            self.conn_dict[address], Commands(header), payload
+                        )
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
@@ -129,6 +119,16 @@ class Server:
             payload_list = payload.split(":")
             sender, message = payload_list[0], payload_list[1]
             self.backend.send_message(sender, message)
+        elif (
+            Commands(header) == Commands.ADD_REACT
+            or Commands(header) == Commands.RM_REACT
+        ):
+            payload_list = payload.split(":")
+            sender, message = payload_list[0], payload_list[1]
+            message_list = message.split(";")
+            message_id, reaction_nb = message_list[0], message_list[1]
+            logging.info(message)
+            self.backend.update_reaction_nb(message_id, reaction_nb)
 
     def handle_new_connection(self, addr, conn):
         self.conn_dict[addr] = conn

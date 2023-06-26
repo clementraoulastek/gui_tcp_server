@@ -19,7 +19,7 @@ class LoginLayout(QHBoxLayout):
         )
         layout = QVBoxLayout(main_widget)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        
+
         info_layout = QHBoxLayout()
         layout.addLayout(info_layout)
 
@@ -30,7 +30,7 @@ class LoginLayout(QHBoxLayout):
 
         self.username_entry = CustomQLineEdit(place_holder_text="Enter your username")
         self.password_entry = CustomQLineEdit(place_holder_text="Enter your password")
-        
+
         button_layout = QHBoxLayout()
         button_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         button_layout.setSpacing(25)

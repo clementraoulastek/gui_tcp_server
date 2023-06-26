@@ -34,7 +34,6 @@ class Icon(Enum):
     RIGHT_ARROW = f"{ICON_PATH}/right_arrow.svg"
     AVATAR = f"{ICON_PATH}/avatar_update.svg"
     SMILEY = f"{ICON_PATH}/smiley.svg"
-    
 
 
 @unique

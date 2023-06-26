@@ -2,7 +2,9 @@ from src.client.core.qt_core import QPixmap, QLabel, QIcon, QSize, QColor, Qt, Q
 
 
 class RoundedLabel(QLabel):
-    def __init__(self, *args, content=None, height=40, width=40, color=None, disabled=False):
+    def __init__(
+        self, *args, content=None, height=40, width=40, color=None, disabled=False
+    ):
         super(RoundedLabel, self).__init__(*args)
         self.disabled = disabled
         self.color = color

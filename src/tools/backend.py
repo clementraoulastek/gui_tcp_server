@@ -1,6 +1,7 @@
 from typing import Union
 import requests
 from src.client.core.qt_core import QFileDialog, QMainWindow
+from src.tools.commands import Commands
 
 
 class Backend:
@@ -60,4 +61,9 @@ class Backend:
         data = {"sender": username, "message": message}
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
+        return response.status_code
+
+    def update_reaction_nb(self, message_id: int, reaction_nb: int):
+        endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}?new_reaction_nb={reaction_nb}"
+        response = requests.patch(url=endpoint)
         return response.status_code

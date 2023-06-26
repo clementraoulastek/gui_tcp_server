@@ -139,14 +139,14 @@ class MainWindow(QMainWindow):
         # --- Left layout with scroll area
         self.user_inline_layout = QVBoxLayout()
         self.user_inline_layout.setSpacing(25)
-        
+
         self.user_inline = QVBoxLayout()
         self.user_inline.setSpacing(10)
-        
+
         self.user_offline = QVBoxLayout()
         self.user_offline.setSpacing(10)
 
-        #self.user_inline_layout.setSpacing(10)
+        # self.user_inline_layout.setSpacing(10)
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 13)
@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
 
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setObjectName("scroll layout")
 
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
         self.scroll_area.setMinimumWidth(600)
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
 
-        self.scroll_area.setContentsMargins(0, 0, 90, 0)
+        self.scroll_area.setContentsMargins(0, 0, 0, 0)
         self.scroll_area.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
@@ -309,12 +309,12 @@ class MainWindow(QMainWindow):
 
         avatar_layout = QHBoxLayout()
         self.user_widget.setLayout(avatar_layout)
-        
+
         avatar_layout.addWidget(self.user_picture)
         avatar_layout.addWidget(self.user_name)
         avatar_layout.addWidget(self.custom_user_button)
         avatar_layout.addWidget(self.logout_button)
-        
+
         self.client_information_dashboard_layout.addWidget(self.user_widget)
 
         self.entry = CustomQLineEdit(place_holder_text="Please login")
