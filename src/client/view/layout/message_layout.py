@@ -10,6 +10,7 @@ from src.client.core.qt_core import (
     QWidget,
     QVBoxLayout,
     QFrame,
+    QSizePolicy
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -38,13 +39,13 @@ class MessageLayout(QHBoxLayout):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-
         self.controller = controller
         self.message_id = message_id
         self.is_reacted = False
         self.nb_react = nb_react
 
         main_widget = QWidget()
+        main_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
@@ -108,18 +109,9 @@ class MessageLayout(QHBoxLayout):
         else:
             label = RoundedLabel(content=content)
             left_layout.addWidget(label)
-
-        message_list = []
-        message = coming_msg["message"]
+            
+        str_message = coming_msg["message"]
         sender = coming_msg["id"]
-
-        while len(message) > self.MAX_CHAR:
-            message_list.append(message[: self.MAX_CHAR])
-            message = message[self.MAX_CHAR :]
-            print(message)
-        message_list.append(message)
-
-        str_message = "\n".join(message_list)
 
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
@@ -172,6 +164,8 @@ class MessageLayout(QHBoxLayout):
             sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
+        message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        message_label.setWordWrap(True) 
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
         right_layout.addLayout(sender_layout)
