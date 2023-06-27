@@ -10,7 +10,6 @@ from src.client.core.qt_core import (
     QWidget,
     QVBoxLayout,
     QFrame,
-    QSizePolicy,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -141,23 +140,28 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.setIcon(react_icon)
             self.react_buttton.hide()
 
-        emot_widget = QWidget()
-        emot_widget.setFixedWidth(50)
-        emot_layout = QHBoxLayout(emot_widget)
-        emot_layout.setSpacing(0)
-        emot_layout.setContentsMargins(0, 0, 0, 0)
-        self.react_emot = RoundedLabel(
-            content=Icon.SMILEY.value, height=15, width=15, color=Color.LIGHT_GREY.value
-        )
-        self.react_emot.hide()
-        self.react_emot.setStyleSheet("border: 0px")
-        self.react_nb = QLabel("1")
-        self.react_nb.hide()
-        self.react_emot.setAlignment(Qt.AlignLeft)
-        self.react_nb.setAlignment(Qt.AlignLeft)
-        self.react_nb.setStyleSheet("font-weight: bold; border: 0px")
-        emot_layout.addWidget(self.react_emot)
-        emot_layout.addWidget(self.react_nb)
+            emot_widget = QWidget()
+            emot_widget.setFixedWidth(50)
+            emot_layout = QHBoxLayout(emot_widget)
+            emot_layout.setSpacing(0)
+            emot_layout.setContentsMargins(0, 0, 0, 0)
+            
+            self.react_emot = RoundedLabel(
+                content=Icon.SMILEY.value, height=15, width=15, color=Color.LIGHT_GREY.value
+            )
+            self.react_emot.hide()
+            sp_retain = self.react_emot.sizePolicy()
+            sp_retain.setRetainSizeWhenHidden(True)
+            self.react_emot.setSizePolicy(sp_retain)
+                
+            self.react_emot.setStyleSheet("border: 0px")
+            self.react_nb = QLabel("1")
+            self.react_nb.hide()
+            self.react_emot.setAlignment(Qt.AlignLeft)
+            self.react_nb.setAlignment(Qt.AlignLeft)
+            self.react_nb.setStyleSheet("font-weight: bold; border: 0px")
+            emot_layout.addWidget(self.react_emot)
+            emot_layout.addWidget(self.react_nb)
 
         date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
         date_label = QLabel(date_time)
@@ -172,9 +176,9 @@ class MessageLayout(QHBoxLayout):
 
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
-        right_layout.addWidget(emot_widget)
-
-        self.update_react(self.nb_react)
+        if message_id:
+            right_layout.addWidget(emot_widget)
+            self.update_react(self.nb_react)
 
     def add_react(self):
         if self.is_reacted:

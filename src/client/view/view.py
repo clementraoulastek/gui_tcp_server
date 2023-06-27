@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
 
         # --- Right layout with scroll area
         self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
+        self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setObjectName("scroll layout")
 
