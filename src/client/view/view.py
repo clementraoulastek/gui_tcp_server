@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
         # self.user_inline_layout.setSpacing(10)
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 13)
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4)
 
         self.scroll_widget_avatar = QWidget()
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
@@ -171,7 +171,8 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("Welcome")
-        self.message_label = QLabel("I'm Robom\nPlease login & enjoy")
+        self.message_label = QLabel("I'm Robom Please login & enjoy")
+        self.message_label.setWordWrap(True)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(

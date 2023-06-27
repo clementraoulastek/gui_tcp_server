@@ -45,7 +45,6 @@ class MessageLayout(QHBoxLayout):
         self.nb_react = nb_react
 
         main_widget = QWidget()
-        main_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
@@ -164,8 +163,8 @@ class MessageLayout(QHBoxLayout):
             sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
-        message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        message_label.setWordWrap(True) 
+        message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        message_label.setWordWrap(True)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
         right_layout.addLayout(sender_layout)
