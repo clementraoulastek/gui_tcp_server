@@ -1,6 +1,7 @@
 from enum import Enum, unique
 import logging
 import datetime
+from typing import List
 from src.client.core.qt_core import (
     QHBoxLayout,
     QIcon,
@@ -66,7 +67,7 @@ class MessageLayout(QHBoxLayout):
                 super(Contener, self).__init__()
 
             def enterEvent(self, event) -> None:
-                button_list: list[CustomQPushButton] = self.findChildren(
+                button_list: List[CustomQPushButton] = self.findChildren(
                     CustomQPushButton
                 )
                 if button_list:
@@ -74,7 +75,7 @@ class MessageLayout(QHBoxLayout):
                     button.show()
 
             def leaveEvent(self, event) -> None:
-                button_list: list[CustomQPushButton] = self.findChildren(
+                button_list: List[CustomQPushButton] = self.findChildren(
                     CustomQPushButton
                 )
                 if button_list:
