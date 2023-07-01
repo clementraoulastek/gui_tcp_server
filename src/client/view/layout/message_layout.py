@@ -50,7 +50,7 @@ class MessageLayout(QHBoxLayout):
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};border-radius: 14px"
+            f"color: {Color.LIGHT_GREY.value};border-radius: 30px"
         )
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -67,20 +67,15 @@ class MessageLayout(QHBoxLayout):
                 super(Contener, self).__init__()
 
             def enterEvent(self, event) -> None:
-                button_list: List[CustomQPushButton] = self.findChildren(
-                    CustomQPushButton
-                )
-                if button_list:
+                if button_list := self.findChildren(CustomQPushButton):
                     button = button_list[0]
                     button.show()
 
             def leaveEvent(self, event) -> None:
-                button_list: List[CustomQPushButton] = self.findChildren(
-                    CustomQPushButton
-                )
-                if button_list:
+                if button_list := self.findChildren(CustomQPushButton):
                     button = button_list[0]
                     button.hide()
+
 
         right_widget = Contener()
 
@@ -109,18 +104,27 @@ class MessageLayout(QHBoxLayout):
         else:
             label = RoundedLabel(content=content)
             left_layout.addWidget(label)
-            
+
         str_message = coming_msg["message"]
         sender = coming_msg["id"]
 
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         sender_label = QLabel(sender)
+        
+        def on_event_enter_user_label():
+            sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value};text-decoration: underline;")
+        def on_event_leave_user_label():
+            sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
+            
+        sender_label.enterEvent = lambda event : on_event_enter_user_label()
+        sender_label.leaveEvent = lambda event : on_event_leave_user_label()
+    
         sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
 
         if message_id:
             self.react_buttton = CustomQPushButton(
-                " Add react", bg_color=Color.GREY.value
+                " Add react", bg_color=Color.GREY.value, radius=8
             )
             self.react_buttton.clicked.connect(self.add_react)
             sp_retain = self.react_buttton.sizePolicy()
@@ -137,7 +141,7 @@ class MessageLayout(QHBoxLayout):
             emot_layout = QHBoxLayout(emot_widget)
             emot_layout.setSpacing(0)
             emot_layout.setContentsMargins(0, 0, 0, 0)
-            
+
             self.react_emot = RoundedLabel(
                 content=Icon.SMILEY.value, height=15, width=15, color=Color.LIGHT_GREY.value
             )
@@ -145,7 +149,7 @@ class MessageLayout(QHBoxLayout):
             sp_retain = self.react_emot.sizePolicy()
             sp_retain.setRetainSizeWhenHidden(True)
             self.react_emot.setSizePolicy(sp_retain)
-                
+
             self.react_emot.setStyleSheet("border: 0px")
             self.react_nb = QLabel("1")
             self.react_nb.hide()
@@ -157,7 +161,16 @@ class MessageLayout(QHBoxLayout):
 
         date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
         date_label = QLabel(date_time)
+        
+        separator = QFrame()
+        separator.setStyleSheet(f"background-color: {Color.LIGHT_GREY.value};")
+        separator.setFrameShape(QFrame.VLine)
+        separator.setFrameShadow(QFrame.Sunken)
+        separator.setFixedWidth(1)
+        separator.setFixedHeight(12)
+        
         sender_layout.addWidget(sender_label)
+        sender_layout.addWidget(separator)
         sender_layout.addWidget(date_label)
 
         if message_id:

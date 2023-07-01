@@ -24,6 +24,7 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QWidget,
     Signal,
+    QToolButton
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
@@ -90,7 +91,7 @@ class MainWindow(QMainWindow):
         # --- Background
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px"
+            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
         self.status_server_layout.setSpacing(20)
@@ -100,10 +101,10 @@ class MainWindow(QMainWindow):
         self.server_info_widget = QWidget()
         self.server_name_widget = QWidget()
         self.server_name_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;font-weight: bold"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;font-weight: bold"
         )
         self.server_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;font-weight: bold"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;font-weight: bold"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
         self.server_name_layout = QHBoxLayout(self.server_name_widget)
@@ -154,7 +155,7 @@ class MainWindow(QMainWindow):
         self.scroll_widget_avatar = QWidget()
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
         self.scroll_widget_avatar.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 14px;"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 30px;"
         )
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
@@ -176,7 +177,7 @@ class MainWindow(QMainWindow):
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 12px"
         )
         self.user_inline.addWidget(self.info_label)
         self.user_inline.addWidget(self.message_label)
@@ -187,7 +188,7 @@ class MainWindow(QMainWindow):
         self.info_disconnected_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
         self.info_disconnected_label.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 8px"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 12px"
         )
         self.user_offline.addWidget(self.info_disconnected_label)
         self.user_inline_layout.addLayout(self.user_offline)
@@ -206,7 +207,7 @@ class MainWindow(QMainWindow):
         self.scroll_area.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
-        self.scroll_widget.setContentsMargins(0, 0, 0, 0)
+        self.scroll_widget.setContentsMargins(0, 0, 10, 0)
         self.scroll_area.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
@@ -249,18 +250,6 @@ class MainWindow(QMainWindow):
         self.show_button.setFixedWidth(50)
         self.show_button.hide()
 
-        self.clear_button = CustomQPushButton("")
-        self.clear_button.clicked.connect(self.controller.clear)
-        self.clear_icon = QIcon(QIcon_from_svg(Icon.CLEAR.value))
-        self.clear_button.setIcon(self.clear_icon)
-        self.clear_button.setDisabled(True)
-
-        self.config_button = CustomQPushButton("")
-        self.config_button.clicked.connect(self.controller.config)
-        self.settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value))
-        self.config_button.setFixedWidth(50)
-        self.config_button.setIcon(self.settings_icon)
-
         self.logout_button = CustomQPushButton("Logout")
         self.logout_button.clicked.connect(self.controller.logout)
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
@@ -273,8 +262,6 @@ class MainWindow(QMainWindow):
         )
         self.button_layout.addWidget(self.close_button)
         self.button_layout.addWidget(self.show_button)
-        self.button_layout.addWidget(self.clear_button)
-        self.button_layout.addWidget(self.config_button)
         self.button_layout.addWidget(info_widget)
 
         self.main_layout.addLayout(self.button_layout)
@@ -288,7 +275,7 @@ class MainWindow(QMainWindow):
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 14px;"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
 
@@ -329,6 +316,7 @@ class MainWindow(QMainWindow):
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
+        
 
         self.send_layout.addWidget(self.send_button)
         self.main_layout.addLayout(self.send_layout)

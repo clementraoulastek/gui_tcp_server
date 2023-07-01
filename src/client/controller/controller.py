@@ -105,7 +105,7 @@ class Controller:
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
-                self.ui.info_label.setText(f"Users online - {nb_of_users}")
+                self.ui.info_label.setText(f"Users online | {nb_of_users}")
                 return
             elif header == Commands.HELLO_WORLD.value:
                 self._add_sender_pict(payload, user_disconnect)
@@ -123,9 +123,7 @@ class Controller:
                 user_disconnect[id_] = [coming_user[id_][0], False]
                 self.ui.users_pict.pop(id_)
                 return
-            elif (
-                header == Commands.ADD_REACT.value or header == Commands.RM_REACT.value
-            ):
+            elif header in [Commands.ADD_REACT.value, Commands.RM_REACT.value]:
                 payload = payload.split(":")[1].replace(" ", "")
                 payload_list = payload.split(";")
                 message_id, nb_reaction = payload_list[0], payload_list[1]
@@ -199,7 +197,7 @@ class Controller:
                 self.ui.user_offline.addLayout(user_layout)
                 user_disconnect[user] = [data[0], True]
         self.ui.info_disconnected_label.setText(
-            f"Users offline - {len(user_disconnect)}"
+            f"Users offline | {len(user_disconnect)}"
         )
 
     def read_messages(self):
@@ -251,8 +249,6 @@ class Controller:
             )
             self.ui.login_form.send_button.clicked.connect(self.send_login_form)
             self.ui.login_form.register_button.clicked.connect(self.send_register_form)
-
-        self.ui.clear_button.setDisabled(True)
 
     def send_login_form(self):
         """
@@ -361,7 +357,6 @@ class Controller:
         self.ui.users_connected[self.ui.client.user_name] = True
         if self.connect_to_server():
             self.ui.login_form = None
-            self.ui.clear_button.setDisabled(False)
             self.clear()
             self.get_user_icon(update_personal_avatar=update_avatar)
             self.ui.message_label.hide()
@@ -421,18 +416,6 @@ class Controller:
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
         self.login()
-
-    def config(self):
-        """
-        Display the config
-        """
-        config = (
-            f"Client host = {self.ui.client.host} Client port = {self.ui.client.port}"
-        )
-        comming_msg = {"id": "server", "message": config}
-        self.ui.scroll_layout.addLayout(
-            MessageLayout(self, comming_msg, content=ImageAvatar.SERVER.value)
-        )
 
     def update_buttons(self):
         if self.ui.client.is_connected:

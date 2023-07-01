@@ -23,7 +23,7 @@ scroll_bar_vertical_stylesheet = """
     }
     QScrollBar::sub-line:vertical {
         border: none;
-        background: transparent;
+        background: #2A2C2F;
         height: 20px;
         border-top-left-radius: 7px;
         border-top-right-radius: 7px;
@@ -31,9 +31,9 @@ scroll_bar_vertical_stylesheet = """
         subcontrol-origin: margin;
     }
     QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-        background: transparent;
+        background: #2A2C2F;
     }
     QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-        background: transparent;
+        background: #2A2C2F;
     }
 """
