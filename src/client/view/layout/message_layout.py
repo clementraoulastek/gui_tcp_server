@@ -26,7 +26,7 @@ class EnumReact(Enum):
 
 
 class MessageLayout(QHBoxLayout):
-    MAX_CHAR = 60
+    MAX_CHAR: int = 60
 
     def __init__(
         self,
@@ -50,7 +50,8 @@ class MessageLayout(QHBoxLayout):
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};border-radius: 30px"
+            f"color: {Color.LIGHT_GREY.value};\
+            border-radius: 15px;"
         )
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -79,19 +80,17 @@ class MessageLayout(QHBoxLayout):
         right_widget = Contener()
 
         right_widget.setStyleSheet(
-            "background-color: {background_color};".format(
-                background_color=Color.DARK_GREY.value
-            )
+            f"background-color: {Color.GREY.value};"
         )
         right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
 
-        # if reversed_:
-        #     main_layout.addWidget(right_widget)
-        #     main_layout.addWidget(left_widget)
-        # else:
-        main_layout.addWidget(left_widget)
-        main_layout.addWidget(right_widget)
+        if reversed_:
+            main_layout.addWidget(right_widget)
+            main_layout.addWidget(left_widget)
+        else:
+            main_layout.addWidget(left_widget)
+            main_layout.addWidget(right_widget)
 
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
@@ -109,20 +108,27 @@ class MessageLayout(QHBoxLayout):
 
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
-        sender_label = QLabel(sender)
+        sender_label = QLabel(sender.capitalize())
 
         def on_event_enter_user_label():
             sender_label.setStyleSheet(
-                f"font-weight: bold; color: {Color.WHITE.value};text-decoration: underline;"
+                f"font-weight: bold; color: {Color.WHITE.value};\
+                text-decoration: underline;"
             )
 
         def on_event_leave_user_label():
-            sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
+            sender_label.setStyleSheet(
+                f"font-weight: bold;\
+                color: {Color.WHITE.value}"
+            )
 
         sender_label.enterEvent = lambda event: on_event_enter_user_label()
         sender_label.leaveEvent = lambda event: on_event_leave_user_label()
 
-        sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
+        sender_label.setStyleSheet(
+            f"font-weight: bold;\
+            color: {Color.WHITE.value}"
+        )
 
         if message_id:
             self.react_buttton = CustomQPushButton(

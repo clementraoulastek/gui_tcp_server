@@ -16,7 +16,7 @@ from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class LoginLayout(QHBoxLayout):
-    def __init__(self, parent=None):
+    def __init__(self):
         super(LoginLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
@@ -25,7 +25,9 @@ class LoginLayout(QHBoxLayout):
         main_widget.setMinimumHeight(90)
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px"
+            f"background-color: {Color.DARK_GREY.value};\
+            color: {Color.LIGHT_GREY.value};\
+            border-radius: 30px"
         )
         layout = QVBoxLayout(main_widget)
         layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)

@@ -2,7 +2,7 @@ from threading import Thread
 import time
 from typing import List, Optional, Union
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal
-from src.client.view.layout.message_layout import EnumReact, MessageLayout
+from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
@@ -253,7 +253,7 @@ class GuiController:
                 user_layout.setObjectName(f"{username}_layout")
                 user_pic = RoundedLabel(content=content)
                 user_pic.setStyleSheet("border: 0px")
-                user_name = QLabel(username)
+                user_name = QLabel(username.capitalize())
                 user_name.setStyleSheet("border: 0px")
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
@@ -273,7 +273,7 @@ class GuiController:
                 user_layout.setObjectName(f"{username}_layout_disconnected")
                 user_pic = RoundedLabel(content=content, disabled=True)
                 user_pic.setStyleSheet("border: 0px")
-                user_name = QLabel(username)
+                user_name = QLabel(username.capitalize())
                 user_name.setStyleSheet("border: 0px")
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
@@ -318,9 +318,7 @@ class GuiController:
             self.ui.login_form = LoginLayout()
             self.ui.scroll_layout.addLayout(self.ui.login_form)
             self.ui.scroll_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-            self.ui.login_form.password_entry.returnPressed.connect(
-                self.login_form
-            )
+            self.ui.login_form.password_entry.returnPressed.connect(self.login_form)
             self.ui.login_form.send_button.clicked.connect(self.login_form)
             self.ui.login_form.register_button.clicked.connect(self.register_form)
 
@@ -375,7 +373,7 @@ class GuiController:
     def update_buttons(self):
         if self.ui.client.is_connected:
             self._set_buttons_status(True, False, "Enter your message")
-            self.ui.user_name.setText(self.ui.client.user_name)
+            self.ui.user_name.setText(self.ui.client.user_name.capitalize())
         else:
             self._set_buttons_status(False, True, "Please login")
             self.ui.user_name.setText("User disconnected")

@@ -1,17 +1,8 @@
-import logging
-from threading import Thread
-import time
-from typing import List, Optional, Union
 from src.client.controller.api_controller import ApiController
 from src.client.controller.gui_controller import GuiController
 from src.client.controller.tcp_controller import TcpServerController
-from src.client.view.layout.message_layout import EnumReact, MessageLayout
+from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
-from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
-from src.client.view.customWidget.CustomQLabel import RoundedLabel
-from src.client.view.layout.login_layout import LoginLayout
-from src.tools.utils import ImageAvatar
-
 
 class MainController:
     def __init__(self, ui) -> None:
