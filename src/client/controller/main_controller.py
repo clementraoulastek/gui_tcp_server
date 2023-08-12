@@ -4,6 +4,7 @@ from src.client.controller.tcp_controller import TcpServerController
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 
+
 class MainController:
     def __init__(self, ui) -> None:
         self.ui = ui

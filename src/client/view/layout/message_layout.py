@@ -48,9 +48,7 @@ class MessageLayout(QHBoxLayout):
 
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
-        main_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};"
-        )
+        main_widget.setStyleSheet(f"color: {Color.LIGHT_GREY.value};")
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -106,7 +104,7 @@ class MessageLayout(QHBoxLayout):
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         sender_label = QLabel(sender.capitalize())
         left_layout.addWidget(sender_label)
-        
+
         def on_event_enter_user_label():
             sender_label.setStyleSheet(
                 f"font-weight: bold; color: {Color.WHITE.value};\
@@ -168,7 +166,7 @@ class MessageLayout(QHBoxLayout):
             self.react_nb.setAlignment(Qt.AlignLeft)
             self.react_nb.setStyleSheet("font-weight: bold; border: 0px")
             self.react_nb.hide()
-            
+
             emot_layout.addWidget(self.react_emot)
             emot_layout.addWidget(self.react_nb)
 

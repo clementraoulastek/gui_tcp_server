@@ -30,7 +30,6 @@ class QtGui:
         self.app.setWindowIcon(QIcon(ImageAvatar.SERVER.value))
         self.app.setApplicationName(title)
         self.main_window.show()
-        self.main_window.controller.hide_left_layout()
 
     def run(self):
         sys.exit(self.app.exec())
@@ -39,7 +38,7 @@ class QtGui:
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
-
+        self.showMaximized()
         self.setWindowTitle(title)
 
         self.users_pict = {"server": ImageAvatar.SERVER.value}
@@ -65,58 +64,80 @@ class MainWindow(QMainWindow):
 
         self.set_header_gui()
         self.set_core_gui()
+        self.set_right_nav()
         self.set_footer_gui()
 
         self.controller.login()
 
     def set_header_gui(self):
+        header_widget = QWidget()
+        header_widget.setStyleSheet(
+            f"background-color: {Color.GREY.value};\
+            color: {Color.LIGHT_GREY.value};\
+            border-radius: 30px;\
+            border: 1px solid;\
+            border-color: {Color.MIDDLE_GREY.value}"
+        )
+        icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
+        icon_soft.setStyleSheet("font-weight: bold; border: none")
+        icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        name_server_label = QLabel("Robot Messenger")
+
+        name_server_label.setStyleSheet("font-weight: bold; border: none")
+        status_server_label = QLabel(f"version: {SOFT_VERSION}")
+        status_server_label.setStyleSheet("font-weight: bold; border: none")
+        header_layout = QVBoxLayout(header_widget)
+        header_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+
+        header_layout.addWidget(icon_soft)
+        header_layout.addWidget(status_server_label)
+
+        self.main_layout.addWidget(header_widget)
+
+    def set_right_nav(self):
         """
         Update the header GUI
         """
         # --- Background
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};\
+            f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 30px;\
             border: 1px solid;\
-            border-color: {Color.GREY.value}"
+            border-color: {Color.MIDDLE_GREY.value}"
         )
-        self.status_server_layout = QHBoxLayout(server_status_widget)
+        self.status_server_layout = QVBoxLayout(server_status_widget)
         self.status_server_layout.setSpacing(20)
-        self.status_server_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        self.status_server_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         # --- Server information
         self.server_info_widget = QWidget()
         self.server_name_widget = QWidget()
+
         self.server_name_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 30px;border: 0px"
-        )
-        self.server_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};\
-            color: {Color.LIGHT_GREY.value};\
-            border-radius: 30px;\
-            border: 0px"
+            border-radius: 15px;\
+            border: 1px"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
+        self.server_information_dashboard_layout.setAlignment(
+            Qt.AlignCenter | Qt.AlignTop
+        )
         self.server_name_layout = QHBoxLayout(self.server_name_widget)
 
-        icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
-        name_server_label = QLabel("Robot Messenger")
-        name_server_label.setStyleSheet("font-weight: bold")
-        status_server_label = QLabel(f"version: {SOFT_VERSION}")
+        name_server_label = QLabel("\tTo do\t")
+        name_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        name_server_label.setStyleSheet(
+            "font-weight: bold;\
+            border-radius: 12px;"
+        )
 
         # Adding widgets to the main layout
-        self.server_name_layout.addWidget(icon_soft)
         self.server_name_layout.addWidget(name_server_label)
-        self.server_information_dashboard_layout.addWidget(status_server_label)
-
         self.status_server_layout.addWidget(self.server_name_widget)
-        self.status_server_layout.addWidget(self.server_info_widget)
-
-        self.main_layout.addWidget(server_status_widget)
+        self.core_layout.addWidget(server_status_widget)
 
     def scrollToBottom(self):
         """
@@ -153,10 +174,10 @@ class MainWindow(QMainWindow):
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
         self.scroll_widget_avatar.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
+            background-color: {Color.GREY.value};\
             border-radius: 30px;\
             border: 1px solid;\
-            border-color: {Color.GREY.value}"
+            border-color: {Color.MIDDLE_GREY.value}"
         )
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
@@ -174,7 +195,7 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("Welcome")
-        self.message_label = QLabel("I'm Robom Please login & enjoy")
+        self.message_label = QLabel("Login session")
         self.message_label.setStyleSheet("border: 0px")
         self.message_label.setWordWrap(True)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)

@@ -13,6 +13,7 @@ from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
 from src.tools.utils import Color
 
+
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
 
@@ -332,7 +333,9 @@ class GuiController:
         elif status == False:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
         else:
-            self.ui.login_form.error_label.setText("Error: Username or password incorect")
+            self.ui.login_form.error_label.setText(
+                "Error: Username or password incorect"
+            )
 
     def register_form(self):
         if status := self.api_controller.send_login_form():
@@ -341,7 +344,9 @@ class GuiController:
         elif status == False:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
         else:
-            self.ui.login_form.error_label.setText("Error: Username or password incorect")
+            self.ui.login_form.error_label.setText(
+                "Error: Username or password incorect"
+            )
 
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
         self.ui.users_connected[self.ui.client.user_name] = True
@@ -379,7 +384,6 @@ class GuiController:
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
         self.login()
-        self.hide_left_layout()
 
     def update_buttons(self):
         if self.ui.client.is_connected:

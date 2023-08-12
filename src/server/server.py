@@ -16,9 +16,9 @@ class Server:
         self.sock.listen(conn_nb)
         self.conn_dict = {}
         Thread(target=self.launch).start()
-        
+
         self.hello_world(host, port)
-    
+
     def hello_world(self, hostname, port):
         logging.info(f"Server is running on hostname: {hostname}, port: {port}")
 
