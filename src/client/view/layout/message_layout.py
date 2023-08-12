@@ -1,7 +1,7 @@
 from enum import Enum, unique
 import logging
 import datetime
-from typing import List
+from typing import List, Optional
 from src.client.core.qt_core import (
     QHBoxLayout,
     QIcon,
@@ -11,7 +11,7 @@ from src.client.core.qt_core import (
     QWidget,
     QVBoxLayout,
     QFrame,
-    QSizePolicy
+    QSizePolicy,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -32,10 +32,10 @@ class MessageLayout(QHBoxLayout):
         self,
         controller,
         coming_msg: dict,
-        nb_react: int = 0,
-        content=None,
-        reversed_=False,
-        message_id=None,
+        nb_react: Optional[int] = 0,
+        content: Optional[None] = None,
+        reversed_: Optional[bool] = False,
+        message_id: Optional[None] = None,
     ):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
@@ -76,23 +76,22 @@ class MessageLayout(QHBoxLayout):
                     button = button_list[0]
                     button.hide()
 
-
         right_widget = Contener()
 
         right_widget.setStyleSheet(
             "background-color: {background_color};".format(
-                background_color=Color.GREY.value
+                background_color=Color.DARK_GREY.value
             )
         )
         right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
 
-        if reversed_:
-            main_layout.addWidget(right_widget)
-            main_layout.addWidget(left_widget)
-        else:
-            main_layout.addWidget(left_widget)
-            main_layout.addWidget(right_widget)
+        # if reversed_:
+        #     main_layout.addWidget(right_widget)
+        #     main_layout.addWidget(left_widget)
+        # else:
+        main_layout.addWidget(left_widget)
+        main_layout.addWidget(right_widget)
 
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
@@ -111,15 +110,18 @@ class MessageLayout(QHBoxLayout):
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         sender_label = QLabel(sender)
-        
+
         def on_event_enter_user_label():
-            sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value};text-decoration: underline;")
+            sender_label.setStyleSheet(
+                f"font-weight: bold; color: {Color.WHITE.value};text-decoration: underline;"
+            )
+
         def on_event_leave_user_label():
             sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
-            
-        sender_label.enterEvent = lambda event : on_event_enter_user_label()
-        sender_label.leaveEvent = lambda event : on_event_leave_user_label()
-    
+
+        sender_label.enterEvent = lambda event: on_event_enter_user_label()
+        sender_label.leaveEvent = lambda event: on_event_leave_user_label()
+
         sender_label.setStyleSheet(f"font-weight: bold; color: {Color.WHITE.value}")
 
         if message_id:
@@ -143,7 +145,10 @@ class MessageLayout(QHBoxLayout):
             emot_layout.setContentsMargins(0, 0, 0, 0)
 
             self.react_emot = RoundedLabel(
-                content=Icon.SMILEY.value, height=15, width=15, color=Color.LIGHT_GREY.value
+                content=Icon.SMILEY.value,
+                height=15,
+                width=15,
+                color=Color.LIGHT_GREY.value,
             )
             self.react_emot.hide()
             sp_retain = self.react_emot.sizePolicy()
@@ -161,14 +166,14 @@ class MessageLayout(QHBoxLayout):
 
         date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
         date_label = QLabel(date_time)
-        
+
         separator = QFrame()
         separator.setStyleSheet(f"background-color: {Color.LIGHT_GREY.value};")
         separator.setFrameShape(QFrame.VLine)
         separator.setFrameShadow(QFrame.Sunken)
         separator.setFixedWidth(1)
         separator.setFixedHeight(12)
-        
+
         sender_layout.addWidget(sender_label)
         sender_layout.addWidget(separator)
         sender_layout.addWidget(date_label)
@@ -192,14 +197,14 @@ class MessageLayout(QHBoxLayout):
             self.nb_react -= 1
             self.is_reacted = False
             self.react_buttton.setText(" Add react")
-            self.controller.send_emot_react(
+            self.controller.api_controller.send_emot_react(
                 Commands.RM_REACT, self.message_id, self.nb_react
             )
         else:
             self.nb_react += 1
             self.is_reacted = True
             self.react_buttton.setText(" Remove react")
-            self.controller.send_emot_react(
+            self.controller.api_controller.send_emot_react(
                 Commands.ADD_REACT, self.message_id, self.nb_react
             )
 

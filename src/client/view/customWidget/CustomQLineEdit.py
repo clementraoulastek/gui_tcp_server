@@ -33,8 +33,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         context_color=Color.MIDDLE_GREY.value,
     ):
         super().__init__()
-        
-        
 
         if text:
             self.setText(text)

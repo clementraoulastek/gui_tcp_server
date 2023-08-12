@@ -1,0 +1,390 @@
+from threading import Thread
+import time
+from typing import List, Optional, Union
+from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal
+from src.client.view.layout.message_layout import EnumReact, MessageLayout
+from src.tools.commands import Commands
+from src.client.view.layout.login_layout import LoginLayout
+from src.client.view.customWidget.CustomQLabel import RoundedLabel
+from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
+from src.tools.utils import ImageAvatar
+from src.client.controller.api_controller import ApiController
+from src.client.controller.tcp_controller import TcpServerController
+import src.client.controller.global_variables as global_variables
+
+
+class Worker(QThread):
+    """Tricks to update the GUI with deamon thread
+
+    Args:
+        QThread (QThread): Thread
+    """
+
+    signal = Signal()
+
+    def __init__(self, polling_interval: Optional[int] = 0.01):
+        super(Worker, self).__init__()
+        self._is_running = True
+        self.polling_interval = polling_interval
+
+    def run(self):
+        if not self._is_running:
+            self._is_running = True
+
+        while self._is_running:
+            self.signal.emit()
+            time.sleep(self.polling_interval)
+
+    def stop(self):
+        self.terminate()
+        self.exit()
+        self._is_running = False
+
+
+class GuiController:
+    def __init__(
+        self,
+        ui,
+        messages_dict: dict[str, MessageLayout],
+        last_message_id: int,
+        api_controller: ApiController,
+        tcp_controller: TcpServerController,
+    ) -> None:
+        self.ui = ui
+        self.messages_dict = messages_dict
+        self.last_message_id = last_message_id
+        self.api_controller = api_controller
+        self.tcp_controller = tcp_controller
+
+    def __init_working_signals(self):
+        # Worker for incoming messages
+        self.read_worker = Worker()
+        self.read_worker.signal.connect(self.__diplay_coming_message_on_gui)
+        self.read_worker.start()
+
+        # Worker for incoming avatar
+        self.read_avatar_worker = Worker()
+        self.read_avatar_worker.signal.connect(self.__update_gui_with_connected_avatar)
+        self.read_avatar_worker.start()
+
+        # Worker for outdated avatar
+        self.read_outdated_avatar_worker = Worker()
+        self.read_outdated_avatar_worker.signal.connect(
+            self.__update_gui_with_disconnected_avatar
+        )
+        self.read_outdated_avatar_worker.start()
+
+        self.worker_thread = Thread(
+            target=self.__callback_routing_messages_on_ui, daemon=True
+        )
+        self.worker_thread.start()
+
+        self.update_buttons()
+
+    def diplay_self_message_on_gui(
+        self,
+        id_sender: str,
+        message: str,
+        messsage_id: Union[int, None] = None,
+        nb_react: int = 0,
+    ) -> None:
+        """
+            Display message on gui and clear the message entry
+        Args:
+            id_sender (str): id from the sender
+            message (str): message to display
+        """
+        comming_msg: dict[str, str] = {"id": id_sender, "message": message}
+        if messsage_id:
+            self.last_message_id = messsage_id
+        else:
+            self.last_message_id += 1
+
+        message = MessageLayout(
+            self,
+            comming_msg,
+            content=self.ui.users_pict[id_sender],
+            reversed_=self.ui.client.user_name == id_sender,
+            message_id=self.last_message_id,
+            nb_react=nb_react,
+        )
+        self.ui.scroll_widget.layout().addLayout(message)
+
+        self.messages_dict[self.last_message_id] = message
+        self.ui.entry.clear()
+
+    def display_older_messages(self):
+        """
+        Create backend request to get older users messages
+        """
+        sender_list: list = []
+        messages_dict = self.api_controller.get_older_messages()
+        for message in messages_dict:
+            message_id, sender, message, reaction_nb = (
+                message["message_id"],
+                message["sender"],
+                message["message"],
+                message["reaction_nb"],
+            )
+            if sender not in sender_list:
+                sender_list.append(sender)
+            self.api_controller.add_sender_picture(sender)
+            self.diplay_self_message_on_gui(
+                sender, message, messsage_id=message_id, nb_react=int(reaction_nb)
+            )
+        # Reset dict to handle new avatar images from conn
+        if self.ui.client.user_name in sender_list:
+            sender_list.remove(self.ui.client.user_name)
+        for sender in sender_list:
+            self.ui.users_pict.pop(sender)
+
+    def __diplay_coming_message_on_gui(self):
+        """
+        Callback to update gui with input messages
+        """
+        if global_variables.comming_msg["message"]:
+            if global_variables.comming_msg["id"] != "server":
+                self.last_message_id += 1
+            message = MessageLayout(
+                self,
+                global_variables.comming_msg,
+                content=self.ui.users_pict[global_variables.comming_msg["id"]],
+                message_id=self.last_message_id
+                if global_variables.comming_msg["id"] != "server"
+                else None,
+            )
+            if global_variables.comming_msg["id"] != "server":
+                self.messages_dict[self.last_message_id] = message
+            self.ui.scroll_layout.addLayout(message)
+            (
+                global_variables.comming_msg["id"],
+                global_variables.comming_msg["message"],
+            ) = ("", "")
+
+    def __callback_routing_messages_on_ui(self):
+        """
+        Read messages comming from server
+        """
+        waiting_time = 0.1
+        while self.ui.client.is_connected:
+            header, payload = self.ui.client.read_data()
+            if payload:
+                self.__routing_coming_messages(header, payload)
+            time.sleep(waiting_time)
+
+    def __routing_coming_messages(self, header: int, payload: str) -> None:
+        """
+            Display message on gui and clear the entry
+        Args:
+            message (str): message to display
+        """
+        if ":" in payload:
+            if header == Commands.CONN_NB.value:
+                nb_of_users = payload.split(":")[1]
+                self.ui.info_label.setText(f"Users online | {nb_of_users}")
+            elif header == Commands.HELLO_WORLD.value:
+                self.__add_sender_avatar(payload, global_variables.user_disconnect)
+                # Return welcome to hello world
+                self.ui.client.send_data(Commands.WELCOME, "")
+            elif header == Commands.WELCOME.value:
+                self.__add_sender_avatar(payload, global_variables.user_disconnect)
+            elif header == Commands.GOOD_BYE.value:
+                self.__remove_sender_avatar(
+                    payload,
+                    global_variables.coming_user,
+                    global_variables.user_disconnect,
+                )
+            elif header in [Commands.ADD_REACT.value, Commands.RM_REACT.value]:
+                payload = payload.split(":")[1].replace(" ", "")
+                payload_list = payload.split(";")
+                message_id, nb_reaction = payload_list[0], payload_list[1]
+                message: MessageLayout = self.messages_dict[int(message_id)]
+                message.update_react(int(nb_reaction))
+            else:
+                (
+                    global_variables.comming_msg["id"],
+                    global_variables.comming_msg["message"],
+                ) = payload.split(":", 1)
+        else:
+            (
+                global_variables.comming_msg["id"],
+                global_variables.comming_msg["message"],
+            ) = ("unknown", payload)
+
+    def __remove_sender_avatar(
+        self,
+        payload: str,
+        coming_user: dict[str, List[Union[str, bool]]],
+        user_disconnect: dict[str, List[Union[str, bool]]],
+    ) -> None:
+        id_, _ = payload.split(":", 1)
+        self.ui.users_connected[id_] = False
+        self.clear_avatar("user_inline", f"{id_}_layout")
+        self.api_controller.add_sender_picture(id_)
+        user_disconnect[id_] = [coming_user[id_][0], False]
+        self.ui.users_pict.pop(id_)
+
+    def __add_sender_avatar(
+        self, payload: str, user_disconnect: dict[str, List[Union[str, bool]]]
+    ) -> None:
+        id_, _ = payload.split(":", 1)
+        self.ui.users_connected[id_] = True
+        if id_ in user_disconnect:
+            self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
+            user_disconnect.pop(id_)
+        self.api_controller.add_sender_picture(id_)
+
+    def update_user_icon(self):
+        username = self.ui.client.user_name
+        if self.ui.backend.send_user_icon(username, None):
+            self.clear_avatar("user_inline", f"{username}_layout")
+            self.api_controller.get_user_icon(update_personal_avatar=True)
+
+    def __update_gui_with_connected_avatar(self):
+        """
+        Callback to update gui with input avatar
+        """
+        for user, data in global_variables.coming_user.items():
+            if data[1] == False:
+                user_layout = QHBoxLayout()
+                user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                username = user
+                content = data[0]
+                user_layout.setObjectName(f"{username}_layout")
+                user_pic = RoundedLabel(content=content)
+                user_pic.setStyleSheet("border: 0px")
+                user_name = QLabel(username)
+                user_name.setStyleSheet("border: 0px")
+                user_layout.addWidget(user_pic)
+                user_layout.addWidget(user_name)
+                self.ui.user_inline.addLayout(user_layout)
+                global_variables.coming_user[user] = [data[0], True]
+
+    def __update_gui_with_disconnected_avatar(self):
+        """
+        Callback to update gui with input avatar
+        """
+        for user, data in global_variables.user_disconnect.items():
+            if data[1] == False:
+                user_layout = QHBoxLayout()
+                user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                username = user
+                content = data[0]
+                user_layout.setObjectName(f"{username}_layout_disconnected")
+                user_pic = RoundedLabel(content=content, disabled=True)
+                user_pic.setStyleSheet("border: 0px")
+                user_name = QLabel(username)
+                user_name.setStyleSheet("border: 0px")
+                user_layout.addWidget(user_pic)
+                user_layout.addWidget(user_name)
+                self.ui.user_offline.addLayout(user_layout)
+                global_variables.user_disconnect[user] = [data[0], True]
+        self.ui.info_disconnected_label.setText(
+            f"Users offline | {len(global_variables.user_disconnect)}"
+        )
+
+    def clear(self):
+        """
+        Clear the entry
+        """
+        for i in reversed(range(self.ui.scroll_layout.count())):
+            layout = self.ui.scroll_layout.itemAt(i).layout()
+            for j in reversed(range(layout.count())):
+                layout.itemAt(j).widget().deleteLater()
+        self.ui.scroll_layout.update()
+
+    def clear_avatar(self, parent_layout, layout_name: Union[QHBoxLayout, None] = None):
+        """
+        Clear avatars
+        """
+        for i in reversed(range(getattr(self.ui, parent_layout).count())):
+            if layout := getattr(self.ui, parent_layout).itemAt(i).layout():
+                if (
+                    layout_name
+                    and layout_name == layout.objectName()
+                    or not layout_name
+                ):
+                    for j in reversed(range(layout.count())):
+                        layout.itemAt(j).widget().deleteLater()
+
+        getattr(self.ui, parent_layout).update()  # ? wtf
+
+    def login(self) -> None:
+        """
+        Display the login form
+        """
+        self.clear()
+        if not hasattr(self.ui, "login_form") or not self.ui.login_form:
+            self.ui.login_form = LoginLayout()
+            self.ui.scroll_layout.addLayout(self.ui.login_form)
+            self.ui.scroll_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+            self.ui.login_form.password_entry.returnPressed.connect(
+                self.login_form
+            )
+            self.ui.login_form.send_button.clicked.connect(self.login_form)
+            self.ui.login_form.register_button.clicked.connect(self.register_form)
+
+    def login_form(self):
+        if self.api_controller.send_login_form():
+            self._clean_gui_and_connect(update_avatar=True)
+            self.show_left_layout()
+
+    def register_form(self):
+        if self.api_controller.send_register_form():
+            self._clean_gui_and_connect(update_avatar=True)
+            self.show_left_layout()
+
+    def _clean_gui_and_connect(self, update_avatar: bool) -> None:
+        self.ui.users_connected[self.ui.client.user_name] = True
+        if self.tcp_controller.is_connected_to_server():
+            self.__init_working_signals()
+            self.ui.login_form = None
+            self.clear()
+            self.api_controller.get_user_icon(update_personal_avatar=update_avatar)
+            self.ui.message_label.hide()
+            self.ui.info_disconnected_label.show()
+            self.display_older_messages()
+
+    def hide_left_layout(self):
+        self.ui.scroll_area_avatar.hide()
+        self.ui.close_button.hide()
+        self.ui.show_button.show()
+
+    def show_left_layout(self):
+        self.ui.scroll_area_avatar.show()
+        self.ui.show_button.hide()
+        self.ui.close_button.show()
+
+    def logout(self) -> None:
+        """
+        Disconnect the client
+        """
+        self.ui.client.close_connection()
+        self.update_buttons()
+        self.clear_avatar("user_inline")
+        global_variables.coming_user.clear()
+        global_variables.user_disconnect.clear()
+        self.clear_avatar("user_offline")
+        self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.ui.users_connected.clear()
+        self.ui.message_label.show()
+        self.ui.info_disconnected_label.hide()
+        self.login()
+        self.hide_left_layout()
+
+    def update_buttons(self):
+        if self.ui.client.is_connected:
+            self._set_buttons_status(True, False, "Enter your message")
+            self.ui.user_name.setText(self.ui.client.user_name)
+        else:
+            self._set_buttons_status(False, True, "Please login")
+            self.ui.user_name.setText("User disconnected")
+            self.ui.info_label.setText("Welcome")
+            self.ui.user_picture.update_picture(content="")
+
+    def _set_buttons_status(self, arg0, arg1, lock_message):
+        self.ui.custom_user_button.setDisabled(arg1)
+        self.ui.logout_button.setDisabled(arg1)
+        self.ui.send_button.setDisabled(arg1)
+        self.ui.entry.setDisabled(arg1)
+        self.ui.entry.setPlaceholderText(lock_message)

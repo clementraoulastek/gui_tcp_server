@@ -4,7 +4,7 @@ import time
 from threading import Thread
 from typing import Union
 from src.client.client import Client
-from src.client.controller.controller import Controller
+from src.client.controller.main_controller import MainController
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
@@ -24,7 +24,8 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QWidget,
     Signal,
-    QToolButton
+    QToolButton,
+    QSizePolicy,
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
@@ -39,6 +40,7 @@ class QtGui:
         self.app.setWindowIcon(QIcon(ImageAvatar.SERVER.value))
         self.app.setApplicationName(title)
         self.main_window.show()
+        self.main_window.controller.hide_left_layout()
 
     def run(self):
         sys.exit(self.app.exec())
@@ -54,8 +56,8 @@ class MainWindow(QMainWindow):
         self.users_pict = {"server": ImageAvatar.SERVER.value}
         self.users_connected = {}
 
-        # Create Controller
-        self.controller = Controller(self)
+        # Create MainController
+        self.controller = MainController(self)
 
         # Create Client socket
         self.client = Client(IP_SERVER, PORT_NB, "Default")
@@ -91,7 +93,7 @@ class MainWindow(QMainWindow):
         # --- Background
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;border: 1px solid;border-color: {Color.GREY.value}"
         )
         self.status_server_layout = QHBoxLayout(server_status_widget)
         self.status_server_layout.setSpacing(20)
@@ -101,16 +103,17 @@ class MainWindow(QMainWindow):
         self.server_info_widget = QWidget()
         self.server_name_widget = QWidget()
         self.server_name_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;font-weight: bold"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;border: 0px"
         )
         self.server_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;font-weight: bold"
+            f"background-color: {Color.DARK_GREY.value};color: {Color.LIGHT_GREY.value};border-radius: 30px;border: 0px"
         )
         self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
         self.server_name_layout = QHBoxLayout(self.server_name_widget)
 
         icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
         name_server_label = QLabel("Robot Messenger")
+        name_server_label.setStyleSheet("font-weight: bold")
         status_server_label = QLabel(f"version: {SOFT_VERSION}")
 
         # Adding widgets to the main layout
@@ -147,15 +150,17 @@ class MainWindow(QMainWindow):
         self.user_offline = QVBoxLayout()
         self.user_offline.setSpacing(10)
 
-        # self.user_inline_layout.setSpacing(10)
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4)
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 15)
 
         self.scroll_widget_avatar = QWidget()
+        self.scroll_widget_avatar.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
         self.scroll_widget_avatar.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.GREY.value};border-radius: 30px;"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 30px;border: 1px solid;border-color: {Color.GREY.value}"
         )
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
@@ -164,7 +169,7 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setStyleSheet(
             "background-color: transparent;color: white"
         )
-        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
 
@@ -173,11 +178,12 @@ class MainWindow(QMainWindow):
 
         self.info_label = QLabel("Welcome")
         self.message_label = QLabel("I'm Robom Please login & enjoy")
+        self.message_label.setStyleSheet("border: 0px")
         self.message_label.setWordWrap(True)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 12px"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 12px;border: 0px"
         )
         self.user_inline.addWidget(self.info_label)
         self.user_inline.addWidget(self.message_label)
@@ -188,7 +194,7 @@ class MainWindow(QMainWindow):
         self.info_disconnected_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
         self.info_disconnected_label.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 12px"
+            f"font-weight: bold; color: {Color.LIGHT_GREY.value};background-color: {Color.DARK_GREY.value};border-radius: 12px;border: 0px"
         )
         self.user_offline.addWidget(self.info_disconnected_label)
         self.user_inline_layout.addLayout(self.user_offline)
@@ -306,17 +312,16 @@ class MainWindow(QMainWindow):
         self.client_information_dashboard_layout.addWidget(self.user_widget)
 
         self.entry = CustomQLineEdit(place_holder_text="Please login")
-        self.entry.returnPressed.connect(self.controller.send_messages)
+        self.entry.returnPressed.connect(self.controller.send_message_to_server)
         self.entry.setDisabled(True)
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
         self.send_button = CustomQPushButton("")
-        self.send_button.clicked.connect(self.controller.send_messages)
+        self.send_button.clicked.connect(self.controller.send_message_to_server)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
-        
 
         self.send_layout.addWidget(self.send_button)
         self.main_layout.addLayout(self.send_layout)
