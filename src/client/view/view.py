@@ -19,7 +19,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
 )
 from src.tools.backend import Backend
-from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_NB, SOFT_VERSION
+from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
 
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.users_connected = {}
 
         self.controller = MainController(self)
-        self.client = Client(IP_SERVER, PORT_NB, "Default")
+        self.client = Client(IP_SERVER, PORT_SERVER, "Default")
         self.backend = Backend(IP_API, PORT_API, self)
 
         # GUI settings
@@ -73,7 +73,6 @@ class MainWindow(QMainWindow):
         """
         Update the header GUI
         """
-
         # --- Background
         server_status_widget = QWidget()
         server_status_widget.setStyleSheet(
@@ -264,7 +263,7 @@ class MainWindow(QMainWindow):
         self.show_button.setFixedWidth(50)
         self.show_button.hide()
 
-        self.logout_button = CustomQPushButton("Logout")
+        self.logout_button = CustomQPushButton(" Logout")
         self.logout_button.clicked.connect(self.controller.logout)
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
         self.logout_button.setIcon(self.logout_icon)
@@ -272,7 +271,8 @@ class MainWindow(QMainWindow):
 
         info_widget = QWidget()
         info_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};border-radius: 14px"
+            f"background-color: {Color.GREY.value};\
+            border-radius: 14px"
         )
         self.button_layout.addWidget(self.close_button)
         self.button_layout.addWidget(self.show_button)
@@ -297,7 +297,7 @@ class MainWindow(QMainWindow):
 
         self.user_widget = QWidget()
         self.user_widget.setStyleSheet(
-            f"border: 1px solid;\
+            f"border: 0px solid;\
             border-color: {Color.GREY.value}"
         )
         self.custom_user_button = CustomQPushButton("")

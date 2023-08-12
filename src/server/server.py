@@ -10,14 +10,17 @@ from src.tools.constant import IP_API, PORT_API
 
 class Server:
     def __init__(self, host: str, port: int, conn_nb: int = 2):
-        # create a TCP/IP socket
         self.backend = Backend(IP_API, PORT_API)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((host, port))
         self.sock.listen(conn_nb)
         self.conn_dict = {}
-
         Thread(target=self.launch).start()
+        
+        self.hello_world(host, port)
+    
+    def hello_world(self, hostname, port):
+        logging.info(f"Server is running on hostname: {hostname}, port: {port}")
 
     def launch(self):
         """
@@ -119,16 +122,16 @@ class Server:
             payload_list = payload.split(":")
             sender, message = payload_list[0], payload_list[1]
             self.backend.send_message(sender, message)
-        elif (
-            Commands(header) == Commands.ADD_REACT
-            or Commands(header) == Commands.RM_REACT
-        ):
-            payload_list = payload.split(":")
-            sender, message = payload_list[0], payload_list[1]
-            message_list = message.split(";")
-            message_id, reaction_nb = message_list[0], message_list[1]
-            logging.info(message)
-            self.backend.update_reaction_nb(message_id, reaction_nb)
+        elif Commands(header) in [Commands.ADD_REACT, Commands.RM_REACT]:
+            self._update_reaction(payload)
+
+    def _update_reaction(self, payload):
+        payload_list = payload.split(":")
+        sender, message = payload_list[0], payload_list[1]
+        message_list = message.split(";")
+        message_id, reaction_nb = message_list[0], message_list[1]
+        logging.info(message)
+        self.backend.update_reaction_nb(message_id, reaction_nb)
 
     def handle_new_connection(self, addr, conn):
         self.conn_dict[addr] = conn

@@ -10,11 +10,12 @@ def setup_logger(logger_name):
     )
     # Update the log file
     file_handler = logging.FileHandler(os.path.join(os.getcwd(), logger_name))
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    _set_formatter(file_handler, formatter, logger)
     # Update the console
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    _set_formatter(console_handler, formatter, logger)
+
+def _set_formatter(handler, formatter, logger):
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)

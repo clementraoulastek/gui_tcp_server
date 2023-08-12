@@ -1,4 +1,4 @@
-PORT_NB = 9999
+PORT_SERVER = 9999
 IP_SERVER = "localhost"
 IP_API = "localhost"
 PORT_API = 8000

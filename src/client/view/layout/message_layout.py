@@ -1,7 +1,6 @@
 from enum import Enum, unique
-import logging
 import datetime
-from typing import List, Optional
+from typing import Optional
 from src.client.core.qt_core import (
     QHBoxLayout,
     QIcon,
@@ -50,8 +49,7 @@ class MessageLayout(QHBoxLayout):
         main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
-            border-radius: 15px;"
+            f"color: {Color.LIGHT_GREY.value};"
         )
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -59,7 +57,7 @@ class MessageLayout(QHBoxLayout):
         left_widget = QWidget()
         left_widget.setMaximumWidth(80)
         left_widget.setMinimumWidth(80)
-        left_layout = QHBoxLayout()
+        left_layout = QVBoxLayout()
         left_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         left_widget.setLayout(left_layout)
 
@@ -80,17 +78,15 @@ class MessageLayout(QHBoxLayout):
         right_widget = Contener()
 
         right_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};"
+            f"background-color: {Color.GREY.value};\
+            border-radius: 15px;\
+            border: 1px solid {Color.MIDDLE_GREY.value}; "
         )
         right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
 
-        if reversed_:
-            main_layout.addWidget(right_widget)
-            main_layout.addWidget(left_widget)
-        else:
-            main_layout.addWidget(left_widget)
-            main_layout.addWidget(right_widget)
+        main_layout.addWidget(left_widget)
+        main_layout.addWidget(right_widget)
 
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
@@ -109,17 +105,20 @@ class MessageLayout(QHBoxLayout):
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         sender_label = QLabel(sender.capitalize())
-
+        left_layout.addWidget(sender_label)
+        
         def on_event_enter_user_label():
             sender_label.setStyleSheet(
                 f"font-weight: bold; color: {Color.WHITE.value};\
-                text-decoration: underline;"
+                text-decoration: underline;\
+                border: 0px"
             )
 
         def on_event_leave_user_label():
             sender_label.setStyleSheet(
                 f"font-weight: bold;\
-                color: {Color.WHITE.value}"
+                color: {Color.WHITE.value};\
+                border: 0px"
             )
 
         sender_label.enterEvent = lambda event: on_event_enter_user_label()
@@ -145,6 +144,7 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.hide()
 
             emot_widget = QWidget()
+            emot_widget.setStyleSheet("border: 0px;")
             emot_widget.setFixedWidth(50)
             emot_layout = QHBoxLayout(emot_widget)
             emot_layout.setSpacing(0)
@@ -163,15 +163,18 @@ class MessageLayout(QHBoxLayout):
 
             self.react_emot.setStyleSheet("border: 0px")
             self.react_nb = QLabel("1")
-            self.react_nb.hide()
+
             self.react_emot.setAlignment(Qt.AlignLeft)
             self.react_nb.setAlignment(Qt.AlignLeft)
             self.react_nb.setStyleSheet("font-weight: bold; border: 0px")
+            self.react_nb.hide()
+            
             emot_layout.addWidget(self.react_emot)
             emot_layout.addWidget(self.react_nb)
 
         date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
         date_label = QLabel(date_time)
+        date_label.setStyleSheet("border: 0px")
 
         separator = QFrame()
         separator.setStyleSheet(f"background-color: {Color.LIGHT_GREY.value};")
@@ -180,14 +183,13 @@ class MessageLayout(QHBoxLayout):
         separator.setFixedWidth(1)
         separator.setFixedHeight(12)
 
-        sender_layout.addWidget(sender_label)
-        sender_layout.addWidget(separator)
         sender_layout.addWidget(date_label)
 
         if message_id:
             sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
+        message_label.setStyleSheet("border: 0px")
         message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         message_label.setWordWrap(True)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)

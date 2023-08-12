@@ -11,7 +11,7 @@ from src.tools.utils import ImageAvatar
 from src.client.controller.api_controller import ApiController
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
-
+from src.tools.utils import Color
 
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
@@ -252,9 +252,12 @@ class GuiController:
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout")
                 user_pic = RoundedLabel(content=content)
-                user_pic.setStyleSheet("border: 0px")
+                user_pic.setStyleSheet("border: 0px;")
                 user_name = QLabel(username.capitalize())
-                user_name.setStyleSheet("border: 0px")
+                user_name.setStyleSheet(
+                    f"border: 0px;\
+                    color: {Color.WHITE.value};"
+                )
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
                 self.ui.user_inline.addLayout(user_layout)
@@ -323,14 +326,22 @@ class GuiController:
             self.ui.login_form.register_button.clicked.connect(self.register_form)
 
     def login_form(self):
-        if self.api_controller.send_login_form():
+        if status := self.api_controller.send_login_form():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
+        elif status == False:
+            self.ui.login_form.error_label.setText("Error: Empty username or password")
+        else:
+            self.ui.login_form.error_label.setText("Error: Username or password incorect")
 
     def register_form(self):
-        if self.api_controller.send_register_form():
+        if status := self.api_controller.send_login_form():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
+        elif status == False:
+            self.ui.login_form.error_label.setText("Error: Empty username or password")
+        else:
+            self.ui.login_form.error_label.setText("Error: Username or password incorect")
 
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
         self.ui.users_connected[self.ui.client.user_name] = True
