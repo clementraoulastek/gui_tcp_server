@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
 
         # GUI settings
         self.setup_gui()
-
+    
     def setup_gui(self):
         """
         Add elements to the main window
@@ -78,20 +78,37 @@ class MainWindow(QMainWindow):
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value}"
         )
+        
+        logo_layout = QVBoxLayout()
+        logo_widget = QWidget()
+        logo_widget.setStyleSheet("border: none")
+        logo_widget.setLayout(logo_layout)
+        logo_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
-        icon_soft.setStyleSheet("font-weight: bold; border: none")
+        icon_soft.setStyleSheet(
+            "font-weight: bold;\
+            border: none"
+        )
         icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        name_server_label = QLabel("Robot Messenger")
-
-        name_server_label.setStyleSheet("font-weight: bold; border: none")
+        
         status_server_label = QLabel(f"version: {SOFT_VERSION}")
-        status_server_label.setStyleSheet("font-weight: bold; border: none")
-        header_layout = QVBoxLayout(header_widget)
-        header_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+        status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        status_server_label.setStyleSheet(
+            "font-weight: bold;\
+            border: none"
+        )
+        header_layout = QHBoxLayout(header_widget)
 
-        header_layout.addWidget(icon_soft)
-        header_layout.addWidget(status_server_label)
-
+        self.set_buttons_nav_gui(header_layout)
+        
+        logo_layout.addWidget(icon_soft)
+        logo_layout.addWidget(status_server_label)
+        
+        header_layout.addWidget(logo_widget)
+    
+        header_layout.addWidget(self.show_right_nav_button)
+        header_layout.addWidget(self.close_right_nav_button)
+        
         self.main_layout.addWidget(header_widget)
 
     def set_right_nav(self):
@@ -99,45 +116,40 @@ class MainWindow(QMainWindow):
         Update the header GUI
         """
         # --- Background
-        server_status_widget = QWidget()
-        server_status_widget.setStyleSheet(
+        self.right_nav_widget = QWidget()
+        self.right_nav_widget.setMinimumWidth(self.scroll_widget_avatar.width())
+        self.right_nav_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 30px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value}"
         )
-        self.status_server_layout = QVBoxLayout(server_status_widget)
-        self.status_server_layout.setSpacing(20)
+        self.status_server_layout = QVBoxLayout(self.right_nav_widget)
+        self.status_server_layout.setSpacing(10)
         self.status_server_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
-        # --- Server information
-        self.server_info_widget = QWidget()
-        self.server_name_widget = QWidget()
-
-        self.server_name_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};\
+        top_label = QLabel("Room")
+        top_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        top_label.setContentsMargins(15, 5, 15, 5)
+        top_label.setStyleSheet(
+            f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 15px;\
-            border: 1px"
+            background-color: {Color.DARK_GREY.value};\
+            border-radius: 12px;\
+            border: 0px"
         )
-        self.server_information_dashboard_layout = QHBoxLayout(self.server_info_widget)
-        self.server_information_dashboard_layout.setAlignment(
-            Qt.AlignCenter | Qt.AlignTop
-        )
-        self.server_name_layout = QHBoxLayout(self.server_name_widget)
-
-        name_server_label = QLabel("\tTo do\t")
-        name_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        name_server_label.setStyleSheet(
+        room_label = QLabel("🏠 Home")
+        room_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        room_label.setStyleSheet(
             "font-weight: bold;\
-            border-radius: 12px;"
+            border: none;"
         )
 
         # Adding widgets to the main layout
-        self.server_name_layout.addWidget(name_server_label)
-        self.status_server_layout.addWidget(self.server_name_widget)
-        self.core_layout.addWidget(server_status_widget)
+        self.status_server_layout.addWidget(top_label)
+        self.status_server_layout.addWidget(room_label)
+        self.core_layout.addWidget(self.right_nav_widget)
 
     def scrollToBottom(self):
         """
@@ -265,25 +277,6 @@ class MainWindow(QMainWindow):
         """
         Update the footer GUI
         """
-        self.button_layout = QHBoxLayout()
-        self.button_layout.setContentsMargins(5, 0, 0, 0)
-        self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        self.button_layout.setObjectName("button layout")
-        self.button_layout.setSpacing(5)
-
-        self.close_button = CustomQPushButton("")
-        self.close_button.clicked.connect(self.controller.hide_left_layout)
-        self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
-        self.close_button.setIcon(self.close_icon)
-        self.close_button.setFixedWidth(50)
-
-        self.show_button = CustomQPushButton("")
-        self.show_button.clicked.connect(self.controller.show_left_layout)
-        self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
-        self.show_button.setIcon(self.show_icon)
-        self.show_button.setFixedWidth(50)
-        self.show_button.hide()
-
         self.logout_button = CustomQPushButton(" Logout")
         self.logout_button.clicked.connect(self.controller.logout)
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
@@ -295,14 +288,15 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.GREY.value};\
             border-radius: 14px"
         )
-        self.button_layout.addWidget(self.close_button)
-        self.button_layout.addWidget(self.show_button)
         self.button_layout.addWidget(info_widget)
 
         self.main_layout.addLayout(self.button_layout)
-
+        self.send_widget = QWidget()
+        
         self.send_layout = QHBoxLayout()
+        self.send_widget.setLayout(self.send_layout)
         self.send_layout.setObjectName("send layout")
+        self.send_layout.setContentsMargins(0, 0, 0, 0)
         self.send_layout.setSpacing(5)
 
         # --- Client information
@@ -310,16 +304,17 @@ class MainWindow(QMainWindow):
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};\
+            f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 30px;"
+            border-radius: 30px;\
+            border: 1px solid {Color.MIDDLE_GREY.value}"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
 
         self.user_widget = QWidget()
         self.user_widget.setStyleSheet(
-            f"border: 0px solid;\
-            border-color: {Color.GREY.value}"
+            f"border: 1px solid;\
+            border: 1px solid {Color.MIDDLE_GREY.value}"
         )
         self.custom_user_button = CustomQPushButton("")
 
@@ -328,7 +323,7 @@ class MainWindow(QMainWindow):
         self.user_name = QLabel("User disconnected")
         self.user_name.setStyleSheet(
             "font-weight: bold;\
-            border: 0px"
+            border: none;"
         )
 
         self.custom_user_button.setIcon(self.user_icon)
@@ -352,15 +347,58 @@ class MainWindow(QMainWindow):
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
-        self.send_button = CustomQPushButton("")
+        self.send_button = CustomQPushButton(" Send")
         self.send_button.clicked.connect(self.controller.send_message_to_server)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
 
+        self.main_layout.addWidget(self.send_widget)
         self.send_layout.addWidget(self.send_button)
-        self.main_layout.addLayout(self.send_layout)
 
+    def set_buttons_nav_gui(self, header_layout):
+        self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
+        self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
+        
+        # --- Button horizontal layout
+        self.button_layout = QHBoxLayout()
+        self.button_layout.setContentsMargins(5, 0, 0, 0)
+        self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        self.button_layout.setObjectName("button layout")
+        self.button_layout.setSpacing(5)
+
+        # --- Close left nav button
+        self.close_left_nav_button = CustomQPushButton("")
+        self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
+        self.close_left_nav_button.setIcon(self.close_icon)
+        self.close_left_nav_button.setFixedWidth(50)
+        
+        # --- Close right nav button
+        self.close_right_nav_button = CustomQPushButton("")
+        self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
+        self.close_right_nav_button.setIcon(self.show_icon)
+        self.close_right_nav_button.setFixedWidth(50)
+        
+        
+        # --- Show left button
+        self.show_left_nav_button = CustomQPushButton("")
+        self.show_left_nav_button.clicked.connect(self.controller.show_left_layout)
+        self.show_left_nav_button.setIcon(self.show_icon)
+        self.show_left_nav_button.setFixedWidth(50)
+        self.show_left_nav_button.hide()
+        
+        # --- Show right button
+        self.show_right_nav_button = CustomQPushButton("")
+        self.show_right_nav_button.clicked.connect(self.controller.show_right_layout)
+        self.show_right_nav_button.setIcon(self.close_icon)
+        self.show_right_nav_button.setFixedWidth(50)
+        self.show_right_nav_button.hide()
+        
+        header_layout.addWidget(self.close_left_nav_button)
+        header_layout.addWidget(self.show_left_nav_button)
+
+        
+        
     def closeEvent(self, event) -> None:
         """
         Close the socket and destroy the gui

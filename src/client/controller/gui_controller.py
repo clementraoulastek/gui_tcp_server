@@ -330,6 +330,8 @@ class GuiController:
         if status := self.api_controller.send_login_form():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
+            self.show_right_layout()
+            self.show_footer_layout()
         elif status == False:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
         else:
@@ -338,7 +340,7 @@ class GuiController:
             )
 
     def register_form(self):
-        if status := self.api_controller.send_login_form():
+        if status := self.api_controller.send_register_form():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
         elif status == False:
@@ -358,16 +360,48 @@ class GuiController:
             self.ui.message_label.hide()
             self.ui.info_disconnected_label.show()
             self.display_older_messages()
+            
+    def hide_left_layouts_buttons(self):
+        self.ui.show_left_nav_button.hide()
+        self.ui.close_left_nav_button.hide()
+        
+    def show_left_layouts_buttons(self):
+        self.ui.show_left_nav_button.show()
+        self.ui.close_left_nav_button.show()
+        
+    def hide_right_layouts_buttons(self):
+        self.ui.show_right_nav_button.hide()
+        self.ui.close_right_nav_button.hide()
+        
+    def show_right_layouts_buttons(self):
+        self.ui.show_right_nav_button.show()
+        self.ui.close_right_nav_button.show()
 
     def hide_left_layout(self):
         self.ui.scroll_area_avatar.hide()
-        self.ui.close_button.hide()
-        self.ui.show_button.show()
+        self.ui.close_left_nav_button.hide()
+        self.ui.show_left_nav_button.show()
 
     def show_left_layout(self):
         self.ui.scroll_area_avatar.show()
-        self.ui.show_button.hide()
-        self.ui.close_button.show()
+        self.ui.show_left_nav_button.hide()
+        self.ui.close_left_nav_button.show()
+        
+    def hide_right_layout(self):
+        self.ui.right_nav_widget.hide()
+        self.ui.close_right_nav_button.hide()
+        self.ui.show_right_nav_button.show()
+
+    def show_right_layout(self):
+        self.ui.right_nav_widget.show()
+        self.ui.show_right_nav_button.hide()
+        self.ui.close_right_nav_button.show()
+        
+    def show_footer_layout(self):
+        self.ui.send_widget.show()
+        
+    def hide_footer_layout(self):
+        self.ui.send_widget.hide()
 
     def logout(self) -> None:
         """

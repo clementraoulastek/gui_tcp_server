@@ -1,6 +1,5 @@
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from src.client.view.customWidget.CustomQLabel import RoundedLabel
 
 from src.client.core.qt_core import (
     QHBoxLayout,
@@ -12,7 +11,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QLineEdit,
 )
-from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import Color, Icon, QIcon_from_svg
 
 
 class LoginLayout(QHBoxLayout):
@@ -36,7 +35,9 @@ class LoginLayout(QHBoxLayout):
         title_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.title_layout = QLabel("Login")
         self.title_layout.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value}; border: none; font-size: 36px; font-weight: bold"
+            f"color: {Color.LIGHT_GREY.value};\
+            border: none; font-size: 36px;\
+            font-weight: bold"
         )
         title_layout.addWidget(self.title_layout)
         layout.addLayout(title_layout)
@@ -45,7 +46,10 @@ class LoginLayout(QHBoxLayout):
         error_layout.setContentsMargins(0, 0, 0, 15)
         error_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.error_label = QLabel("Please login or register if you havn't account yet")
-        self.error_label.setStyleSheet(f"color: {Color.LIGHT_GREY.value}; border: none")
+        self.error_label.setStyleSheet(
+            f"color: {Color.LIGHT_GREY.value};\
+            border: none"
+        )
         error_layout.addWidget(self.error_label)
 
         layout.addLayout(error_layout)
@@ -65,19 +69,27 @@ class LoginLayout(QHBoxLayout):
 
         username_label = QLabel("Username: ")
         username_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        username_label.setStyleSheet("font-weight: bold; border: none")
+        username_label.setStyleSheet(
+            "font-weight: bold;\
+            border: none;"
+        )
         password_label = QLabel("Password: ")
         password_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        password_label.setStyleSheet("font-weight: bold; border: none")
+        password_label.setStyleSheet(
+            "font-weight: bold;\
+            border: none"
+        )
 
         self.username_entry = CustomQLineEdit(
             place_holder_text="Enter your username", border_size=1
         )
+        self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
 
         self.password_entry = CustomQLineEdit(
             place_holder_text="Enter your password", border_size=1
         )
+        self.password_entry.setFixedWidth(300)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
 

@@ -36,15 +36,36 @@ class MainController:
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()
+        
+    def hide_right_layout(self) -> None:
+        self.gui_controller.hide_right_layout()
 
     def show_left_layout(self) -> None:
         self.gui_controller.show_left_layout()
+        
+    def show_right_layout(self) -> None:
+        self.gui_controller.show_right_layout()
+        
+    def show_footer_layout(self) -> None:
+        self.gui_controller.show_footer_layout()
+        
+    def hide_footer_layout(self) -> None:
+        self.gui_controller.hide_footer_layout()
 
     def login(self) -> None:
         self.gui_controller.login()
+        self._hide_components()
 
     def logout(self) -> None:
         self.gui_controller.logout()
+        self._hide_components()
+
+    def _hide_components(self):
+        self.gui_controller.hide_left_layout()
+        self.gui_controller.hide_right_layout()
+        self.gui_controller.hide_footer_layout()
+        self.gui_controller.hide_left_layouts_buttons()
+        self.gui_controller.hide_right_layouts_buttons()
 
     def update_user_icon(self) -> None:
         self.gui_controller.update_user_icon()
