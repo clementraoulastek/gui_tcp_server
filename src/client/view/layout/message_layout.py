@@ -14,7 +14,7 @@ from src.client.core.qt_core import (
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
-from src.tools.utils import Color, Icon, QIcon_from_svg
+from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 
 
@@ -102,7 +102,8 @@ class MessageLayout(QHBoxLayout):
 
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
-        sender_label = QLabel(sender.capitalize())
+        username_label = check_str_len(sender)
+        sender_label = QLabel(username_label)
         left_layout.addWidget(sender_label)
 
         def on_event_enter_user_label():
@@ -164,7 +165,10 @@ class MessageLayout(QHBoxLayout):
 
             self.react_emot.setAlignment(Qt.AlignLeft)
             self.react_nb.setAlignment(Qt.AlignLeft)
-            self.react_nb.setStyleSheet("font-weight: bold; border: 0px")
+            self.react_nb.setStyleSheet(
+                "font-weight: bold;\
+                border: 0px"
+            )
             self.react_nb.hide()
 
             emot_layout.addWidget(self.react_emot)

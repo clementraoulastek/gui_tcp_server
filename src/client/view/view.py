@@ -347,14 +347,19 @@ class MainWindow(QMainWindow):
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
-        self.send_button = CustomQPushButton(" Send")
+        self.send_button = CustomQPushButton("")
         self.send_button.clicked.connect(self.controller.send_message_to_server)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
 
+        empty_widget = QWidget()
+        empty_widget.setMinimumWidth(self.scroll_widget_avatar.width())
+        
         self.main_layout.addWidget(self.send_widget)
         self.send_layout.addWidget(self.send_button)
+        self.send_layout.addWidget(empty_widget)
+        
 
     def set_buttons_nav_gui(self, header_layout):
         self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
@@ -397,7 +402,6 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(self.close_left_nav_button)
         header_layout.addWidget(self.show_left_nav_button)
 
-        
         
     def closeEvent(self, event) -> None:
         """
