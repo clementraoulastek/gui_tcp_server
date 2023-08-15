@@ -1,5 +1,6 @@
 from enum import Enum, unique
 import datetime
+import logging
 from typing import Optional
 from src.client.core.qt_core import (
     QHBoxLayout,
@@ -11,6 +12,8 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QFrame,
     QSizePolicy,
+    QStackedLayout,
+    QLayout
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -23,10 +26,42 @@ class EnumReact(Enum):
     REMOVE = 0
     ADD = 1
 
+class UserMenu(QWidget):
+    def __init__(self, user):
+        super().__init__()
+        self.setStyleSheet("color: red")
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setFixedWidth(170)
+        
+        self.layout_ = QVBoxLayout()
+        self.layout_.setSpacing(0)
+        self.layout_.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        
+        list_buttons = [
+            CustomQPushButton(f"Display {user} infos", radius=0),
+            CustomQPushButton("Send message", radius=0)
+        ]
+        self.setFixedHeight(60*len(list_buttons))
+        self.setLayout(self.layout_)       
+        for widget in list_buttons:  
+            self.layout_.addWidget(widget)
+        
+class Contener(QFrame):
+    def __init__(self):
+        super(Contener, self).__init__()
+
+    def enterEvent(self, event) -> None:
+        if button_list := self.findChildren(CustomQPushButton):
+            button = button_list[0]
+            button.show()
+
+    def leaveEvent(self, event) -> None:
+        if button_list := self.findChildren(CustomQPushButton):
+            button = button_list[0]
+            button.hide()
 
 class MessageLayout(QHBoxLayout):
     MAX_CHAR: int = 60
-
     def __init__(
         self,
         controller,
@@ -44,37 +79,27 @@ class MessageLayout(QHBoxLayout):
         self.is_reacted = False
         self.nb_react = nb_react
 
+        # --- Main widget
         main_widget = QWidget()
-
-        main_widget.setFixedHeight(main_widget.maximumHeight())
         self.addWidget(main_widget)
         main_widget.setStyleSheet(f"color: {Color.LIGHT_GREY.value};")
+        
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # --- Left widget
+        self.left_layout = QVBoxLayout()
+        self.left_layout.setSpacing(0)
+        self.left_widget = QWidget()
+        self.left_widget.setMaximumWidth(80)
+        self.left_widget.setMinimumWidth(80)
 
-        left_widget = QWidget()
-        left_widget.setMaximumWidth(80)
-        left_widget.setMinimumWidth(80)
-        left_layout = QVBoxLayout()
-        left_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
-        left_widget.setLayout(left_layout)
-
-        class Contener(QFrame):
-            def __init__(self):
-                super(Contener, self).__init__()
-
-            def enterEvent(self, event) -> None:
-                if button_list := self.findChildren(CustomQPushButton):
-                    button = button_list[0]
-                    button.show()
-
-            def leaveEvent(self, event) -> None:
-                if button_list := self.findChildren(CustomQPushButton):
-                    button = button_list[0]
-                    button.hide()
-
+        self.left_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
+        self.left_widget.setLayout(self.left_layout)
+        main_layout.addWidget(self.left_widget)
+        
+        # --- Right widget
         right_widget = Contener()
-
         right_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 15px;\
@@ -83,7 +108,6 @@ class MessageLayout(QHBoxLayout):
         right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
 
-        main_layout.addWidget(left_widget)
         main_layout.addWidget(right_widget)
 
         right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
@@ -92,10 +116,11 @@ class MessageLayout(QHBoxLayout):
             icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(15, 15))
             icon_label = QLabel("")
             icon_label.setPixmap(icon)
-            left_layout.addWidget(icon_label)
+            self.left_layout.addWidget(icon_label)
         else:
-            label = RoundedLabel(content=content)
-            left_layout.addWidget(label)
+            icon_label = RoundedLabel(content=content)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.left_layout.addWidget(icon_label)
 
         str_message = coming_msg["message"]
         sender = coming_msg["id"]
@@ -103,27 +128,45 @@ class MessageLayout(QHBoxLayout):
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         username_label = check_str_len(sender)
-        sender_label = QLabel(username_label)
-        left_layout.addWidget(sender_label)
 
+        self.sender_btn = CustomQPushButton(username_label)
+        self.user_menu = UserMenu(username_label)
+        self.user_menu.hide()
+        self.left_layout.addWidget(self.sender_btn)
+        if message_id:
+            self.sender_btn.clicked.connect(self.display_menu)
+            main_layout.addChildWidget(self.user_menu)
+            self.user_menu.move(self.user_menu.x(), self.user_menu.y() + icon_label.heightMM()/2)
+            
         def on_event_enter_user_label():
-            sender_label.setStyleSheet(
+            self.sender_btn.setStyleSheet(
                 f"font-weight: bold; color: {Color.WHITE.value};\
                 text-decoration: underline;\
                 border: 0px"
             )
 
         def on_event_leave_user_label():
-            sender_label.setStyleSheet(
+            self.sender_btn.setStyleSheet(
                 f"font-weight: bold;\
                 color: {Color.WHITE.value};\
                 border: 0px"
             )
+            
+        def on_event_leave_mp_button():
+            self.hide_menu()
+            self.sender_btn.setStyleSheet(
+                f"font-weight: bold;\
+                color: {Color.WHITE.value};\
+                border: 0px"
+            )
+            self.left_layout.update()
+        
+        if message_id:
+            self.sender_btn.enterEvent = lambda e: on_event_enter_user_label()
+            self.sender_btn.leaveEvent = lambda e: on_event_leave_user_label()
+            self.user_menu.leaveEvent = lambda e: on_event_leave_mp_button()
 
-        sender_label.enterEvent = lambda event: on_event_enter_user_label()
-        sender_label.leaveEvent = lambda event: on_event_leave_user_label()
-
-        sender_label.setStyleSheet(
+        self.sender_btn.setStyleSheet(
             f"font-weight: bold;\
             color: {Color.WHITE.value}"
         )
@@ -236,3 +279,18 @@ class MessageLayout(QHBoxLayout):
         else:
             self.react_emot.show()
             self.react_nb.show()
+            
+    def display_menu(self):
+        self.sender_btn.hide()
+        self.user_menu.show()
+        self.left_layout.update()
+        
+        
+    def hide_menu(self):
+        self.sender_btn.show()
+        self.user_menu.hide()
+        self.left_layout.update()
+    
+    def to_do(self):
+        # TODO
+        logging.info("ok")

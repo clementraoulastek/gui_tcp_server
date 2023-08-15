@@ -112,4 +112,4 @@ def QIcon_from_svg(svg_name, color=Color.WHITE.value):
 def check_str_len(intput_str: str) -> str:
     intput_str.capitalize()
     LEN = 10
-    return f"{intput_str[:6]}..." if len(intput_str) >= LEN else intput_str
+    return f"{intput_str[:6]}.." if len(intput_str) >= LEN else intput_str
