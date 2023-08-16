@@ -1,10 +1,12 @@
 import logging
 import sys
+from typing import Dict, List
 from src.client.client import Client
 from src.client.controller.main_controller import MainController
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
+from src.client.view.layout.body_layout import BodyLayout
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.core.qt_core import (
     QApplication,
@@ -63,8 +65,12 @@ class MainWindow(QMainWindow):
         self.main_widget.setLayout(self.main_layout)
 
         self.set_header_gui()
-        self.set_core_gui()
+        self.core_layout = QHBoxLayout()
+        self.set_left_nav()
+        self.set_body_gui()
         self.set_right_nav()
+        self.main_layout.addLayout(self.core_layout)
+        self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.set_footer_gui()
 
         self.controller.login()
@@ -125,47 +131,47 @@ class MainWindow(QMainWindow):
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value}"
         )
-        self.status_server_layout = QVBoxLayout(self.right_nav_widget)
-        self.status_server_layout.setSpacing(10)
-        self.status_server_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
-
-        top_label = QLabel("Room")
-        top_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        top_label.setContentsMargins(15, 5, 15, 5)
-        top_label.setStyleSheet(
+        self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
+        self.direct_message_layout.setSpacing(10)
+        self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+        
+        rooms_label = QLabel("Rooms")
+        rooms_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        rooms_label.setContentsMargins(15, 5, 15, 5)
+        rooms_label.setStyleSheet(
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
             border-radius: 12px;\
             border: 0px"
         )
-        room_label = QLabel("🏠 Home")
-        room_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        room_label.setStyleSheet(
+
+        dm_label = QLabel("Direct messages")
+        dm_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        dm_label.setContentsMargins(15, 5, 15, 5)
+        dm_label.setStyleSheet(
+            f"font-weight: bold;\
+            color: {Color.LIGHT_GREY.value};\
+            background-color: {Color.DARK_GREY.value};\
+            border-radius: 12px;\
+            border: 0px"
+        )
+        room_btn = CustomQPushButton("🏠 Home")
+        room_btn.clicked.connect(self.show_home_layout)
+        room_btn.setStyleSheet(
             "font-weight: bold;\
             border: none;"
         )
-
+        self.room_list: Dict[str, QWidget] = {}
         # Adding widgets to the main layout
-        self.status_server_layout.addWidget(top_label)
-        self.status_server_layout.addWidget(room_label)
+        self.direct_message_layout.addWidget(rooms_label)
+        self.direct_message_layout.addWidget(room_btn)
+        self.direct_message_layout.addWidget(dm_label)
         self.core_layout.addWidget(self.right_nav_widget)
-
-    def scrollToBottom(self):
-        """
-        Update the scrollbar vertical position to the bottom
-        """
-        self.scroll_area.verticalScrollBar().setValue(
-            self.scroll_area.verticalScrollBar().maximum()
-        )
-
-    def set_core_gui(self):
-        """
-        Update the core GUI
-        """
-        self.core_layout = QHBoxLayout()
-
+        
+    def set_left_nav(self):
         # --- Left layout with scroll area
+        self.left_nav_layout = QHBoxLayout()
         self.user_inline_layout = QVBoxLayout()
         self.user_inline_layout.setSpacing(25)
 
@@ -235,43 +241,16 @@ class MainWindow(QMainWindow):
         )
         self.user_offline.addWidget(self.info_disconnected_label)
         self.user_inline_layout.addLayout(self.user_offline)
+        
+        self.left_nav_layout.addWidget(self.scroll_area_avatar)
+        self.core_layout.addLayout(self.left_nav_layout)
 
-        # --- Right layout with scroll area
-        self.scroll_layout = QVBoxLayout()
-        self.scroll_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.scroll_layout.setContentsMargins(0, 0, 0, 0)
-        self.scroll_layout.setObjectName("scroll layout")
-
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setMinimumWidth(600)
-        self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
-
-        self.scroll_area.setContentsMargins(0, 0, 0, 0)
-        self.scroll_area.setMinimumHeight(380)
-
-        self.scroll_widget = QWidget()
-        self.scroll_widget.setContentsMargins(0, 0, 10, 0)
-        self.scroll_area.verticalScrollBar().setStyleSheet(
-            scroll_bar_vertical_stylesheet
-        )
-        self.scroll_area.setStyleSheet(
-            "background-color: transparent;\
-            color: white"
-        )
-        self.scroll_area.setObjectName("scroll_feature")
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setObjectName("scroll_area")
-
-        self.scroll_widget.setLayout(self.scroll_layout)
-        self.scroll_area.setWidget(self.scroll_widget)
-
-        self.core_layout.addWidget(self.scroll_area_avatar)
-        self.core_layout.addWidget(self.scroll_area)
-
-        self.main_layout.addLayout(self.core_layout)
-        self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+    def set_body_gui(self):
+        """
+        Update the core GUI
+        """
+        self.body_gui_dict = {"home": BodyLayout(core_layout=self.core_layout, name="home_layout")}
+        self.scroll_layout = self.body_gui_dict["home"]
 
     def set_footer_gui(self):
         """
@@ -401,8 +380,10 @@ class MainWindow(QMainWindow):
         
         header_layout.addWidget(self.close_left_nav_button)
         header_layout.addWidget(self.show_left_nav_button)
-
         
+    def show_home_layout(self):
+        self.scroll_layout.scroll_area.show()
+
     def closeEvent(self, event) -> None:
         """
         Close the socket and destroy the gui

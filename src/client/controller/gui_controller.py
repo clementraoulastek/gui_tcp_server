@@ -1,7 +1,9 @@
+import logging
 from threading import Thread
 import time
 from typing import List, Optional, Union
-from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal
+from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, QWidget
+from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
@@ -100,7 +102,6 @@ class GuiController:
             self.last_message_id = messsage_id
         else:
             self.last_message_id += 1
-
         message = MessageLayout(
             self,
             comming_msg,
@@ -109,8 +110,7 @@ class GuiController:
             message_id=self.last_message_id,
             nb_react=nb_react,
         )
-        self.ui.scroll_widget.layout().addLayout(message)
-
+        self.ui.scroll_layout.addLayout(message)
         self.messages_dict[self.last_message_id] = message
         self.ui.entry.clear()
 
@@ -440,3 +440,24 @@ class GuiController:
         self.ui.send_button.setDisabled(arg1)
         self.ui.entry.setDisabled(arg1)
         self.ui.entry.setPlaceholderText(lock_message)
+        
+    def update_gui_for_mp_layout(self, room_name: str, icon):
+        if room_name not in self.ui.room_list:
+            direct_message_widget = QWidget()
+            direct_message_widget.setStyleSheet("border: none;")
+            direct_message_layout = QHBoxLayout()
+            direct_message_layout.setSpacing(0)
+            direct_message_layout.setContentsMargins(0, 0, 0, 0)
+            direct_message_widget.setLayout(direct_message_layout)
+            icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            btn = CustomQPushButton(room_name)
+            btn.setStyleSheet(
+                "font-weight: bold;"\
+                "text-align: left;"
+            )
+            btn.setContentsMargins(0, 0, 0, 0)
+            direct_message_layout.addWidget(icon)
+            direct_message_layout.addWidget(btn)
+            self.ui.room_list[room_name] = direct_message_widget
+            self.ui.direct_message_layout.addWidget(direct_message_widget)
+

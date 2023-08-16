@@ -1,5 +1,6 @@
 from enum import Enum, unique
 import datetime
+import functools
 import logging
 from typing import Optional
 from src.client.core.qt_core import (
@@ -19,7 +20,7 @@ from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
-
+import copy
 
 @unique
 class EnumReact(Enum):
@@ -29,17 +30,20 @@ class EnumReact(Enum):
 class UserMenu(QWidget):
     def __init__(self, user):
         super().__init__()
-        self.setStyleSheet("color: red")
+        self.setStyleSheet("background-color: red;")
         self.setContentsMargins(0, 0, 0, 0)
         self.setFixedWidth(170)
         
         self.layout_ = QVBoxLayout()
         self.layout_.setSpacing(0)
-        self.layout_.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.layout_.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
+        msg_icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value))
+        
+        self.send_msg_btn = CustomQPushButton(" Send message")
+        self.send_msg_btn.setIcon(msg_icon)
         list_buttons = [
-            CustomQPushButton(f"Display {user} infos", radius=0),
-            CustomQPushButton("Send message", radius=0)
+            self.send_msg_btn
         ]
         self.setFixedHeight(60*len(list_buttons))
         self.setLayout(self.layout_)       
@@ -114,11 +118,12 @@ class MessageLayout(QHBoxLayout):
 
         if not content:
             icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(15, 15))
-            icon_label = QLabel("")
+            icon_label, copy_icon = QLabel(""), QLabel("")
             icon_label.setPixmap(icon)
+            copy_icon.setPixmap(icon)
             self.left_layout.addWidget(icon_label)
         else:
-            icon_label = RoundedLabel(content=content)
+            icon_label, copy_icon = RoundedLabel(content=content), RoundedLabel(content=content)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.left_layout.addWidget(icon_label)
 
@@ -127,16 +132,18 @@ class MessageLayout(QHBoxLayout):
 
         sender_layout = QHBoxLayout()
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
-        username_label = check_str_len(sender)
+        self.username_label = check_str_len(sender)
 
-        self.sender_btn = CustomQPushButton(username_label)
-        self.user_menu = UserMenu(username_label)
+        self.sender_btn = CustomQPushButton(self.username_label)
+        self.user_menu = UserMenu(self.username_label)
+
+        self.user_menu.send_msg_btn.clicked.connect(functools.partial(self.to_do, copy_icon))
         self.user_menu.hide()
         self.left_layout.addWidget(self.sender_btn)
         if message_id:
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
-            self.user_menu.move(self.user_menu.x(), self.user_menu.y() + icon_label.heightMM()/2)
+            self.user_menu.move(self.user_menu.x() - 10, self.user_menu.y() + icon_label.heightMM()/2)
             
         def on_event_enter_user_label():
             self.sender_btn.setStyleSheet(
@@ -152,19 +159,10 @@ class MessageLayout(QHBoxLayout):
                 border: 0px"
             )
             
-        def on_event_leave_mp_button():
-            self.hide_menu()
-            self.sender_btn.setStyleSheet(
-                f"font-weight: bold;\
-                color: {Color.WHITE.value};\
-                border: 0px"
-            )
-            self.left_layout.update()
-        
         if message_id:
             self.sender_btn.enterEvent = lambda e: on_event_enter_user_label()
             self.sender_btn.leaveEvent = lambda e: on_event_leave_user_label()
-            self.user_menu.leaveEvent = lambda e: on_event_leave_mp_button()
+            self.user_menu.leaveEvent = lambda e: self.hide_menu()
 
         self.sender_btn.setStyleSheet(
             f"font-weight: bold;\
@@ -217,7 +215,7 @@ class MessageLayout(QHBoxLayout):
             emot_layout.addWidget(self.react_emot)
             emot_layout.addWidget(self.react_nb)
 
-        date_time = str(datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S"))
+        date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
         date_label.setStyleSheet("border: 0px")
 
@@ -281,16 +279,13 @@ class MessageLayout(QHBoxLayout):
             self.react_nb.show()
             
     def display_menu(self):
-        self.sender_btn.hide()
-        self.user_menu.show()
-        self.left_layout.update()
-        
-        
+        if self.user_menu.isHidden():
+            self.user_menu.show()
+            self.user_menu.setFocus()
+            
     def hide_menu(self):
-        self.sender_btn.show()
-        self.user_menu.hide()
-        self.left_layout.update()
+        if not self.user_menu.isHidden():
+            self.user_menu.hide()
     
-    def to_do(self):
-        # TODO
-        logging.info("ok")
+    def to_do(self, icon_label):
+        self.controller.update_gui_for_mp_layout(self.username_label, icon_label)

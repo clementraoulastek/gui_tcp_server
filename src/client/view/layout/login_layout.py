@@ -1,6 +1,7 @@
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-
+from dotenv import load_dotenv
+import os
 from src.client.core.qt_core import (
     QHBoxLayout,
     QLabel,
@@ -13,6 +14,7 @@ from src.client.core.qt_core import (
 )
 from src.tools.utils import Color, Icon, QIcon_from_svg
 
+load_dotenv()
 
 class LoginLayout(QHBoxLayout):
     def __init__(self):
@@ -81,13 +83,13 @@ class LoginLayout(QHBoxLayout):
         )
 
         self.username_entry = CustomQLineEdit(
-            place_holder_text="Enter your username", border_size=1
+            place_holder_text="Enter your username", border_size=1, text=os.environ["USERNAME"]
         )
         self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
 
         self.password_entry = CustomQLineEdit(
-            place_holder_text="Enter your password", border_size=1
+            place_holder_text="Enter your password", border_size=1, text=os.environ["PASSWORD"]
         )
         self.password_entry.setFixedWidth(300)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
