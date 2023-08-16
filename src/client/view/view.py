@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
             border-radius: 12px;\
             border: 0px"
         )
-        room_btn = CustomQPushButton("🏠 Home")
+        room_btn = CustomQPushButton("> 🏠 Home")
         room_btn.clicked.connect(self.show_home_layout)
         room_btn.setStyleSheet(
             "font-weight: bold;\

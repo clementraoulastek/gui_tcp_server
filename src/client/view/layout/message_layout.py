@@ -144,31 +144,27 @@ class MessageLayout(QHBoxLayout):
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
             self.user_menu.move(self.user_menu.x() - 10, self.user_menu.y() + icon_label.heightMM()/2)
-            
-        def on_event_enter_user_label():
-            self.sender_btn.setStyleSheet(
-                f"font-weight: bold; color: {Color.WHITE.value};\
-                text-decoration: underline;\
-                border: 0px"
-            )
-
-        def on_event_leave_user_label():
-            self.sender_btn.setStyleSheet(
-                f"font-weight: bold;\
-                color: {Color.WHITE.value};\
-                border: 0px"
-            )
-            
-        if message_id:
-            self.sender_btn.enterEvent = lambda e: on_event_enter_user_label()
-            self.sender_btn.leaveEvent = lambda e: on_event_leave_user_label()
+            style_= """
+            QPushButton {{
+            font-weight: bold;
+            border: 0px;
+            color: {color};
+            }} 
+            QPushButton:hover {{
+            text-decoration: underline;
+            }}
+            """
             self.user_menu.leaveEvent = lambda e: self.hide_menu()
-
-        self.sender_btn.setStyleSheet(
-            f"font-weight: bold;\
-            color: {Color.WHITE.value}"
-        )
-
+        else:
+            style_= """
+            QPushButton {{
+            font-weight: bold;
+            border: 0px;
+            color: {color};
+            }}
+            """
+        self.sender_btn.setStyleSheet(style_.format(color=Color.WHITE.value))
+            
         if message_id:
             self.react_buttton = CustomQPushButton(
                 " Add react", bg_color=Color.GREY.value, radius=8
@@ -217,7 +213,7 @@ class MessageLayout(QHBoxLayout):
 
         date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
-        date_label.setStyleSheet("border: 0px")
+        date_label.setStyleSheet("border: 0px; text-decoration: ")
 
         separator = QFrame()
         separator.setStyleSheet(f"background-color: {Color.LIGHT_GREY.value};")
@@ -289,3 +285,5 @@ class MessageLayout(QHBoxLayout):
     
     def to_do(self, icon_label):
         self.controller.update_gui_for_mp_layout(self.username_label, icon_label)
+        self.hide_menu()
+        

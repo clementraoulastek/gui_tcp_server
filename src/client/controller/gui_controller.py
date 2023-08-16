@@ -451,10 +451,16 @@ class GuiController:
             direct_message_widget.setLayout(direct_message_layout)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             btn = CustomQPushButton(room_name)
-            btn.setStyleSheet(
-                "font-weight: bold;"\
-                "text-align: left;"
-            )
+            style_= """
+            QPushButton {{
+            font-weight: bold;
+            text-align: left;
+            }} 
+            QPushButton:hover {{
+            text-decoration: underline;
+            }}
+            """
+            btn.setStyleSheet(style_.format())
             btn.setContentsMargins(0, 0, 0, 0)
             direct_message_layout.addWidget(icon)
             direct_message_layout.addWidget(btn)

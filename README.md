@@ -1,30 +1,29 @@
 
-# Hello 
+# Robot Messenger 
 
 This project provide:
 - TCP server
 - GUI client
 
-You Need the backend API, to register/connect to the app
+This project need the Robot Messenger backend API, to register/connect to the app
 
-100% Python project in Qt
-
-The TCP client (last updated on 17/06/2023):
+The TCP client (last updated on 16/08/2023):
 
 ![Alt text](./resources/images/readme_pic.png?raw=true "Client GUI")
 
-# Clone the repository and ...
+# Init the repository
 
 create virtual env:
- - mkdir .venv
+ -  mkdir .venv
  -  python3 -m venv .venv
 
 Activate the virtualenv:
-- source ./.venv/bin/activate
+- source .venv/bin/activate
 
 for installating dependencies (need to be in the venv):
- - pip install -r requirements.txt
  - pip install -e .
+ - pip install -r requirements.txt
+
  
 ## Launch project
 Launch the server:
