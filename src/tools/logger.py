@@ -6,7 +6,7 @@ def setup_logger(logger_name):
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
     )
     # Update the log file
     file_handler = logging.FileHandler(os.path.join(os.getcwd(), logger_name))
@@ -20,3 +20,4 @@ def _set_formatter(handler, formatter, logger):
     handler.setLevel(logging.DEBUG)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+    
