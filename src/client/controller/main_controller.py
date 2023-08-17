@@ -9,7 +9,7 @@ class MainController:
     def __init__(self, ui) -> None:
         self.ui = ui
         self.messages_dict: dict[str, MessageLayout] = {}
-        self.last_message_id: int = 0
+        self.last_message_id = 0
 
         self.tcp_controller = TcpServerController(self.ui)
         self.api_controller = ApiController(self.ui)
@@ -60,7 +60,7 @@ class MainController:
         self.gui_controller.logout()
         self._hide_components()
 
-    def _hide_components(self):
+    def _hide_components(self) -> None:
         self.gui_controller.hide_left_layout()
         self.gui_controller.hide_right_layout()
         self.gui_controller.hide_footer_layout()

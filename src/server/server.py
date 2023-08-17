@@ -2,6 +2,7 @@ import logging
 import socket
 import sys
 from threading import Thread
+from typing import Optional
 from src.tools.backend import Backend
 
 from src.tools.commands import Commands
@@ -9,7 +10,7 @@ from src.tools.constant import IP_API, PORT_API
 
 
 class Server:
-    def __init__(self, host: str, port: int, conn_nb: int = 2):
+    def __init__(self, host: str, port: int, conn_nb: int = 2) -> None:
         self.backend = Backend(IP_API, PORT_API)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((host, port))
@@ -19,10 +20,10 @@ class Server:
 
         self.hello_world(host, port)
 
-    def hello_world(self, hostname, port):
+    def hello_world(self, hostname: str, port: int) -> None:
         logging.info(f"Server is running on hostname: {hostname}, port: {port}")
 
-    def launch(self):
+    def launch(self) -> None:
         """
         Launch the server
         """
@@ -42,7 +43,7 @@ class Server:
                 name="Close Connection thread, no deamon thread",
             ).start()
 
-    def close_connection(self, *args):
+    def close_connection(self, *args) -> None:
         """
         Close the connection
         """
@@ -51,7 +52,7 @@ class Server:
         self.sock.close()
         sys.exit(0)
 
-    def read_data(self, conn):
+    def read_data(self, conn) -> tuple:
         """
             Read raw data from the client
 
@@ -76,7 +77,7 @@ class Server:
             header, payload = raw_data[0], raw_data[1:].decode("utf-8")
         return header, payload
 
-    def send_data(self, conn, header: Commands, payload: str, is_from_server=False):
+    def send_data(self, conn, header: Commands, payload: str, is_from_server: Optional[bool] = False) -> None:
         """
             Send data to the client
 
@@ -90,7 +91,7 @@ class Server:
         bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         conn.send(bytes_message)
 
-    def create_connection(self, conn, addr):
+    def create_connection(self, conn, addr) -> None:
         """
             Create a new connection
 
@@ -117,7 +118,7 @@ class Server:
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
 
-    def send_message_to_backend(self, header: int, payload: str):
+    def send_message_to_backend(self, header: int, payload: str) -> None:
         if Commands(header) == Commands.MESSAGE:
             payload_list = payload.split(":")
             sender, message = payload_list[0], payload_list[1]
@@ -125,7 +126,7 @@ class Server:
         elif Commands(header) in [Commands.ADD_REACT, Commands.RM_REACT]:
             self._update_reaction(payload)
 
-    def _update_reaction(self, payload):
+    def _update_reaction(self, payload: str) -> None:
         payload_list = payload.split(":")
         sender, message = payload_list[0], payload_list[1]
         message_list = message.split(";")
@@ -133,7 +134,7 @@ class Server:
         logging.info(message)
         self.backend.update_reaction_nb(message_id, reaction_nb)
 
-    def handle_new_connection(self, addr, conn):
+    def handle_new_connection(self, addr, conn) -> None:
         self.conn_dict[addr] = conn
 
         # Send data to new client
@@ -150,7 +151,7 @@ class Server:
                 self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True
             )
 
-    def _display_disconnection(self, conn, addr):
+    def _display_disconnection(self, conn, addr: str) -> None:
         """
             Display disconnection on gui
 

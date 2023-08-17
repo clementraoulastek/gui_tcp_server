@@ -19,6 +19,7 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QWidget,
     QSizePolicy,
+    QLayout
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         # GUI settings
         self.setup_gui()
     
-    def setup_gui(self):
+    def setup_gui(self) -> None:
         """
         Add elements to the main window
         """
@@ -75,7 +76,7 @@ class MainWindow(QMainWindow):
 
         self.controller.login()
 
-    def set_header_gui(self):
+    def set_header_gui(self) -> None:
         header_widget = QWidget()
         header_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
@@ -117,7 +118,7 @@ class MainWindow(QMainWindow):
         
         self.main_layout.addWidget(header_widget)
 
-    def set_right_nav(self):
+    def set_right_nav(self) -> None:
         """
         Update the header GUI
         """
@@ -169,7 +170,7 @@ class MainWindow(QMainWindow):
         self.direct_message_layout.addWidget(dm_label)
         self.core_layout.addWidget(self.right_nav_widget)
         
-    def set_left_nav(self):
+    def set_left_nav(self) -> None:
         # --- Left layout with scroll area
         self.left_nav_layout = QHBoxLayout()
         self.user_inline_layout = QVBoxLayout()
@@ -245,14 +246,14 @@ class MainWindow(QMainWindow):
         self.left_nav_layout.addWidget(self.scroll_area_avatar)
         self.core_layout.addLayout(self.left_nav_layout)
 
-    def set_body_gui(self):
+    def set_body_gui(self) -> None:
         """
         Update the core GUI
         """
         self.body_gui_dict = {"home": BodyLayout(core_layout=self.core_layout, name="home_layout")}
         self.scroll_layout = self.body_gui_dict["home"]
 
-    def set_footer_gui(self):
+    def set_footer_gui(self) -> None:
         """
         Update the footer GUI
         """
@@ -340,7 +341,7 @@ class MainWindow(QMainWindow):
         self.send_layout.addWidget(empty_widget)
         
 
-    def set_buttons_nav_gui(self, header_layout):
+    def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
         self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
         self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
         
@@ -381,7 +382,7 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(self.close_left_nav_button)
         header_layout.addWidget(self.show_left_nav_button)
         
-    def show_home_layout(self):
+    def show_home_layout(self) -> None:
         self.scroll_layout.scroll_area.show()
 
     def closeEvent(self, event) -> None:

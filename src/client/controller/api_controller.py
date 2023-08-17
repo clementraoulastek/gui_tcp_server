@@ -1,3 +1,4 @@
+from typing import Optional
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
 
@@ -32,13 +33,13 @@ class ApiController:
             self.ui.client.user_name = username
             return True
 
-    def send_emot_react(self, cmd: Commands, messageId, react_nb):
+    def send_emot_react(self, cmd: Commands, messageId: int, react_nb: int) -> None:
         """
         Send emot message to the server
         """
         self.ui.client.send_data(cmd, ";".join([str(messageId), str(react_nb)]))
 
-    def get_user_icon(self, username=None, update_personal_avatar=False):
+    def get_user_icon(self, username: Optional[bool] = None, update_personal_avatar: Optional[bool] = False) -> None:
         """
         Backend request for getting user icon
         """
@@ -63,7 +64,7 @@ class ApiController:
         older_messages: dict = self.ui.backend.get_older_messages()
         return older_messages["messages"]
 
-    def add_sender_picture(self, sender_id):
+    def add_sender_picture(self, sender_id: str) -> None:
         """Add sender picture to the list of sender pictures
 
         Args:

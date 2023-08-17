@@ -25,12 +25,12 @@ class Worker(QThread):
 
     signal = Signal()
 
-    def __init__(self, polling_interval: Optional[int] = 0.01):
+    def __init__(self, polling_interval: Optional[int] = 0.01) -> None:
         super(Worker, self).__init__()
         self._is_running = True
         self.polling_interval = polling_interval
 
-    def run(self):
+    def run(self) -> None:
         if not self._is_running:
             self._is_running = True
 
@@ -38,7 +38,7 @@ class Worker(QThread):
             self.signal.emit()
             time.sleep(self.polling_interval)
 
-    def stop(self):
+    def stop(self) -> None:
         self.terminate()
         self.exit()
         self._is_running = False
@@ -59,7 +59,7 @@ class GuiController:
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
 
-    def __init_working_signals(self):
+    def __init_working_signals(self) -> None:
         # Worker for incoming messages
         self.read_worker = Worker()
         self.read_worker.signal.connect(self.__diplay_coming_message_on_gui)
@@ -114,7 +114,7 @@ class GuiController:
         self.messages_dict[self.last_message_id] = message
         self.ui.entry.clear()
 
-    def display_older_messages(self):
+    def display_older_messages(self) -> None:
         """
         Create backend request to get older users messages
         """
@@ -139,7 +139,7 @@ class GuiController:
         for sender in sender_list:
             self.ui.users_pict.pop(sender)
 
-    def __diplay_coming_message_on_gui(self):
+    def __diplay_coming_message_on_gui(self) -> None:
         """
         Callback to update gui with input messages
         """
@@ -162,7 +162,7 @@ class GuiController:
                 global_variables.comming_msg["message"],
             ) = ("", "")
 
-    def __callback_routing_messages_on_ui(self):
+    def __callback_routing_messages_on_ui(self) -> None:
         """
         Read messages comming from server
         """
@@ -235,13 +235,13 @@ class GuiController:
             user_disconnect.pop(id_)
         self.api_controller.add_sender_picture(id_)
 
-    def update_user_icon(self):
+    def update_user_icon(self) -> None:
         username = self.ui.client.user_name
         if self.ui.backend.send_user_icon(username, None):
             self.clear_avatar("user_inline", f"{username}_layout")
             self.api_controller.get_user_icon(update_personal_avatar=True)
 
-    def __update_gui_with_connected_avatar(self):
+    def __update_gui_with_connected_avatar(self) -> None:
         """
         Callback to update gui with input avatar
         """
@@ -265,7 +265,7 @@ class GuiController:
                 self.ui.user_inline.addLayout(user_layout)
                 global_variables.coming_user[user] = [data[0], True]
 
-    def __update_gui_with_disconnected_avatar(self):
+    def __update_gui_with_disconnected_avatar(self) -> None:
         """
         Callback to update gui with input avatar
         """
@@ -289,7 +289,7 @@ class GuiController:
             f"Users offline | {len(global_variables.user_disconnect)}"
         )
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Clear the entry
         """
@@ -299,7 +299,7 @@ class GuiController:
                 layout.itemAt(j).widget().deleteLater()
         self.ui.scroll_layout.update()
 
-    def clear_avatar(self, parent_layout, layout_name: Union[QHBoxLayout, None] = None):
+    def clear_avatar(self, parent_layout, layout_name: Optional[Union[QHBoxLayout, None]] = None) -> None:
         """
         Clear avatars
         """
@@ -328,7 +328,7 @@ class GuiController:
             self.ui.login_form.send_button.clicked.connect(self.login_form)
             self.ui.login_form.register_button.clicked.connect(self.register_form)
 
-    def login_form(self):
+    def login_form(self) -> None:
         if status := self.api_controller.send_login_form():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
@@ -341,7 +341,7 @@ class GuiController:
                 "Error: Username or password incorect"
             )
 
-    def register_form(self):
+    def register_form(self) -> None:
         if status := self.api_controller.send_register_form():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
@@ -365,46 +365,46 @@ class GuiController:
             self.ui.info_disconnected_label.show()
             self.display_older_messages()
             
-    def hide_left_layouts_buttons(self):
+    def hide_left_layouts_buttons(self) -> None:
         self.ui.show_left_nav_button.hide()
         self.ui.close_left_nav_button.hide()
         
-    def show_left_layouts_buttons(self):
+    def show_left_layouts_buttons(self) -> None:
         self.ui.show_left_nav_button.show()
         self.ui.close_left_nav_button.show()
         
-    def hide_right_layouts_buttons(self):
+    def hide_right_layouts_buttons(self) -> None:
         self.ui.show_right_nav_button.hide()
         self.ui.close_right_nav_button.hide()
         
-    def show_right_layouts_buttons(self):
+    def show_right_layouts_buttons(self) -> None:
         self.ui.show_right_nav_button.show()
         self.ui.close_right_nav_button.show()
 
-    def hide_left_layout(self):
+    def hide_left_layout(self) -> None:
         self.ui.scroll_area_avatar.hide()
         self.ui.close_left_nav_button.hide()
         self.ui.show_left_nav_button.show()
 
-    def show_left_layout(self):
+    def show_left_layout(self) -> None:
         self.ui.scroll_area_avatar.show()
         self.ui.show_left_nav_button.hide()
         self.ui.close_left_nav_button.show()
         
-    def hide_right_layout(self):
+    def hide_right_layout(self) -> None:
         self.ui.right_nav_widget.hide()
         self.ui.close_right_nav_button.hide()
         self.ui.show_right_nav_button.show()
 
-    def show_right_layout(self):
+    def show_right_layout(self) -> None:
         self.ui.right_nav_widget.show()
         self.ui.show_right_nav_button.hide()
         self.ui.close_right_nav_button.show()
         
-    def show_footer_layout(self):
+    def show_footer_layout(self) -> None:
         self.ui.send_widget.show()
         
-    def hide_footer_layout(self):
+    def hide_footer_layout(self) -> None:
         self.ui.send_widget.hide()
 
     def logout(self) -> None:
@@ -423,25 +423,25 @@ class GuiController:
         self.ui.info_disconnected_label.hide()
         self.login()
 
-    def update_buttons(self):
+    def update_buttons(self) -> None:
         if self.ui.client.is_connected:
-            self._set_buttons_status(True, False, "Enter your message")
+            self._set_buttons_status(False, "Enter your message")
             username_label = check_str_len(self.ui.client.user_name)
             self.ui.user_name.setText(username_label)
         else:
-            self._set_buttons_status(False, True, "Please login")
+            self._set_buttons_status(True, "Please login")
             self.ui.user_name.setText("User disconnected")
             self.ui.info_label.setText("Welcome")
             self.ui.user_picture.update_picture(content="")
 
-    def _set_buttons_status(self, arg0, arg1, lock_message):
-        self.ui.custom_user_button.setDisabled(arg1)
-        self.ui.logout_button.setDisabled(arg1)
-        self.ui.send_button.setDisabled(arg1)
-        self.ui.entry.setDisabled(arg1)
+    def _set_buttons_status(self, activate: bool, lock_message: str) -> None:
+        self.ui.custom_user_button.setDisabled(activate)
+        self.ui.logout_button.setDisabled(activate)
+        self.ui.send_button.setDisabled(activate)
+        self.ui.entry.setDisabled(activate)
         self.ui.entry.setPlaceholderText(lock_message)
         
-    def update_gui_for_mp_layout(self, room_name: str, icon):
+    def update_gui_for_mp_layout(self, room_name: str, icon) -> None:
         if room_name not in self.ui.room_list:
             direct_message_widget = QWidget()
             direct_message_widget.setStyleSheet("border: none;")

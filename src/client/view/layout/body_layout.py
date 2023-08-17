@@ -13,12 +13,11 @@ class BodyLayout(QVBoxLayout):
         Update the core GUI
         """
         super(BodyLayout, self).__init__()
-
-        # --- Body
         self.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.setContentsMargins(0, 0, 0, 0)
         self.setObjectName(name)
 
+        # ----------------- Scroll Area ----------------- #
         self.scroll_area = QScrollArea()
         self.scroll_area.setMinimumWidth(600)
         self.scroll_area.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
@@ -43,6 +42,7 @@ class BodyLayout(QVBoxLayout):
 
         self.scroll_widget.setLayout(self)
         self.scroll_area.setWidget(self.scroll_widget)
+        #
 
         core_layout.addWidget(self.scroll_area)
 

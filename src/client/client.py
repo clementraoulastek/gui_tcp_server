@@ -1,5 +1,6 @@
 import logging
 import socket
+from typing import Union, Tuple
 
 from src.tools.commands import Commands
 
@@ -34,7 +35,7 @@ class Client:
         self.sock.close()
         self.is_connected = False
 
-    def read_data(self):
+    def read_data(self) -> Union[Tuple[str, str], Tuple[bool, bool]]:
         """
             Read data from the socket
 
