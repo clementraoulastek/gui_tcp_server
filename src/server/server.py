@@ -77,7 +77,13 @@ class Server:
             header, payload = raw_data[0], raw_data[1:].decode("utf-8")
         return header, payload
 
-    def send_data(self, conn, header: Commands, payload: str, is_from_server: Optional[bool] = False) -> None:
+    def send_data(
+        self,
+        conn,
+        header: Commands,
+        payload: str,
+        is_from_server: Optional[bool] = False,
+    ) -> None:
         """
             Send data to the client
 

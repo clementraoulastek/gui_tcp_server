@@ -39,7 +39,11 @@ class ApiController:
         """
         self.ui.client.send_data(cmd, ";".join([str(messageId), str(react_nb)]))
 
-    def get_user_icon(self, username: Optional[bool] = None, update_personal_avatar: Optional[bool] = False) -> None:
+    def get_user_icon(
+        self,
+        username: Optional[bool] = None,
+        update_personal_avatar: Optional[bool] = False,
+    ) -> None:
         """
         Backend request for getting user icon
         """

@@ -36,19 +36,19 @@ class MainController:
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()
-        
+
     def hide_right_layout(self) -> None:
         self.gui_controller.hide_right_layout()
 
     def show_left_layout(self) -> None:
         self.gui_controller.show_left_layout()
-        
+
     def show_right_layout(self) -> None:
         self.gui_controller.show_right_layout()
-        
+
     def show_footer_layout(self) -> None:
         self.gui_controller.show_footer_layout()
-        
+
     def hide_footer_layout(self) -> None:
         self.gui_controller.hide_footer_layout()
 

@@ -20,4 +20,3 @@ def _set_formatter(handler, formatter, logger):
     handler.setLevel(logging.DEBUG)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    

@@ -109,6 +109,7 @@ def QIcon_from_svg(svg_name, color=Color.WHITE.value):
     painter.end()
     return QIcon(pixmap)
 
+
 def check_str_len(intput_str: str) -> str:
     intput_str.capitalize()
     LEN = 10

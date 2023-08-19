@@ -4,6 +4,7 @@ import time
 from typing import List, Optional, Union
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, QWidget
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
+from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
@@ -110,7 +111,7 @@ class GuiController:
             message_id=self.last_message_id,
             nb_react=nb_react,
         )
-        self.ui.scroll_layout.addLayout(message)
+        self.ui.scroll_area.main_layout.addLayout(message)
         self.messages_dict[self.last_message_id] = message
         self.ui.entry.clear()
 
@@ -156,7 +157,7 @@ class GuiController:
             )
             if global_variables.comming_msg["id"] != "server":
                 self.messages_dict[self.last_message_id] = message
-            self.ui.scroll_layout.addLayout(message)
+            self.ui.scroll_area.main_layout.addLayout(message)
             (
                 global_variables.comming_msg["id"],
                 global_variables.comming_msg["message"],
@@ -248,6 +249,7 @@ class GuiController:
         for user, data in global_variables.coming_user.items():
             if data[1] == False:
                 user_layout = QHBoxLayout()
+                user_layout.setSpacing(15)
                 user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
                 username = user
                 content = data[0]
@@ -272,6 +274,7 @@ class GuiController:
         for user, data in global_variables.user_disconnect.items():
             if data[1] == False:
                 user_layout = QHBoxLayout()
+                user_layout.setSpacing(15)
                 user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
                 username = user
                 content = data[0]
@@ -293,13 +296,15 @@ class GuiController:
         """
         Clear the entry
         """
-        for i in reversed(range(self.ui.scroll_layout.count())):
-            layout = self.ui.scroll_layout.itemAt(i).layout()
+        for i in reversed(range(self.ui.scroll_area.main_layout.count())):
+            layout = self.ui.scroll_area.main_layout.itemAt(i).layout()
             for j in reversed(range(layout.count())):
                 layout.itemAt(j).widget().deleteLater()
-        self.ui.scroll_layout.update()
+        self.ui.scroll_area.main_layout.update()
 
-    def clear_avatar(self, parent_layout, layout_name: Optional[Union[QHBoxLayout, None]] = None) -> None:
+    def clear_avatar(
+        self, parent_layout, layout_name: Optional[Union[QHBoxLayout, None]] = None
+    ) -> None:
         """
         Clear avatars
         """
@@ -322,8 +327,8 @@ class GuiController:
         self.clear()
         if not hasattr(self.ui, "login_form") or not self.ui.login_form:
             self.ui.login_form = LoginLayout()
-            self.ui.scroll_layout.addLayout(self.ui.login_form)
-            self.ui.scroll_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+            self.ui.scroll_area.main_layout.addLayout(self.ui.login_form)
+            self.ui.scroll_area.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
             self.ui.login_form.password_entry.returnPressed.connect(self.login_form)
             self.ui.login_form.send_button.clicked.connect(self.login_form)
             self.ui.login_form.register_button.clicked.connect(self.register_form)
@@ -364,19 +369,19 @@ class GuiController:
             self.ui.message_label.hide()
             self.ui.info_disconnected_label.show()
             self.display_older_messages()
-            
+
     def hide_left_layouts_buttons(self) -> None:
         self.ui.show_left_nav_button.hide()
         self.ui.close_left_nav_button.hide()
-        
+
     def show_left_layouts_buttons(self) -> None:
         self.ui.show_left_nav_button.show()
         self.ui.close_left_nav_button.show()
-        
+
     def hide_right_layouts_buttons(self) -> None:
         self.ui.show_right_nav_button.hide()
         self.ui.close_right_nav_button.hide()
-        
+
     def show_right_layouts_buttons(self) -> None:
         self.ui.show_right_nav_button.show()
         self.ui.close_right_nav_button.show()
@@ -390,7 +395,7 @@ class GuiController:
         self.ui.scroll_area_avatar.show()
         self.ui.show_left_nav_button.hide()
         self.ui.close_left_nav_button.show()
-        
+
     def hide_right_layout(self) -> None:
         self.ui.right_nav_widget.hide()
         self.ui.close_right_nav_button.hide()
@@ -400,10 +405,10 @@ class GuiController:
         self.ui.right_nav_widget.show()
         self.ui.show_right_nav_button.hide()
         self.ui.close_right_nav_button.show()
-        
+
     def show_footer_layout(self) -> None:
         self.ui.send_widget.show()
-        
+
     def hide_footer_layout(self) -> None:
         self.ui.send_widget.hide()
 
@@ -440,8 +445,8 @@ class GuiController:
         self.ui.send_button.setDisabled(activate)
         self.ui.entry.setDisabled(activate)
         self.ui.entry.setPlaceholderText(lock_message)
-        
-    def update_gui_for_mp_layout(self, room_name: str, icon) -> None:
+
+    def add_gui_for_mp_layout(self, room_name: str, icon) -> None:
         if room_name not in self.ui.room_list:
             direct_message_widget = QWidget()
             direct_message_widget.setStyleSheet("border: none;")
@@ -451,7 +456,7 @@ class GuiController:
             direct_message_widget.setLayout(direct_message_layout)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             btn = CustomQPushButton(room_name)
-            style_= """
+            style_ = """
             QPushButton {{
             font-weight: bold;
             text-align: left;
@@ -466,4 +471,20 @@ class GuiController:
             direct_message_layout.addWidget(btn)
             self.ui.room_list[room_name] = direct_message_widget
             self.ui.direct_message_layout.addWidget(direct_message_widget)
+            
+            # --- Add Body Scroll Area --- #
+            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}_area")
+            self.update_gui_for_mp_layout(room_name)
+            
+    def update_gui_for_mp_layout(self, room_name):
+        old_widget = self.ui.scroll_area
+        old_widget.hide()
+        widget = self.ui.body_gui_dict[room_name]
+        index = self.ui.core_layout.indexOf(old_widget)
 
+        
+        self.ui.core_layout.removeWidget(old_widget)
+        self.ui.core_layout.insertWidget(index, widget)
+        self.ui.scroll_area = widget
+        self.ui.scroll_area.show()
+        

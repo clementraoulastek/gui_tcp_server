@@ -14,7 +14,7 @@ from src.client.core.qt_core import (
     QFrame,
     QSizePolicy,
     QStackedLayout,
-    QLayout
+    QLayout,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -22,10 +22,12 @@ from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 import copy
 
+
 @unique
 class EnumReact(Enum):
     REMOVE = 0
     ADD = 1
+
 
 class UserMenu(QWidget):
     def __init__(self, user):
@@ -33,23 +35,22 @@ class UserMenu(QWidget):
         self.setStyleSheet("background-color: red;")
         self.setContentsMargins(0, 0, 0, 0)
         self.setFixedWidth(170)
-        
+
         self.layout_ = QVBoxLayout()
         self.layout_.setSpacing(0)
         self.layout_.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+
         msg_icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value))
-        
+
         self.send_msg_btn = CustomQPushButton(" Send message")
         self.send_msg_btn.setIcon(msg_icon)
-        list_buttons = [
-            self.send_msg_btn
-        ]
-        self.setFixedHeight(60*len(list_buttons))
-        self.setLayout(self.layout_)       
-        for widget in list_buttons:  
+        list_buttons = [self.send_msg_btn]
+        self.setFixedHeight(60 * len(list_buttons))
+        self.setLayout(self.layout_)
+        for widget in list_buttons:
             self.layout_.addWidget(widget)
-        
+
+
 class Contener(QFrame):
     def __init__(self):
         super(Contener, self).__init__()
@@ -64,8 +65,10 @@ class Contener(QFrame):
             button = button_list[0]
             button.hide()
 
+
 class MessageLayout(QHBoxLayout):
     MAX_CHAR: int = 60
+
     def __init__(
         self,
         controller,
@@ -87,10 +90,10 @@ class MessageLayout(QHBoxLayout):
         main_widget = QWidget()
         self.addWidget(main_widget)
         main_widget.setStyleSheet(f"color: {Color.LIGHT_GREY.value};")
-        
+
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         # --- Left widget
         self.left_layout = QVBoxLayout()
         self.left_layout.setSpacing(0)
@@ -101,7 +104,7 @@ class MessageLayout(QHBoxLayout):
         self.left_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.left_widget.setLayout(self.left_layout)
         main_layout.addWidget(self.left_widget)
-        
+
         # --- Right widget
         right_widget = Contener()
         right_widget.setStyleSheet(
@@ -121,12 +124,12 @@ class MessageLayout(QHBoxLayout):
             icon_label, copy_icon = QLabel(""), QLabel("")
             icon_label.setPixmap(icon)
             copy_icon.setPixmap(icon)
-            self.left_layout.addWidget(icon_label)
         else:
-            icon_label, copy_icon = RoundedLabel(content=content), RoundedLabel(content=content)
+            icon_label, copy_icon = RoundedLabel(content=content), RoundedLabel(
+                content=content
+            )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.left_layout.addWidget(icon_label)
-
+        self.left_layout.addWidget(icon_label)
         str_message = coming_msg["message"]
         sender = coming_msg["id"]
 
@@ -137,14 +140,18 @@ class MessageLayout(QHBoxLayout):
         self.sender_btn = CustomQPushButton(self.username_label)
         self.user_menu = UserMenu(self.username_label)
 
-        self.user_menu.send_msg_btn.clicked.connect(functools.partial(self.to_do, copy_icon))
+        self.user_menu.send_msg_btn.clicked.connect(
+            functools.partial(self.add_dm_layout, copy_icon)
+        )
         self.user_menu.hide()
         self.left_layout.addWidget(self.sender_btn)
         if message_id:
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
-            self.user_menu.move(self.user_menu.x() - 10, self.user_menu.y() + icon_label.heightMM()/2)
-            style_= """
+            self.user_menu.move(
+                self.user_menu.x() - 10, self.user_menu.y()
+            )
+            style_ = """
             QPushButton {{
             font-weight: bold;
             border: 0px;
@@ -156,7 +163,7 @@ class MessageLayout(QHBoxLayout):
             """
             self.user_menu.leaveEvent = lambda e: self.hide_menu()
         else:
-            style_= """
+            style_ = """
             QPushButton {{
             font-weight: bold;
             border: 0px;
@@ -164,7 +171,7 @@ class MessageLayout(QHBoxLayout):
             }}
             """
         self.sender_btn.setStyleSheet(style_.format(color=Color.WHITE.value))
-            
+
         if message_id:
             self.react_buttton = CustomQPushButton(
                 " Add react", bg_color=Color.GREY.value, radius=8
@@ -273,17 +280,16 @@ class MessageLayout(QHBoxLayout):
         else:
             self.react_emot.show()
             self.react_nb.show()
-            
+
     def display_menu(self):
         if self.user_menu.isHidden():
             self.user_menu.show()
             self.user_menu.setFocus()
-            
+
     def hide_menu(self):
         if not self.user_menu.isHidden():
             self.user_menu.hide()
-    
-    def to_do(self, icon_label):
-        self.controller.update_gui_for_mp_layout(self.username_label, icon_label)
+
+    def add_dm_layout(self, icon_label):
+        self.controller.add_gui_for_mp_layout(self.username_label, icon_label)
         self.hide_menu()
-        
