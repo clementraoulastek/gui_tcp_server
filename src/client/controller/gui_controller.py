@@ -456,6 +456,7 @@ class GuiController:
             direct_message_widget.setLayout(direct_message_layout)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             btn = CustomQPushButton(room_name)
+            btn.clicked.connect(lambda: self.update_gui_for_mp_layout(room_name))
             style_ = """
             QPushButton {{
             font-weight: bold;
@@ -481,8 +482,6 @@ class GuiController:
         old_widget.hide()
         widget = self.ui.body_gui_dict[room_name]
         index = self.ui.core_layout.indexOf(old_widget)
-
-        
         self.ui.core_layout.removeWidget(old_widget)
         self.ui.core_layout.insertWidget(index, widget)
         self.ui.scroll_area = widget

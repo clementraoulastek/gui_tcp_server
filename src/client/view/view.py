@@ -157,12 +157,19 @@ class MainWindow(QMainWindow):
             border-radius: 12px;\
             margin-bottom: 15px;"
         )
-        room_btn = CustomQPushButton("> 🏠 Home")
+        room_btn = CustomQPushButton("🏠 Home")
         room_btn.clicked.connect(self.show_home_layout)
-        room_btn.setStyleSheet(
-            "font-weight: bold;\
-            border: none;"
-        )
+        style_ = """
+            QPushButton {{
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            }} 
+            QPushButton:hover {{
+            text-decoration: underline;
+            }}
+            """
+        room_btn.setStyleSheet(style_.format())
         self.room_list: Dict[str, QWidget] = {}
         # Adding widgets to the main layout
         self.direct_message_layout.addWidget(rooms_label)
