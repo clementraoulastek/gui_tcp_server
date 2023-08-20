@@ -149,7 +149,7 @@ class MessageLayout(QHBoxLayout):
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
             self.user_menu.move(
-                self.user_menu.x() - 10, self.user_menu.y()
+                self.user_menu.x() - 10, self.user_menu.y() + 40
             )
             style_ = """
             QPushButton {{

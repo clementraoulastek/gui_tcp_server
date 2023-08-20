@@ -1,6 +1,6 @@
 import logging
 import socket
-from typing import Union, Tuple
+from typing import Optional, Union, Tuple
 
 from src.tools.commands import Commands
 
@@ -52,21 +52,20 @@ class Client:
                     break
             header, payload = int(raw_data[0]), raw_data[1:].decode("utf-8")
             return header, payload
-        except Exception as error:
-            logging.error(error)
+        except Exception:
             self.sock.close()
             logging.debug("Closing connection")
             self.is_connected = False
             return False, False
 
-    def send_data(self, header: Commands, payload: str) -> None:
+    def send_data(self, header: Commands, payload: str, receiver: Optional[str] = "home") -> None:
         """
             Send data to the socket
 
         Args:
             data (str): string data to send
         """
-        message = f"{self.user_name}: {payload}\n"
+        message = f"{self.user_name}: {receiver}: {payload}\n"
 
         bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         self.sock.send(bytes_message)

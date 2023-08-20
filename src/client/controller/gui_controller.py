@@ -15,7 +15,7 @@ from src.client.controller.api_controller import ApiController
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
 from src.tools.utils import Color
-
+from functools import partial
 
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
@@ -197,7 +197,7 @@ class GuiController:
                     global_variables.user_disconnect,
                 )
             elif header in [Commands.ADD_REACT.value, Commands.RM_REACT.value]:
-                payload = payload.split(":")[1].replace(" ", "")
+                payload = payload.split(":")[-1].replace(" ", "")
                 payload_list = payload.split(";")
                 message_id, nb_reaction = payload_list[0], payload_list[1]
                 message: MessageLayout = self.messages_dict[int(message_id)]
@@ -205,8 +205,9 @@ class GuiController:
             else:
                 (
                     global_variables.comming_msg["id"],
+                    _,
                     global_variables.comming_msg["message"],
-                ) = payload.split(":", 1)
+                ) = payload.split(":")
         else:
             (
                 global_variables.comming_msg["id"],
@@ -328,7 +329,7 @@ class GuiController:
         if not hasattr(self.ui, "login_form") or not self.ui.login_form:
             self.ui.login_form = LoginLayout()
             self.ui.scroll_area.main_layout.addLayout(self.ui.login_form)
-            self.ui.scroll_area.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+            self.ui.scroll_area.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
             self.ui.login_form.password_entry.returnPressed.connect(self.login_form)
             self.ui.login_form.send_button.clicked.connect(self.login_form)
             self.ui.login_form.register_button.clicked.connect(self.register_form)
@@ -456,7 +457,7 @@ class GuiController:
             direct_message_widget.setLayout(direct_message_layout)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             btn = CustomQPushButton(room_name)
-            btn.clicked.connect(lambda: self.update_gui_for_mp_layout(room_name))
+            btn.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
             style_ = """
             QPushButton {{
             font-weight: bold;
@@ -474,7 +475,7 @@ class GuiController:
             self.ui.direct_message_layout.addWidget(direct_message_widget)
             
             # --- Add Body Scroll Area --- #
-            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}_area")
+            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}")
             self.update_gui_for_mp_layout(room_name)
             
     def update_gui_for_mp_layout(self, room_name):

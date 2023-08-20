@@ -56,9 +56,9 @@ class Backend:
         else:
             return False
 
-    def send_message(self, username: str, message: str):
+    def send_message(self, username: str, receiver: str, message: str):
         endpoint = f"http://{self.ip}:{self.port}/messages/"
-        data = {"sender": username, "message": message}
+        data = {"sender": username, "receiver": receiver, "message": message}
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
         return response.status_code

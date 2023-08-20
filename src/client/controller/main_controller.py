@@ -28,8 +28,9 @@ class MainController:
         Args:
             signal (event): event coming from signal
         """
+        receiver = self.ui.scroll_area.objectName()
         if message := self.ui.entry.text():
-            self.ui.client.send_data(Commands.MESSAGE, message)
+            self.ui.client.send_data(Commands.MESSAGE, message, receiver=receiver)
             self.gui_controller.diplay_self_message_on_gui(
                 self.ui.client.user_name, message
             )

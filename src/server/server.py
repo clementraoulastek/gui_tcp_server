@@ -2,7 +2,7 @@ import logging
 import socket
 import sys
 from threading import Thread
-from typing import Optional
+from typing import Dict, Optional
 from src.tools.backend import Backend
 
 from src.tools.commands import Commands
@@ -15,7 +15,8 @@ class Server:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((host, port))
         self.sock.listen(conn_nb)
-        self.conn_dict = {}
+        self.conn_dict: Dict[str, socket.socket] = {}
+        self.user_dict: Dict[str, str] = {}
         Thread(target=self.launch).start()
 
         self.hello_world(host, port)
@@ -114,12 +115,18 @@ class Server:
                 header, payload = self.read_data(conn)
                 if not payload:
                     raise ConnectionAbortedError
+                receiver = self.__match_username_and_address(addr, payload) 
                 self.send_message_to_backend(header, payload)
-                for address in list(self.conn_dict.keys()):
-                    if address != addr:
-                        self.send_data(
-                            self.conn_dict[address], Commands(header), payload
-                        )
+                if receiver == "home":
+                    for address in self.conn_dict:
+                        if address != addr:
+                            self.send_data(
+                                self.conn_dict[address], Commands(header), payload
+                            )
+                else:
+                    self.send_data(
+                        self.conn_dict[self.user_dict[receiver]], Commands(header), payload
+                    )
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
             self._display_disconnection(conn, addr)
@@ -127,14 +134,14 @@ class Server:
     def send_message_to_backend(self, header: int, payload: str) -> None:
         if Commands(header) == Commands.MESSAGE:
             payload_list = payload.split(":")
-            sender, message = payload_list[0], payload_list[1]
-            self.backend.send_message(sender, message)
+            sender, receiver, message = payload_list[0], payload_list[1], payload_list[2]
+            self.backend.send_message(sender, receiver, message)
         elif Commands(header) in [Commands.ADD_REACT, Commands.RM_REACT]:
             self._update_reaction(payload)
 
     def _update_reaction(self, payload: str) -> None:
         payload_list = payload.split(":")
-        sender, message = payload_list[0], payload_list[1]
+        sender, receiver, message = payload_list[0], payload_list[1], payload_list[2]
         message_list = message.split(";")
         message_id, reaction_nb = message_list[0], message_list[1]
         logging.info(message)
@@ -145,14 +152,14 @@ class Server:
 
         # Send data to new client
         self.send_data(
-            conn, Commands.MESSAGE, "Welcome to the server 😀", is_from_server=True
+            conn, Commands.MESSAGE, "home: Welcome to the server 😀", is_from_server=True
         )
 
         # Send nb of conn
         message = f"{len(self.conn_dict)}"
 
         # Send to all connected clients
-        for address in list(self.conn_dict.keys()):
+        for address in self.conn_dict:
             self.send_data(
                 self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True
             )
@@ -170,7 +177,7 @@ class Server:
         self.conn_dict.pop(addr)
         already_connected = len(self.conn_dict) >= 1
         if already_connected:
-            for address in list(self.conn_dict.keys()):
+            for address in self.conn_dict:
                 if address != addr:
                     message = f"{len(self.conn_dict)}"
                     self.send_data(
@@ -179,3 +186,14 @@ class Server:
                         message,
                         is_from_server=True,
                     )
+    
+    def __match_username_and_address(self, address: str, payload: str) -> None:
+        username, receiver = payload.split(":")[0], payload.split(":")[1]
+        receiver = receiver.replace(" ", "")
+        username = username.replace(" ", "")
+        if username != "home":
+            self.user_dict[username] = address
+        
+        return receiver
+            
+        

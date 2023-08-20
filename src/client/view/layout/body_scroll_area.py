@@ -36,7 +36,7 @@ class BodyScrollArea(QScrollArea):
             "background-color: transparent;\
             color: white"
         )
-        self.setObjectName(f"{name}_area")
+        self.setObjectName(name)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
