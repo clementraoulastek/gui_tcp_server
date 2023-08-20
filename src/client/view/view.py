@@ -86,7 +86,7 @@ class MainWindow(QMainWindow):
             border-color: {Color.MIDDLE_GREY.value}"
         )
 
-        logo_layout = QVBoxLayout()
+        logo_layout = QHBoxLayout()
         logo_widget = QWidget()
         logo_widget.setStyleSheet("border: none")
         logo_widget.setLayout(logo_layout)

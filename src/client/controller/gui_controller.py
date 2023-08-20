@@ -240,7 +240,6 @@ class GuiController:
                 global_variables.comming_msg["id"] = id
                 global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
                 global_variables.comming_msg["message"] = message
-
         else:
             (
                 global_variables.comming_msg["id"],
@@ -481,7 +480,7 @@ class GuiController:
         self.ui.entry.setDisabled(activate)
         self.ui.entry.setPlaceholderText(lock_message)
 
-    def add_gui_for_mp_layout(self, room_name: str, icon) -> None:
+    def add_gui_for_mp_layout(self, room_name: str, icon, switch_frame: Optional[bool] = False) -> None:
         if room_name not in self.ui.room_list:
             direct_message_widget = QWidget()
             direct_message_widget.setStyleSheet("border: none;")
@@ -510,6 +509,8 @@ class GuiController:
 
             # --- Add Body Scroll Area --- #
             self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}")
+        if switch_frame:
+            self.update_gui_for_mp_layout(room_name)
 
     def update_gui_for_mp_layout(self, room_name):
         old_widget = self.ui.scroll_area

@@ -13,14 +13,12 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QFrame,
     QSizePolicy,
-    QStackedLayout,
-    QLayout,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
-import copy
+
 
 
 @unique
@@ -148,7 +146,7 @@ class MessageLayout(QHBoxLayout):
         if message_id:
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
-            self.user_menu.move(self.user_menu.x() - 10, self.user_menu.y() + 40)
+            self.user_menu.move(self.user_menu.x() + 50, self.user_menu.y() + 40)
             style_ = """
             QPushButton {{
             font-weight: bold;
@@ -282,5 +280,5 @@ class MessageLayout(QHBoxLayout):
             self.user_menu.hide()
 
     def add_dm_layout(self, icon_label):
-        self.controller.add_gui_for_mp_layout(self.username_label, icon_label)
+        self.controller.add_gui_for_mp_layout(self.username_label, icon_label, switch_frame=True)
         self.hide_menu()
