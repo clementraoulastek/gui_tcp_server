@@ -74,5 +74,5 @@ class ApiController:
         Args:
             sender_id (str): sender identifier
         """
-        #if sender_id not in list(self.ui.users_pict.keys()):
+        # if sender_id not in list(self.ui.users_pict.keys()):
         self.get_user_icon(sender_id)

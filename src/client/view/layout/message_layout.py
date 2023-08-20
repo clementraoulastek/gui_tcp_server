@@ -148,9 +148,7 @@ class MessageLayout(QHBoxLayout):
         if message_id:
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
-            self.user_menu.move(
-                self.user_menu.x() - 10, self.user_menu.y() + 40
-            )
+            self.user_menu.move(self.user_menu.x() - 10, self.user_menu.y() + 40)
             style_ = """
             QPushButton {{
             font-weight: bold;
@@ -181,7 +179,7 @@ class MessageLayout(QHBoxLayout):
             sp_retain.setRetainSizeWhenHidden(True)
             self.react_buttton.setSizePolicy(sp_retain)
             self.react_buttton.setAutoFillBackground(True)
-            self.react_buttton.setFixedHeight(25)
+            self.react_buttton.setFixedHeight(20)
             react_icon = QIcon(QIcon_from_svg(Icon.SMILEY.value))
             self.react_buttton.setIcon(react_icon)
             self.react_buttton.hide()
@@ -220,14 +218,7 @@ class MessageLayout(QHBoxLayout):
 
         date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
-        date_label.setStyleSheet("border: 0px; text-decoration: ")
-
-        separator = QFrame()
-        separator.setStyleSheet(f"background-color: {Color.LIGHT_GREY.value};")
-        separator.setFrameShape(QFrame.VLine)
-        separator.setFrameShadow(QFrame.Sunken)
-        separator.setFixedWidth(1)
-        separator.setFixedHeight(12)
+        date_label.setStyleSheet("border: 0px;")
 
         sender_layout.addWidget(date_label)
 

@@ -17,6 +17,7 @@ import src.client.controller.global_variables as global_variables
 from src.tools.utils import Color
 from functools import partial
 
+
 class Worker(QThread):
     """Tricks to update the GUI with deamon thread
 
@@ -89,6 +90,7 @@ class GuiController:
         self,
         id_sender: str,
         message: str,
+        frame_name: Optional[Union[str, None]] = None,
         messsage_id: Union[int, None] = None,
         nb_react: int = 0,
     ) -> None:
@@ -111,7 +113,10 @@ class GuiController:
             message_id=self.last_message_id,
             nb_react=nb_react,
         )
-        self.ui.scroll_area.main_layout.addLayout(message)
+        if not frame_name:
+            self.ui.scroll_area.main_layout.addLayout(message)
+        else:
+            self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
         self.messages_dict[self.last_message_id] = message
         self.ui.entry.clear()
 
@@ -122,18 +127,38 @@ class GuiController:
         sender_list: list = []
         messages_dict = self.api_controller.get_older_messages()
         for message in messages_dict:
-            message_id, sender, message, reaction_nb = (
+            message_id, sender, receiver, message, reaction_nb = (
                 message["message_id"],
                 message["sender"],
+                message["receiver"],
                 message["message"],
                 message["reaction_nb"],
             )
             if sender not in sender_list:
                 sender_list.append(sender)
             self.api_controller.add_sender_picture(sender)
-            self.diplay_self_message_on_gui(
-                sender, message, messsage_id=message_id, nb_react=int(reaction_nb)
-            )
+            if receiver == "home":
+                self.diplay_self_message_on_gui(
+                    sender,
+                    message,
+                    frame_name="home",
+                    messsage_id=message_id,
+                    nb_react=int(reaction_nb),
+                )
+            elif self.ui.client.user_name in (sender, receiver):
+                direct_message_name = (
+                    receiver if sender == self.ui.client.user_name else sender
+                )
+                icon = RoundedLabel(content=self.ui.users_pict[direct_message_name])
+                self.add_gui_for_mp_layout(direct_message_name, icon)
+                self.diplay_self_message_on_gui(
+                    sender,
+                    message,
+                    frame_name=direct_message_name,
+                    messsage_id=message_id,
+                    nb_react=int(reaction_nb),
+                )
+
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
             sender_list.remove(self.ui.client.user_name)
@@ -144,24 +169,32 @@ class GuiController:
         """
         Callback to update gui with input messages
         """
-        if global_variables.comming_msg["message"]:
-            if global_variables.comming_msg["id"] != "server":
-                self.last_message_id += 1
-            message = MessageLayout(
-                self,
-                global_variables.comming_msg,
-                content=self.ui.users_pict[global_variables.comming_msg["id"]],
-                message_id=self.last_message_id
-                if global_variables.comming_msg["id"] != "server"
-                else None,
-            )
-            if global_variables.comming_msg["id"] != "server":
-                self.messages_dict[self.last_message_id] = message
-            self.ui.scroll_area.main_layout.addLayout(message)
-            (
-                global_variables.comming_msg["id"],
-                global_variables.comming_msg["message"],
-            ) = ("", "")
+        if not global_variables.comming_msg["message"]:
+            return
+        if global_variables.comming_msg["id"] != "server":
+            self.last_message_id += 1
+        message = MessageLayout(
+            self,
+            global_variables.comming_msg,
+            content=self.ui.users_pict[global_variables.comming_msg["id"]],
+            message_id=self.last_message_id
+            if global_variables.comming_msg["id"] != "server"
+            else None,
+        )
+        if global_variables.comming_msg["id"] != "server":
+            self.messages_dict[self.last_message_id] = message
+
+        if global_variables.comming_msg["receiver"] == "home":
+            dict_key = "home"
+        else:
+            dict_key = global_variables.comming_msg["id"]
+
+        self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
+        (
+            global_variables.comming_msg["id"],
+            global_variables.comming_msg["receiver"],
+            global_variables.comming_msg["message"],
+        ) = ("", "", "")
 
     def __callback_routing_messages_on_ui(self) -> None:
         """
@@ -203,16 +236,17 @@ class GuiController:
                 message: MessageLayout = self.messages_dict[int(message_id)]
                 message.update_react(int(nb_reaction))
             else:
-                (
-                    global_variables.comming_msg["id"],
-                    _,
-                    global_variables.comming_msg["message"],
-                ) = payload.split(":")
+                id, receiver, message = payload.split(":")
+                global_variables.comming_msg["id"] = id
+                global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
+                global_variables.comming_msg["message"] = message
+
         else:
             (
                 global_variables.comming_msg["id"],
+                global_variables.comming_msg["receiver"],
                 global_variables.comming_msg["message"],
-            ) = ("unknown", payload)
+            ) = ("unknown", "unknown", payload)
 
     def __remove_sender_avatar(
         self,
@@ -473,11 +507,10 @@ class GuiController:
             direct_message_layout.addWidget(btn)
             self.ui.room_list[room_name] = direct_message_widget
             self.ui.direct_message_layout.addWidget(direct_message_widget)
-            
+
             # --- Add Body Scroll Area --- #
             self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}")
-            self.update_gui_for_mp_layout(room_name)
-            
+
     def update_gui_for_mp_layout(self, room_name):
         old_widget = self.ui.scroll_area
         old_widget.hide()
@@ -487,4 +520,3 @@ class GuiController:
         self.ui.core_layout.insertWidget(index, widget)
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
-        

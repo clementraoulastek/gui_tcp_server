@@ -257,11 +257,9 @@ class MainWindow(QMainWindow):
         """
         Update the core GUI
         """
-        self.body_gui_dict = {
-            "home": BodyScrollArea(name="home")
-        }
+        self.body_gui_dict = {"home": BodyScrollArea(name="home")}
         self.scroll_area = self.body_gui_dict["home"]
-        
+
         self.core_layout.addWidget(self.scroll_area)
 
     def set_footer_gui(self) -> None:

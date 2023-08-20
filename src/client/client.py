@@ -58,7 +58,9 @@ class Client:
             self.is_connected = False
             return False, False
 
-    def send_data(self, header: Commands, payload: str, receiver: Optional[str] = "home") -> None:
+    def send_data(
+        self, header: Commands, payload: str, receiver: Optional[str] = "home"
+    ) -> None:
         """
             Send data to the socket
 

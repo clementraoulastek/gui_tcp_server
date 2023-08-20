@@ -29,9 +29,7 @@ class BodyScrollArea(QScrollArea):
 
         self.scroll_widget = QWidget()
         self.scroll_widget.setContentsMargins(0, 0, 10, 0)
-        self.verticalScrollBar().setStyleSheet(
-            scroll_bar_vertical_stylesheet
-        )
+        self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet)
         self.setStyleSheet(
             "background-color: transparent;\
             color: white"
@@ -44,14 +42,11 @@ class BodyScrollArea(QScrollArea):
         self.scroll_widget.setLayout(self.main_layout)
         self.setWidget(self.scroll_widget)
         if self.objectName() != "home_area":
-            #self.hide()
+            # self.hide()
             pass
-
 
     def scrollToBottom(self):
         """
         Update the scrollbar vertical position to the bottom
         """
-        self.verticalScrollBar().setValue(
-            self.verticalScrollBar().maximum()
-        )
+        self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())

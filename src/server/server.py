@@ -115,7 +115,7 @@ class Server:
                 header, payload = self.read_data(conn)
                 if not payload:
                     raise ConnectionAbortedError
-                receiver = self.__match_username_and_address(addr, payload) 
+                receiver = self.__match_username_and_address(addr, payload)
                 self.send_message_to_backend(header, payload)
                 if receiver == "home":
                     for address in self.conn_dict:
@@ -125,7 +125,9 @@ class Server:
                             )
                 else:
                     self.send_data(
-                        self.conn_dict[self.user_dict[receiver]], Commands(header), payload
+                        self.conn_dict[self.user_dict[receiver]],
+                        Commands(header),
+                        payload,
                     )
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError):
@@ -134,7 +136,12 @@ class Server:
     def send_message_to_backend(self, header: int, payload: str) -> None:
         if Commands(header) == Commands.MESSAGE:
             payload_list = payload.split(":")
-            sender, receiver, message = payload_list[0], payload_list[1], payload_list[2]
+            sender, receiver, message = (
+                payload_list[0],
+                payload_list[1],
+                payload_list[2],
+            )
+            receiver = receiver.replace(" ", "")
             self.backend.send_message(sender, receiver, message)
         elif Commands(header) in [Commands.ADD_REACT, Commands.RM_REACT]:
             self._update_reaction(payload)
@@ -186,14 +193,12 @@ class Server:
                         message,
                         is_from_server=True,
                     )
-    
+
     def __match_username_and_address(self, address: str, payload: str) -> None:
         username, receiver = payload.split(":")[0], payload.split(":")[1]
         receiver = receiver.replace(" ", "")
         username = username.replace(" ", "")
         if username != "home":
             self.user_dict[username] = address
-        
+
         return receiver
-            
-        
