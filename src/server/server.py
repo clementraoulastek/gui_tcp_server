@@ -2,6 +2,7 @@ import logging
 import socket
 import sys
 from threading import Thread
+import time
 from typing import Dict, Optional
 from src.tools.backend import Backend
 
@@ -31,6 +32,7 @@ class Server:
         try:
             while "Server connected":
                 conn, addr = self.sock.accept()
+                time.sleep(1)
                 conn_thread = Thread(
                     target=self.create_connection,
                     args=(conn, addr),
@@ -159,7 +161,7 @@ class Server:
 
         # Send data to new client
         self.send_data(
-            conn, Commands.MESSAGE, "home: Welcome to the server 😀", is_from_server=True
+            conn, Commands.MESSAGE, "home:Welcome to the server 😀", is_from_server=True
         )
 
         # Send nb of conn

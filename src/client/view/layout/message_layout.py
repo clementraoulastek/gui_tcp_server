@@ -111,11 +111,12 @@ class MessageLayout(QHBoxLayout):
             border: 1px solid {Color.MIDDLE_GREY.value}; "
         )
         right_layout = QVBoxLayout()
+        right_layout.setSpacing(10)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
 
-        right_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        right_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         if not content:
             icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(15, 15))

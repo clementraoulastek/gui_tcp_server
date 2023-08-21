@@ -67,7 +67,7 @@ class Client:
         Args:
             data (str): string data to send
         """
-        message = f"{self.user_name}: {receiver}: {payload}\n"
+        message = f"{self.user_name}:{receiver}:{payload}\n"
 
         bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         self.sock.send(bytes_message)

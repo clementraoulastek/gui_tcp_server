@@ -41,10 +41,10 @@ class Worker(QThread):
             time.sleep(self.polling_interval)
 
     def stop(self) -> None:
+        self._is_running = False
         self.terminate()
         self.exit()
-        self._is_running = False
-
+        
 
 class GuiController:
     def __init__(
@@ -288,14 +288,22 @@ class GuiController:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout")
-                user_pic = RoundedLabel(content=content)
+                user_pic, dm_pic = RoundedLabel(content=content), RoundedLabel(content=content)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
-                user_name = QLabel(username_label)
-                user_name.setStyleSheet(
-                    f"border: 0px;\
-                    color: {Color.WHITE.value};"
-                )
+                user_name = CustomQPushButton(username_label)
+                user_name.clicked.connect(partial(self.add_gui_for_mp_layout, username_label, dm_pic, True))
+                style_ = """
+                    QPushButton {{
+                    font-weight: bold;
+                    text-align: center;
+                    border: none;
+                    }} 
+                    QPushButton:hover {{
+                    text-decoration: underline;
+                    }}
+                    """
+                user_name.setStyleSheet(style_.format())
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
                 self.ui.user_inline.addLayout(user_layout)
@@ -313,11 +321,22 @@ class GuiController:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
-                user_pic = RoundedLabel(content=content, disabled=True)
+                user_pic, dm_pic = RoundedLabel(content=content, disabled=True), RoundedLabel(content=content)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)
-                user_name = QLabel(username_label)
-                user_name.setStyleSheet("border: 0px")
+                user_name = CustomQPushButton(username_label)
+                user_name.clicked.connect(partial(self.add_gui_for_mp_layout, username_label, dm_pic, True))
+                style_ = """
+                    QPushButton {{
+                    font-weight: bold;
+                    text-align: center;
+                    border: none;
+                    }} 
+                    QPushButton:hover {{
+                    text-decoration: underline;
+                    }}
+                    """
+                user_name.setStyleSheet(style_.format())
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
                 self.ui.user_offline.addLayout(user_layout)
