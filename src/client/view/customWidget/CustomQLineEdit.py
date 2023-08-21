@@ -24,7 +24,7 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         self,
         text="",
         place_holder_text="",
-        radius=16,
+        radius=6,
         border_size=0,
         color="#FFF",
         selection_color="#FFF",

@@ -107,7 +107,7 @@ class MessageLayout(QHBoxLayout):
         right_widget = Contener()
         right_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
-            border-radius: 15px;\
+            border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value}; "
         )
         right_layout = QVBoxLayout()

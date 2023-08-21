@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
         header_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 30px;\
+            border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value}"
         )
@@ -128,7 +128,7 @@ class MainWindow(QMainWindow):
         self.right_nav_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 30px;\
+            border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value}"
         )
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 12px;\
+            border-radius: 6px;\
             margin-bottom: 5px;"
         )
 
@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 12px;\
+            border-radius: 6px;\
             margin-bottom: 15px;"
         )
         room_btn = CustomQPushButton("🏠 Home")
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
         self.scroll_widget_avatar.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
             background-color: {Color.GREY.value};\
-            border-radius: 30px;\
+            border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value}"
         )
@@ -229,7 +229,7 @@ class MainWindow(QMainWindow):
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 12px;\
+            border-radius: 6px;\
             margin-bottom: 15px;"
         )
         self.user_inline.addWidget(self.info_label)
@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 12px;\
+            border-radius: 6px;\
             margin-bottom: 15px;"
         )
         self.user_offline.addWidget(self.info_disconnected_label)
@@ -275,7 +275,7 @@ class MainWindow(QMainWindow):
         info_widget = QWidget()
         info_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
-            border-radius: 14px"
+            border-radius: 12px"
         )
         self.button_layout.addWidget(info_widget)
 
@@ -295,7 +295,7 @@ class MainWindow(QMainWindow):
         self.user_info_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 30px;\
+            border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value}"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
