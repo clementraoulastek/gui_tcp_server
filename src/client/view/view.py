@@ -280,11 +280,17 @@ class MainWindow(QMainWindow):
         self.upper_widget.setLayout(upper_layout)
 
         self.frame_name = QLabel("#Home")
+        self.frame_name.setSizePolicy(
+            QSizePolicy.Fixed, QSizePolicy.Fixed
+        )
+        self.frame_name.setContentsMargins(15, 5, 15, 5)
         self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.frame_name.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
+            background-color: {Color.DARK_GREY.value};\
+            border-radius: 6px;\
             font-weight: bold;\
-            border: none;"
+            border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         upper_layout.addWidget(self.frame_name)
         self.body_layout.addWidget(self.upper_widget)
