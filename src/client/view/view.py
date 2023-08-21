@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
             "background-color: transparent;\
             color: white"
         )
-        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
 
@@ -260,10 +260,39 @@ class MainWindow(QMainWindow):
         """
         Update the core GUI
         """
+        self.body_widget = QWidget()
+        self.body_layout = QVBoxLayout()
+        self.body_widget.setLayout(self.body_layout)
+        
+        self.upper_widget = QWidget()
+        self.upper_widget.hide()
+        self.upper_widget.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
+        self.upper_widget.setStyleSheet(
+            f"background-color: {Color.GREY.value};\
+            border-radius: 12px;\
+            border: 1px solid {Color.MIDDLE_GREY.value}; "
+        )
+        upper_layout = QHBoxLayout()
+        self.upper_widget.setLayout(upper_layout)
+
+        self.frame_name = QLabel("#Home")
+        self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.frame_name.setStyleSheet(
+            f"color: {Color.LIGHT_GREY.value};\
+            font-weight: bold;\
+            border: none;"
+        )
+        upper_layout.addWidget(self.frame_name)
+        self.body_layout.addWidget(self.upper_widget)
+        
         self.body_gui_dict = {"home": BodyScrollArea(name="home")}
         self.scroll_area = self.body_gui_dict["home"]
+        
+        self.body_layout.addWidget(self.scroll_area)
 
-        self.core_layout.addWidget(self.scroll_area)
+        self.core_layout.addWidget(self.body_widget)
 
     def set_footer_gui(self) -> None:
         """

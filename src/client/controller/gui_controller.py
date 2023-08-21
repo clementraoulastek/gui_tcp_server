@@ -2,7 +2,7 @@ import logging
 from threading import Thread
 import time
 from typing import List, Optional, Union
-from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, QWidget
+from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, QWidget, QLayout
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
@@ -354,8 +354,9 @@ class GuiController:
         """
         for i in reversed(range(self.ui.scroll_area.main_layout.count())):
             layout = self.ui.scroll_area.main_layout.itemAt(i).layout()
-            for j in reversed(range(layout.count())):
-                layout.itemAt(j).widget().deleteLater()
+            if isinstance(layout, QLayout):
+                for j in reversed(range(layout.count())):
+                    layout.itemAt(j).widget().deleteLater()
         self.ui.scroll_area.main_layout.update()
 
     def clear_avatar(
@@ -395,6 +396,7 @@ class GuiController:
             self.show_left_layout()
             self.show_right_layout()
             self.show_footer_layout()
+            self.ui.upper_widget.show()
         elif status == False:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
         else:
@@ -408,6 +410,7 @@ class GuiController:
             self.show_left_layout()
             self.show_right_layout()
             self.show_footer_layout()
+            self.ui.upper_widget.show()
         elif status == False:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
         else:
@@ -482,6 +485,7 @@ class GuiController:
         self.ui.users_connected.clear()
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
+        self.ui.upper_widget.hide()
         self.login()
 
     def update_buttons(self) -> None:
@@ -538,8 +542,9 @@ class GuiController:
         old_widget = self.ui.scroll_area
         old_widget.hide()
         widget = self.ui.body_gui_dict[room_name]
-        index = self.ui.core_layout.indexOf(old_widget)
-        self.ui.core_layout.removeWidget(old_widget)
-        self.ui.core_layout.insertWidget(index, widget)
+        index = self.ui.body_layout.indexOf(old_widget)
+        self.ui.body_layout.removeWidget(old_widget)
+        self.ui.body_layout.insertWidget(index, widget)
+        self.ui.frame_name.setText(f"#{room_name.capitalize()}")
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
