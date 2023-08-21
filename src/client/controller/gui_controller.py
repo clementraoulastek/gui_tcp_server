@@ -134,6 +134,7 @@ class GuiController:
                 message["message"],
                 message["reaction_nb"],
             )
+            message = message.replace("$replaced$", ":")
             if sender not in sender_list:
                 sender_list.append(sender)
             self.api_controller.add_sender_picture(sender)
@@ -239,7 +240,7 @@ class GuiController:
                 id, receiver, message = payload.split(":")
                 global_variables.comming_msg["id"] = id
                 global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
-                global_variables.comming_msg["message"] = message
+                global_variables.comming_msg["message"] = message.replace("$replaced$", ":")
         else:
             (
                 global_variables.comming_msg["id"],
