@@ -221,9 +221,7 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("Welcome")
-        self.info_label.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Minimum
-        )
+        self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.message_label = QLabel("Login session")
         self.message_label.setStyleSheet("border: 0px")
@@ -264,13 +262,11 @@ class MainWindow(QMainWindow):
         self.body_layout = QVBoxLayout()
         self.body_layout.setContentsMargins(0, 0, 0, 0)
         self.body_widget.setLayout(self.body_layout)
-        
+
         self.upper_widget = QWidget()
         self.upper_widget.setContentsMargins(0, 0, 0, 0)
         self.upper_widget.hide()
-        self.upper_widget.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Minimum
-        )
+        self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 12px;\
@@ -280,9 +276,7 @@ class MainWindow(QMainWindow):
         self.upper_widget.setLayout(upper_layout)
 
         self.frame_name = QLabel("#Home")
-        self.frame_name.setSizePolicy(
-            QSizePolicy.Fixed, QSizePolicy.Fixed
-        )
+        self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.frame_name.setContentsMargins(15, 5, 15, 5)
         self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.frame_name.setStyleSheet(
@@ -294,10 +288,10 @@ class MainWindow(QMainWindow):
         )
         upper_layout.addWidget(self.frame_name)
         self.body_layout.addWidget(self.upper_widget)
-        
+
         self.body_gui_dict = {"home": BodyScrollArea(name="home")}
         self.scroll_area = self.body_gui_dict["home"]
-        
+
         self.body_layout.addWidget(self.scroll_area)
 
         self.core_layout.addWidget(self.body_widget)
@@ -443,4 +437,3 @@ class MainWindow(QMainWindow):
             self.client.close_connection()
             logging.debug("Client disconnected")
         logging.debug("GUI closing ...")
-

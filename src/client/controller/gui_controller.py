@@ -2,7 +2,14 @@ import logging
 from threading import Thread
 import time
 from typing import List, Optional, Union
-from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, QWidget, QLayout
+from src.client.core.qt_core import (
+    QHBoxLayout,
+    QLabel,
+    QThread,
+    Signal,
+    QWidget,
+    QLayout,
+)
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
@@ -44,7 +51,7 @@ class Worker(QThread):
         self._is_running = False
         self.terminate()
         self.exit()
-        
+
 
 class GuiController:
     def __init__(
@@ -240,7 +247,9 @@ class GuiController:
                 id, receiver, message = payload.split(":")
                 global_variables.comming_msg["id"] = id
                 global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
-                global_variables.comming_msg["message"] = message.replace("$replaced$", ":")
+                global_variables.comming_msg["message"] = message.replace(
+                    "$replaced$", ":"
+                )
         else:
             (
                 global_variables.comming_msg["id"],
@@ -290,12 +299,16 @@ class GuiController:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout")
-                user_pic, dm_pic = RoundedLabel(content=content, disabled=AvatarStatus.ACTIVATED), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
+                user_pic, dm_pic = RoundedLabel(
+                    content=content, disabled=AvatarStatus.ACTIVATED
+                ), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
-                user_name.clicked.connect(partial(self.add_gui_for_mp_layout, username_label, dm_pic, True))
+                user_name.clicked.connect(
+                    partial(self.add_gui_for_mp_layout, username_label, dm_pic, True)
+                )
                 style_ = """
                     QPushButton {{
                     font-weight: bold;
@@ -310,7 +323,7 @@ class GuiController:
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
                 self.ui.user_inline.addLayout(user_layout)
-                
+
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
         Callback to update gui with input avatar
@@ -323,12 +336,16 @@ class GuiController:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
-                user_pic, dm_pic = RoundedLabel(content=content, disabled=AvatarStatus.DEACTIVATED), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
+                user_pic, dm_pic = RoundedLabel(
+                    content=content, disabled=AvatarStatus.DEACTIVATED
+                ), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
-                user_name.clicked.connect(partial(self.add_gui_for_mp_layout, username_label, dm_pic, True))
+                user_name.clicked.connect(
+                    partial(self.add_gui_for_mp_layout, username_label, dm_pic, True)
+                )
                 style_ = """
                     QPushButton {{
                     font-weight: bold;
@@ -497,7 +514,9 @@ class GuiController:
             self._set_buttons_status(True, "Please login")
             self.ui.user_name.setText("User disconnected")
             self.ui.info_label.setText("Welcome")
-            self.ui.user_picture.update_picture(status=AvatarStatus.DEACTIVATED, content="")
+            self.ui.user_picture.update_picture(
+                status=AvatarStatus.DEACTIVATED, content=""
+            )
 
     def _set_buttons_status(self, activate: bool, lock_message: str) -> None:
         self.ui.custom_user_button.setDisabled(activate)
@@ -506,7 +525,9 @@ class GuiController:
         self.ui.entry.setDisabled(activate)
         self.ui.entry.setPlaceholderText(lock_message)
 
-    def add_gui_for_mp_layout(self, room_name: str, icon, switch_frame: Optional[bool] = False) -> None:
+    def add_gui_for_mp_layout(
+        self, room_name: str, icon, switch_frame: Optional[bool] = False
+    ) -> None:
         if room_name not in self.ui.room_list:
             direct_message_widget = QWidget()
             direct_message_widget.setStyleSheet("border: none;")

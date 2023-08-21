@@ -20,7 +20,6 @@ from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 
 
-
 @unique
 class EnumReact(Enum):
     REMOVE = 0
@@ -285,5 +284,7 @@ class MessageLayout(QHBoxLayout):
             self.user_menu.hide()
 
     def add_dm_layout(self, icon_label):
-        self.controller.add_gui_for_mp_layout(self.username_label, icon_label, switch_frame=True)
+        self.controller.add_gui_for_mp_layout(
+            self.username_label, icon_label, switch_frame=True
+        )
         self.hide_menu()

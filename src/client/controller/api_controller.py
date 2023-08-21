@@ -53,7 +53,9 @@ class ApiController:
         if content := self.ui.backend.get_user_icon(username):
             self.ui.users_pict[username] = content
             if update_personal_avatar:
-                self.ui.user_picture.update_picture(status=AvatarStatus.ACTIVATED, content=content)
+                self.ui.user_picture.update_picture(
+                    status=AvatarStatus.ACTIVATED, content=content
+                )
             if (
                 username in self.ui.users_connected.keys()
                 and self.ui.users_connected[username] == True

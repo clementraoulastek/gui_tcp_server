@@ -1,5 +1,17 @@
 from enum import Enum, unique
-from src.client.core.qt_core import QPixmap, QLabel, QIcon, QSize, QColor, Qt, QPainter, QBrush, QPoint, QPen
+from src.client.core.qt_core import (
+    QPixmap,
+    QLabel,
+    QIcon,
+    QSize,
+    QColor,
+    Qt,
+    QPainter,
+    QBrush,
+    QPoint,
+    QPen,
+)
+
 
 @unique
 class AvatarStatus(Enum):
@@ -10,7 +22,13 @@ class AvatarStatus(Enum):
 
 class RoundedLabel(QLabel):
     def __init__(
-        self, *args, content=None, height=40, width=40, color=None, disabled=AvatarStatus.IDLE
+        self,
+        *args,
+        content=None,
+        height=40,
+        width=40,
+        color=None,
+        disabled=AvatarStatus.IDLE
     ):
         super(RoundedLabel, self).__init__(*args)
         self.color = color
@@ -19,7 +37,6 @@ class RoundedLabel(QLabel):
         self.content = content
         self.update_picture(disabled)
         self.setStyleSheet("border-radius: 40px;")  # not working
-        
 
     def update_picture(self, status, content=None):
         if content:
@@ -34,7 +51,7 @@ class RoundedLabel(QLabel):
             self.setPixmap(p)
         else:
             self.update_icon_status(status=status)
-        
+
     def update_icon_status(self, status: AvatarStatus) -> None:
         pm = QPixmap()
         pm.loadFromData(self.content)
@@ -42,7 +59,7 @@ class RoundedLabel(QLabel):
         if status == AvatarStatus.IDLE:
             self.setPixmap(icon_pixmap)
             return
-        
+
         painter = QPainter(icon_pixmap)
         painter.setRenderHint(QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
         painter.drawPixmap(0, 0, icon_pixmap)
@@ -53,15 +70,16 @@ class RoundedLabel(QLabel):
         elif status == AvatarStatus.DEACTIVATED:
             brush_color = QColor(255, 0, 0)
             self.setDisabled(True)
-            
+
         painter.setPen(QPen(Qt.NoPen))
         circle_radius = 5
-        circle_center = QPoint(self.width_ - circle_radius, self.height_ - circle_radius)
-        
+        circle_center = QPoint(
+            self.width_ - circle_radius, self.height_ - circle_radius
+        )
+
         painter.setBrush(QBrush(brush_color))
         painter.drawEllipse(circle_center, circle_radius, circle_radius)
 
         painter.end()
-        
+
         self.setPixmap(icon_pixmap)
-        

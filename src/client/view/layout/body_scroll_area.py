@@ -5,7 +5,7 @@ from src.client.core.qt_core import (
     QWidget,
     QHBoxLayout,
     QLabel,
-    QSizePolicy
+    QSizePolicy,
 )
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.tools.utils import Color
@@ -17,15 +17,14 @@ class BodyScrollArea(QScrollArea):
         Update the core GUI
         """
         super(BodyScrollArea, self).__init__()
-        
+
         self.name = name
-        
+
         # ----------------- Main Layout ----------------- #
         self.main_layout = QVBoxLayout()
         self.main_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setObjectName(f"{name}_layout")
-        
 
         # ----------------- Scroll Area ----------------- #
         self.setMinimumWidth(600)
@@ -48,8 +47,7 @@ class BodyScrollArea(QScrollArea):
 
         self.scroll_widget.setLayout(self.main_layout)
         self.setWidget(self.scroll_widget)
-        
-        
+
     def scrollToBottom(self):
         """
         Update the scrollbar vertical position to the bottom
@@ -58,9 +56,7 @@ class BodyScrollArea(QScrollArea):
 
     def def_upper_widget(self):
         self.upper_widget = QWidget()
-        self.upper_widget.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Minimum
-        )
+        self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 12px;\
@@ -80,4 +76,3 @@ class BodyScrollArea(QScrollArea):
         self.main_layout.addWidget(self.upper_widget)
         if self.name == "home":
             self.upper_widget.hide()
-        
