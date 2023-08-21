@@ -262,9 +262,11 @@ class MainWindow(QMainWindow):
         """
         self.body_widget = QWidget()
         self.body_layout = QVBoxLayout()
+        self.body_layout.setContentsMargins(0, 0, 0, 0)
         self.body_widget.setLayout(self.body_layout)
         
         self.upper_widget = QWidget()
+        self.upper_widget.setContentsMargins(0, 0, 0, 0)
         self.upper_widget.hide()
         self.upper_widget.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum
@@ -272,7 +274,7 @@ class MainWindow(QMainWindow):
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 12px;\
-            border: 1px solid {Color.MIDDLE_GREY.value}; "
+            border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
