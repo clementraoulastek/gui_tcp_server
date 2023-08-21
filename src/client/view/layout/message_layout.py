@@ -217,7 +217,11 @@ class MessageLayout(QHBoxLayout):
 
         date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
-        date_label.setStyleSheet("border: 0px;")
+        date_label.setStyleSheet(
+            "border: 0px;\
+            font-style: italic;\
+            font-size: 10px;"
+        )
 
         sender_layout.addWidget(date_label)
 

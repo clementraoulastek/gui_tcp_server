@@ -1,4 +1,5 @@
 from typing import Optional
+from src.client.view.customWidget.CustomQLabel import AvatarStatus
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
 
@@ -52,12 +53,12 @@ class ApiController:
         if content := self.ui.backend.get_user_icon(username):
             self.ui.users_pict[username] = content
             if update_personal_avatar:
-                self.ui.user_picture.update_picture(content=content)
+                self.ui.user_picture.update_picture(status=AvatarStatus.ACTIVATED, content=content)
             if (
                 username in self.ui.users_connected.keys()
                 and self.ui.users_connected[username] == True
             ):
-                global_variables.coming_user[username] = [content, False]
+                global_variables.user_connected[username] = [content, False]
             else:
                 self.ui.users_connected["username"] = False
                 global_variables.user_disconnect[username] = [content, False]
@@ -74,5 +75,5 @@ class ApiController:
         Args:
             sender_id (str): sender identifier
         """
-        # if sender_id not in list(self.ui.users_pict.keys()):
-        self.get_user_icon(sender_id)
+        if sender_id not in list(self.ui.users_pict.keys()):
+            self.get_user_icon(sender_id)

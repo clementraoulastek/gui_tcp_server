@@ -32,7 +32,7 @@ class Server:
         try:
             while "Server connected":
                 conn, addr = self.sock.accept()
-                time.sleep(1)
+                time.sleep(0.1)
                 conn_thread = Thread(
                     target=self.create_connection,
                     args=(conn, addr),

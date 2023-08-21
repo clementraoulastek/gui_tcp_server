@@ -8,7 +8,7 @@ from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
-from src.client.view.customWidget.CustomQLabel import RoundedLabel
+from src.client.view.customWidget.CustomQLabel import AvatarStatus, RoundedLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
 from src.tools.utils import ImageAvatar, check_str_len
 from src.client.controller.api_controller import ApiController
@@ -217,7 +217,7 @@ class GuiController:
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
-                self.ui.info_label.setText(f"Users online | {nb_of_users}")
+                self.ui.info_label.setText(f"Users online |   {nb_of_users}")
             elif header == Commands.HELLO_WORLD.value:
                 self.__add_sender_avatar(payload, global_variables.user_disconnect)
                 # Return welcome to hello world
@@ -227,7 +227,7 @@ class GuiController:
             elif header == Commands.GOOD_BYE.value:
                 self.__remove_sender_avatar(
                     payload,
-                    global_variables.coming_user,
+                    global_variables.user_connected,
                     global_variables.user_disconnect,
                 )
             elif header in [Commands.ADD_REACT.value, Commands.RM_REACT.value]:
@@ -251,14 +251,14 @@ class GuiController:
     def __remove_sender_avatar(
         self,
         payload: str,
-        coming_user: dict[str, List[Union[str, bool]]],
+        user_connected: dict[str, List[Union[str, bool]]],
         user_disconnect: dict[str, List[Union[str, bool]]],
     ) -> None:
         id_, _ = payload.split(":", 1)
         self.ui.users_connected[id_] = False
         self.clear_avatar("user_inline", f"{id_}_layout")
         self.api_controller.add_sender_picture(id_)
-        user_disconnect[id_] = [coming_user[id_][0], False]
+        user_disconnect[id_] = [user_connected[id_][0], False]
         self.ui.users_pict.pop(id_)
 
     def __add_sender_avatar(
@@ -281,15 +281,17 @@ class GuiController:
         """
         Callback to update gui with input avatar
         """
-        for user, data in global_variables.coming_user.items():
+        for user, data in global_variables.user_connected.items():
             if data[1] == False:
+                global_variables.user_connected[user] = [data[0], True]
                 user_layout = QHBoxLayout()
-                user_layout.setSpacing(15)
-                user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                user_layout.setSpacing(0)
+                user_layout.setContentsMargins(0, 0, 0, 0)
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout")
-                user_pic, dm_pic = RoundedLabel(content=content), RoundedLabel(content=content)
+                user_pic, dm_pic = RoundedLabel(content=content, disabled=AvatarStatus.ACTIVATED), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
@@ -297,7 +299,7 @@ class GuiController:
                 style_ = """
                     QPushButton {{
                     font-weight: bold;
-                    text-align: center;
+                    text-align: left;
                     border: none;
                     }} 
                     QPushButton:hover {{
@@ -308,8 +310,7 @@ class GuiController:
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
                 self.ui.user_inline.addLayout(user_layout)
-                global_variables.coming_user[user] = [data[0], True]
-
+                
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
         Callback to update gui with input avatar
@@ -317,12 +318,13 @@ class GuiController:
         for user, data in global_variables.user_disconnect.items():
             if data[1] == False:
                 user_layout = QHBoxLayout()
-                user_layout.setSpacing(15)
-                user_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+                user_layout.setSpacing(0)
+                user_layout.setContentsMargins(0, 0, 0, 0)
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
-                user_pic, dm_pic = RoundedLabel(content=content, disabled=True), RoundedLabel(content=content)
+                user_pic, dm_pic = RoundedLabel(content=content, disabled=AvatarStatus.DEACTIVATED), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
@@ -330,7 +332,7 @@ class GuiController:
                 style_ = """
                     QPushButton {{
                     font-weight: bold;
-                    text-align: center;
+                    text-align: left;
                     border: none;
                     }} 
                     QPushButton:hover {{
@@ -343,7 +345,7 @@ class GuiController:
                 self.ui.user_offline.addLayout(user_layout)
                 global_variables.user_disconnect[user] = [data[0], True]
         self.ui.info_disconnected_label.setText(
-            f"Users offline | {len(global_variables.user_disconnect)}"
+            f"Users offline |   {len(global_variables.user_disconnect)}"
         )
 
     def clear(self) -> None:
@@ -473,7 +475,7 @@ class GuiController:
         self.ui.client.close_connection()
         self.update_buttons()
         self.clear_avatar("user_inline")
-        global_variables.coming_user.clear()
+        global_variables.user_connected.clear()
         global_variables.user_disconnect.clear()
         self.clear_avatar("user_offline")
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
@@ -491,7 +493,7 @@ class GuiController:
             self._set_buttons_status(True, "Please login")
             self.ui.user_name.setText("User disconnected")
             self.ui.info_label.setText("Welcome")
-            self.ui.user_picture.update_picture(content="")
+            self.ui.user_picture.update_picture(status=AvatarStatus.DEACTIVATED, content="")
 
     def _set_buttons_status(self, activate: bool, lock_message: str) -> None:
         self.ui.custom_user_button.setDisabled(activate)

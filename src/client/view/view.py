@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         )
         icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
 
-        status_server_label = QLabel(f"version: {SOFT_VERSION}")
+        status_server_label = QLabel("Robot Messenger")
         status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         status_server_label.setStyleSheet(
             "font-weight: bold;\
@@ -221,10 +221,13 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("Welcome")
+        self.info_label.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
+        self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.message_label = QLabel("Login session")
         self.message_label.setStyleSheet("border: 0px")
         self.message_label.setWordWrap(True)
-        self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
@@ -342,12 +345,14 @@ class MainWindow(QMainWindow):
         self.send_button.setIcon(self.send_icon)
         self.send_button.setDisabled(True)
 
-        empty_widget = QWidget()
-        empty_widget.setMinimumWidth(self.scroll_widget_avatar.width())
+        version_widget = QLabel(f"Version: {SOFT_VERSION}")
+        version_widget.setStyleSheet("font-style: italic")
+        version_widget.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        version_widget.setMinimumWidth(self.scroll_widget_avatar.width())
 
         self.main_layout.addWidget(self.send_widget)
         self.send_layout.addWidget(self.send_button)
-        self.send_layout.addWidget(empty_widget)
+        self.send_layout.addWidget(version_widget)
 
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
         self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
@@ -401,5 +406,4 @@ class MainWindow(QMainWindow):
             self.client.close_connection()
             logging.debug("Client disconnected")
         logging.debug("GUI closing ...")
-        self.destroy()
-        sys.exit(0)
+

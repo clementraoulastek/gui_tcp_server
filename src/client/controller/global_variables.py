@@ -8,7 +8,7 @@ comming_msg: dict[str, str] = {
     "message": "",
 }
 
-coming_user: dict[str, List[Union[str, bool]]] = {}  # TODO: Remove that fucking shit
+user_connected: dict[str, List[Union[str, bool]]] = {}  # TODO: Remove that fucking shit
 
 user_disconnect: dict[
     str, List[Union[str, bool]]
