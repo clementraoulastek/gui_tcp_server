@@ -110,7 +110,7 @@ class MessageLayout(QHBoxLayout):
             border: 1px solid {Color.MIDDLE_GREY.value}; "
         )
         right_layout = QVBoxLayout()
-        right_layout.setSpacing(10)
+        right_layout.setSpacing(20)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
@@ -132,6 +132,7 @@ class MessageLayout(QHBoxLayout):
         sender = coming_msg["id"]
 
         sender_layout = QHBoxLayout()
+        sender_layout.setSpacing(10)
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
         self.username_label = check_str_len(sender)
 
@@ -182,13 +183,6 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.setIcon(react_icon)
             self.react_buttton.hide()
 
-            emot_widget = QWidget()
-            emot_widget.setStyleSheet("border: 0px;")
-            emot_widget.setFixedWidth(50)
-            emot_layout = QHBoxLayout(emot_widget)
-            emot_layout.setSpacing(0)
-            emot_layout.setContentsMargins(0, 0, 0, 0)
-
             self.react_emot = RoundedLabel(
                 content=Icon.SMILEY.value,
                 height=15,
@@ -211,9 +205,6 @@ class MessageLayout(QHBoxLayout):
             )
             self.react_nb.hide()
 
-            emot_layout.addWidget(self.react_emot)
-            emot_layout.addWidget(self.react_nb)
-
         date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
         date_label.setStyleSheet(
@@ -221,14 +212,15 @@ class MessageLayout(QHBoxLayout):
             font-style: italic;\
             font-size: 10px;"
         )
-
         sender_layout.addWidget(date_label)
 
         if message_id:
+            sender_layout.addWidget(self.react_emot)
+            sender_layout.addWidget(self.react_nb)
             sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
-        message_label.setStyleSheet("border: 0px")
+        message_label.setStyleSheet("border: 0px; color: white;")
         message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         message_label.setWordWrap(True)
         message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -236,7 +228,6 @@ class MessageLayout(QHBoxLayout):
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
         if message_id:
-            right_layout.addWidget(emot_widget)
             self.update_react(self.nb_react)
 
     def add_react(self):

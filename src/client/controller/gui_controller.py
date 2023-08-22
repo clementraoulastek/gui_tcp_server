@@ -224,7 +224,7 @@ class GuiController:
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
-                self.ui.info_label.setText(f"Users online |   {nb_of_users}")
+                self.ui.info_label.setText(f"Users online   |   {nb_of_users}")
             elif header == Commands.HELLO_WORLD.value:
                 self.__add_sender_avatar(payload, global_variables.user_disconnect)
                 # Return welcome to hello world
@@ -362,7 +362,7 @@ class GuiController:
                 self.ui.user_offline.addLayout(user_layout)
                 global_variables.user_disconnect[user] = [data[0], True]
         self.ui.info_disconnected_label.setText(
-            f"Users offline |   {len(global_variables.user_disconnect)}"
+            f"Users offline   |   {len(global_variables.user_disconnect)}"
         )
 
     def clear(self) -> None:

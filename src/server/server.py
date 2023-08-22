@@ -125,14 +125,14 @@ class Server:
                             self.send_data(
                                 self.conn_dict[address], Commands(header), payload
                             )
-                else:
+                elif receiver in self.user_dict:
                     self.send_data(
                         self.conn_dict[self.user_dict[receiver]],
                         Commands(header),
                         payload,
                     )
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
-        except (ConnectionAbortedError, ConnectionResetError):
+        except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
             self._display_disconnection(conn, addr)
 
     def send_message_to_backend(self, header: int, payload: str) -> None:

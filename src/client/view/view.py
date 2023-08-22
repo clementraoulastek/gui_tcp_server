@@ -133,7 +133,7 @@ class MainWindow(QMainWindow):
             border-color: {Color.MIDDLE_GREY.value}"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
-        self.direct_message_layout.setSpacing(10)
+        self.direct_message_layout.setSpacing(15)
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         rooms_label = QLabel("Rooms")
@@ -143,8 +143,7 @@ class MainWindow(QMainWindow):
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;\
-            margin-bottom: 5px;"
+            border-radius: 6px;"
         )
 
         dm_label = QLabel("Direct messages")
@@ -154,8 +153,7 @@ class MainWindow(QMainWindow):
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;\
-            margin-bottom: 15px;"
+            border-radius: 6px;"
         )
         room_btn = CustomQPushButton("🏠 Home")
         room_btn.clicked.connect(self.show_home_layout)
@@ -184,10 +182,10 @@ class MainWindow(QMainWindow):
         self.user_inline_layout.setSpacing(25)
 
         self.user_inline = QVBoxLayout()
-        self.user_inline.setSpacing(10)
+        self.user_inline.setSpacing(15)
 
         self.user_offline = QVBoxLayout()
-        self.user_offline.setSpacing(10)
+        self.user_offline.setSpacing(15)
 
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
@@ -230,8 +228,7 @@ class MainWindow(QMainWindow):
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;\
-            margin-bottom: 15px;"
+            border-radius: 6px;"
         )
         self.user_inline.addWidget(self.info_label)
         self.user_inline.addWidget(self.message_label)
@@ -245,8 +242,7 @@ class MainWindow(QMainWindow):
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;\
-            margin-bottom: 15px;"
+            border-radius: 6px;"
         )
         self.user_offline.addWidget(self.info_disconnected_label)
         self.user_inline_layout.addLayout(self.user_offline)
