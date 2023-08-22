@@ -159,11 +159,6 @@ class Server:
     def handle_new_connection(self, addr, conn) -> None:
         self.conn_dict[addr] = conn
 
-        # Send data to new client
-        self.send_data(
-            conn, Commands.MESSAGE, "home:Welcome to the server 😀", is_from_server=True
-        )
-
         # Send nb of conn
         message = f"{len(self.conn_dict)}"
 

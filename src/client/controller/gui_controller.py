@@ -157,7 +157,7 @@ class GuiController:
                 direct_message_name = (
                     receiver if sender == self.ui.client.user_name else sender
                 )
-                icon = RoundedLabel(content=self.ui.users_pict[direct_message_name])
+                icon = RoundedLabel(content=self.ui.users_pict[direct_message_name], status=AvatarStatus.DM)
                 self.add_gui_for_mp_layout(direct_message_name, icon)
                 self.diplay_self_message_on_gui(
                     sender,
@@ -300,8 +300,8 @@ class GuiController:
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout")
                 user_pic, dm_pic = RoundedLabel(
-                    content=content, disabled=AvatarStatus.ACTIVATED
-                ), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
+                    content=content, status=AvatarStatus.ACTIVATED
+                ), RoundedLabel(content=content, status=AvatarStatus.DM)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
@@ -337,8 +337,8 @@ class GuiController:
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
                 user_pic, dm_pic = RoundedLabel(
-                    content=content, disabled=AvatarStatus.DEACTIVATED
-                ), RoundedLabel(content=content, disabled=AvatarStatus.IDLE)
+                    content=content, status=AvatarStatus.DEACTIVATED
+                ), RoundedLabel(content=content, status=AvatarStatus.DM)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)

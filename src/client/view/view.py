@@ -271,7 +271,7 @@ class MainWindow(QMainWindow):
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
 
-        self.frame_name = QLabel("#Home")
+        self.frame_name = QLabel("🏠 home")
         self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.frame_name.setContentsMargins(15, 5, 15, 5)
         self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
