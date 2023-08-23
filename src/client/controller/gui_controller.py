@@ -339,6 +339,7 @@ class GuiController:
                 user_pic, dm_pic = RoundedLabel(
                     content=content, status=AvatarStatus.DEACTIVATED
                 ), RoundedLabel(content=content, status=AvatarStatus.DM)
+                user_pic.set_opacity(0.2)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)
@@ -566,6 +567,6 @@ class GuiController:
         index = self.ui.body_layout.indexOf(old_widget)
         self.ui.body_layout.removeWidget(old_widget)
         self.ui.body_layout.insertWidget(index, widget)
-        self.ui.frame_name.setText(f"#{room_name.capitalize()}")
+        self.ui.frame_name.setText(f"{room_name}" if room_name != 'home' else '🏠 home') # TODO: Get label text rather than frame name
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()

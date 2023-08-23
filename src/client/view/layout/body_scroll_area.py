@@ -24,6 +24,7 @@ class BodyScrollArea(QScrollArea):
         self.main_layout = QVBoxLayout()
         self.main_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(5)
         self.main_layout.setObjectName(f"{name}_layout")
 
         # ----------------- Scroll Area ----------------- #
@@ -34,7 +35,7 @@ class BodyScrollArea(QScrollArea):
         self.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
-        self.scroll_widget.setContentsMargins(0, 0, 10, 0)
+        self.scroll_widget.setContentsMargins(0, 0, 0, 0)
         self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet)
         self.setStyleSheet(
             "background-color: transparent;\
@@ -53,6 +54,7 @@ class BodyScrollArea(QScrollArea):
         Update the scrollbar vertical position to the bottom
         """
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
+        
 
     def def_upper_widget(self):
         self.upper_widget = QWidget()

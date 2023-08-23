@@ -6,7 +6,7 @@ QPushButton {{
 	background-color: {_bg_color};
 	border-radius: {_radius}px;
 	border: {_border_size}px solid {_bg_color_active};
-	padding-left: 10px;
+	padding-left: 5px;
     padding-right: 5px;
 	selection-color: {_selection_color};
 	selection-background-color: {_context_color};

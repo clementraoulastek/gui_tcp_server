@@ -1,15 +1,11 @@
 from typing import List, Union
 
-# TODO: REMOVE THIS FUCKING SHIT FILE
-
 comming_msg: dict[str, str] = {
     "id": "",
     "receiver": "",
     "message": "",
 }
 
-user_connected: dict[str, List[Union[str, bool]]] = {}  # TODO: Remove that fucking shit
+user_connected: dict[str, List[Union[str, bool]]] = {}
 
-user_disconnect: dict[
-    str, List[Union[str, bool]]
-] = {}  # WTF IS THAT SHIT !!!! # TODO: Remove
+user_disconnect: dict[str, List[Union[str, bool]]] = {}

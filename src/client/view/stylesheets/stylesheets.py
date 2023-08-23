@@ -5,12 +5,13 @@ scroll_bar_vertical_stylesheet = """
     }
     QScrollBar:vertical {
         background: transparent;
-        width: 8px;
+        width: 12px;
+        margin-left: 5px;
     }
     QScrollBar::handle:vertical {
         background: #171717;
         min-height: 25px;
-        border-radius: 4px
+        border-radius: 2.5px;
     }
     QScrollBar::add-line:vertical {
         border: none;
@@ -20,6 +21,7 @@ scroll_bar_vertical_stylesheet = """
         border-bottom-right-radius: 7px;
         subcontrol-position: bottom;
         subcontrol-origin: margin;
+        margin-left: 5px;
     }
     QScrollBar::sub-line:vertical {
         border: none;
@@ -29,6 +31,7 @@ scroll_bar_vertical_stylesheet = """
         border-top-right-radius: 7px;
         subcontrol-position: top;
         subcontrol-origin: margin;
+        margin-left: 5px;
     }
     QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
         background: #2A2C2F;

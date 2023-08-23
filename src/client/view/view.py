@@ -20,6 +20,9 @@ from src.client.core.qt_core import (
     QWidget,
     QSizePolicy,
     QLayout,
+    QGraphicsDropShadowEffect,
+    QColor,
+    QTimer
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
@@ -36,7 +39,7 @@ class QtGui:
 
     def run(self):
         sys.exit(self.app.exec())
-
+    
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -53,6 +56,14 @@ class MainWindow(QMainWindow):
 
         # GUI settings
         self.setup_gui()
+        
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_layout)
+        self.timer.start(1000)
+        
+    def update_layout(self):
+        # Iterate through all open windows/widgets and update them
+        self.scroll_area_avatar
 
     def setup_gui(self) -> None:
         """
@@ -78,14 +89,15 @@ class MainWindow(QMainWindow):
 
     def set_header_gui(self) -> None:
         header_widget = QWidget()
+        shadow = self.widget_shadow()
+        header_widget.setGraphicsEffect(shadow)
         header_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 12px;\
             border: 1px solid;\
-            border-color: {Color.MIDDLE_GREY.value}"
+            border-color: {Color.MIDDLE_GREY.value};"
         )
-
         logo_layout = QHBoxLayout()
         logo_widget = QWidget()
         logo_widget.setStyleSheet("border: none")
@@ -124,19 +136,25 @@ class MainWindow(QMainWindow):
         """
         # --- Background
         self.right_nav_widget = QWidget()
-        self.right_nav_widget.setMinimumWidth(self.scroll_widget_avatar.width())
+        shadow = self.widget_shadow()
+        self.right_nav_widget.setGraphicsEffect(shadow)
+        self.right_nav_widget.setFixedWidth(self.scroll_widget_avatar.width())
         self.right_nav_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 12px;\
             border: 1px solid;\
-            border-color: {Color.MIDDLE_GREY.value}"
+            border-color: {Color.MIDDLE_GREY.value};\
+            margin-left: 10px"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
         self.direct_message_layout.setSpacing(15)
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         rooms_label = QLabel("Rooms")
+        rooms_label.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Minimum
+        )
         rooms_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         rooms_label.setContentsMargins(15, 5, 15, 5)
         rooms_label.setStyleSheet(
@@ -146,7 +164,7 @@ class MainWindow(QMainWindow):
             border-radius: 6px;"
         )
 
-        dm_label = QLabel("Direct messages")
+        dm_label = QLabel("Messages")
         dm_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         dm_label.setContentsMargins(15, 5, 15, 5)
         dm_label.setStyleSheet(
@@ -174,6 +192,7 @@ class MainWindow(QMainWindow):
         self.direct_message_layout.addWidget(room_btn)
         self.direct_message_layout.addWidget(dm_label)
         self.core_layout.addWidget(self.right_nav_widget)
+        
 
     def set_left_nav(self) -> None:
         # --- Left layout with scroll area
@@ -189,9 +208,12 @@ class MainWindow(QMainWindow):
 
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 15)
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 10)
 
         self.scroll_widget_avatar = QWidget()
+        shadow = self.widget_shadow()
+        self.scroll_area_avatar.setGraphicsEffect(shadow)
+        self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding
         )
@@ -268,6 +290,8 @@ class MainWindow(QMainWindow):
             border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
+        shadow = self.widget_shadow()
+        self.upper_widget.setGraphicsEffect(shadow)
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
 
@@ -292,6 +316,13 @@ class MainWindow(QMainWindow):
 
         self.core_layout.addWidget(self.body_widget)
 
+    def widget_shadow(self):
+        result = QGraphicsDropShadowEffect(self)
+        result.setColor(QColor(0, 0, 0, 150))
+        result.setOffset(0, 2)
+        result.setBlurRadius(1)
+        return result
+
     def set_footer_gui(self) -> None:
         """
         Update the footer GUI
@@ -307,11 +338,12 @@ class MainWindow(QMainWindow):
             f"background-color: {Color.GREY.value};\
             border-radius: 12px"
         )
+
         self.button_layout.addWidget(info_widget)
 
         self.main_layout.addLayout(self.button_layout)
         self.send_widget = QWidget()
-
+        
         self.send_layout = QHBoxLayout()
         self.send_widget.setLayout(self.send_layout)
         self.send_layout.setObjectName("send layout")
@@ -320,20 +352,29 @@ class MainWindow(QMainWindow):
 
         # --- Client information
         self.user_info_widget = QWidget()
+
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 12px;\
-            border: 1px solid {Color.MIDDLE_GREY.value}"
+            border: 1px solid {Color.MIDDLE_GREY.value};\
+            margin-bottom: 2px;"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
 
         self.user_widget = QWidget()
+        shadow = QGraphicsDropShadowEffect(self.user_widget)
+        shadow.setColor(QColor(0, 0, 0, 150))
+        shadow.setOffset(0, 2)
+        shadow.setBlurRadius(1) 
+        self.user_widget.setGraphicsEffect(shadow)
+        shadow.update()
+        
         self.user_widget.setStyleSheet(
             f"border: 1px solid;\
-            border: 1px solid {Color.MIDDLE_GREY.value}"
+            border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         self.custom_user_button = CustomQPushButton("")
 

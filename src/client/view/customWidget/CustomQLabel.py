@@ -37,7 +37,6 @@ class RoundedLabel(QLabel):
         self.height_ = height
         self.width_ = width
         self.content = content
-        self.opacity_effect = QGraphicsOpacityEffect()
         self.update_picture(status)
 
     def update_picture(self, status, content=None):
@@ -67,27 +66,29 @@ class RoundedLabel(QLabel):
         painter.drawPixmap(0, 0, icon_pixmap)
 
         if status == AvatarStatus.ACTIVATED:
-            brush_color = self._update_circle_color(74, 160, 50, 1)
+            brush_color = self._update_circle_color(74, 160, 50)
         elif status == AvatarStatus.DEACTIVATED:
-            brush_color = self._update_circle_color(255, 0, 0, 0.3)
+            brush_color = self._update_circle_color(255, 0, 0)
             self.setDisabled(True)
         elif status == AvatarStatus.DM:
-            brush_color = self._update_circle_color(50, 88, 160, 1)
+            brush_color = self._update_circle_color(50, 88, 160)
         painter.setPen(QPen(Qt.NoPen))
         circle_radius = 5
         circle_center = QPoint(
             self.width_ - circle_radius, self.height_ - circle_radius
         )
-
-        painter.setBrush(QBrush(brush_color))
+        brush = QBrush(brush_color)
+        painter.setBrush(brush)
         painter.drawEllipse(circle_center, circle_radius, circle_radius)
 
         painter.end()
 
         self.setPixmap(icon_pixmap)
 
-    def _update_circle_color(self, r, g, b, opacity):
-        result = QColor(r, g, b)
-        self.opacity_effect.setOpacity(opacity)
-        self.setGraphicsEffect(self.opacity_effect)
-        return result
+    def _update_circle_color(self, r, g, b):
+        return  QColor(r, g, b)
+        
+    def set_opacity(self, opacity):
+        opacity_effect = QGraphicsOpacityEffect(self)
+        opacity_effect.setOpacity(opacity)
+        self.setGraphicsEffect(opacity_effect)

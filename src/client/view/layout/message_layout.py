@@ -13,6 +13,8 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QFrame,
     QSizePolicy,
+    QGraphicsDropShadowEffect,
+    QColor
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -86,7 +88,7 @@ class MessageLayout(QHBoxLayout):
         # --- Main widget
         main_widget = QWidget()
         self.addWidget(main_widget)
-        main_widget.setStyleSheet(f"color: {Color.LIGHT_GREY.value};")
+        main_widget.setStyleSheet(f"color: {Color.LIGHT_GREY.value};margin-bottom: 1px")
 
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -104,13 +106,15 @@ class MessageLayout(QHBoxLayout):
 
         # --- Right widget
         right_widget = Contener()
+        shadow = self.widget_shadow(right_widget)
+        right_widget.setGraphicsEffect(shadow)
         right_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value}; "
         )
         right_layout = QVBoxLayout()
-        right_layout.setSpacing(20)
+        right_layout.setSpacing(10)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
@@ -170,40 +174,56 @@ class MessageLayout(QHBoxLayout):
         self.sender_btn.setStyleSheet(style_.format(color=Color.WHITE.value))
 
         if message_id:
+            # ------------------------------- React Button ------------------------------- #
             self.react_buttton = CustomQPushButton(
-                " Add react", bg_color=Color.GREY.value, radius=8
+                " Add react", bg_color=Color.GREY.value, radius=6
             )
             self.react_buttton.clicked.connect(self.add_react)
             sp_retain = self.react_buttton.sizePolicy()
             sp_retain.setRetainSizeWhenHidden(True)
             self.react_buttton.setSizePolicy(sp_retain)
-            self.react_buttton.setAutoFillBackground(True)
             self.react_buttton.setFixedHeight(20)
+            self.react_buttton.setContentsMargins(0, 0, 0, 0)
             react_icon = QIcon(QIcon_from_svg(Icon.SMILEY.value))
             self.react_buttton.setIcon(react_icon)
             self.react_buttton.hide()
-
+            # ---------------------------------------------------------------------------- #
+            
+            # -------------------------------- React widget ------------------------------- #
+            react_layout = QHBoxLayout()
+            react_layout.setSpacing(5)
+            react_layout.setContentsMargins(3, 2, 3, 2)
+            self.react_widget = QWidget()
+            self.react_widget.setStyleSheet(
+                f"color: {Color.LIGHT_GREY.value};\
+                background-color: {Color.DARK_GREY.value};\
+                border-radius: 6px;\
+                font-weight: bold;\
+                border: 1px solid {Color.MIDDLE_GREY.value};"
+            )
+            self.react_widget.setLayout(react_layout)
             self.react_emot = RoundedLabel(
                 content=Icon.SMILEY.value,
                 height=15,
                 width=15,
                 color=Color.LIGHT_GREY.value,
             )
-            self.react_emot.hide()
-            sp_retain = self.react_emot.sizePolicy()
+            self.react_emot.setContentsMargins(0, 0, 0, 0)
+            sp_retain = self.react_widget.sizePolicy()
             sp_retain.setRetainSizeWhenHidden(True)
-            self.react_emot.setSizePolicy(sp_retain)
+            self.react_widget.setSizePolicy(sp_retain)
 
-            self.react_emot.setStyleSheet("border: 0px")
+            self.react_emot.setStyleSheet("border: 0px;")
             self.react_nb = QLabel("1")
 
             self.react_emot.setAlignment(Qt.AlignLeft)
             self.react_nb.setAlignment(Qt.AlignLeft)
             self.react_nb.setStyleSheet(
-                "font-weight: bold;\
-                border: 0px"
+                "border: 0px"
             )
-            self.react_nb.hide()
+            react_layout.addWidget(self.react_emot)
+            react_layout.addWidget(self.react_nb)
+            # ---------------------------------------------------------------------------- #
 
         date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
@@ -215,8 +235,7 @@ class MessageLayout(QHBoxLayout):
         sender_layout.addWidget(date_label)
 
         if message_id:
-            sender_layout.addWidget(self.react_emot)
-            sender_layout.addWidget(self.react_nb)
+            sender_layout.addWidget(self.react_widget)
             sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
@@ -249,21 +268,17 @@ class MessageLayout(QHBoxLayout):
         self.react_nb.setText(f"{self.nb_react}")
 
         if self.nb_react == 0:
-            self.react_emot.hide()
-            self.react_nb.hide()
+            self.react_widget.hide()
         else:
-            self.react_emot.show()
-            self.react_nb.show()
+            self.react_widget.show()
 
     def update_react(self, react_nb: int):
         self.nb_react = react_nb
         self.react_nb.setText(f"{self.nb_react}")
         if self.nb_react == 0:
-            self.react_emot.hide()
-            self.react_nb.hide()
+            self.react_widget.hide()
         else:
-            self.react_emot.show()
-            self.react_nb.show()
+            self.react_widget.show()
 
     def display_menu(self):
         if self.user_menu.isHidden():
@@ -279,3 +294,10 @@ class MessageLayout(QHBoxLayout):
             self.username_label, icon_label, switch_frame=True
         )
         self.hide_menu()
+    
+    def widget_shadow(self, widget):
+        result = QGraphicsDropShadowEffect(widget)
+        result.setColor(QColor(0, 0, 0, 150))
+        result.setOffset(0, 1)
+        result.setBlurRadius(1)
+        return result
