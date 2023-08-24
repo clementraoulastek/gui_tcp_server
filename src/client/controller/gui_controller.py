@@ -144,7 +144,6 @@ class GuiController:
             message = message.replace("$replaced$", ":")
             if sender not in sender_list:
                 sender_list.append(sender)
-            self.api_controller.add_sender_picture(sender)
             if receiver == "home":
                 self.diplay_self_message_on_gui(
                     sender,
@@ -445,6 +444,7 @@ class GuiController:
             self.api_controller.get_user_icon(update_personal_avatar=update_avatar)
             self.ui.message_label.hide()
             self.ui.info_disconnected_label.show()
+            self.fetch_all_users_username()
             self.display_older_messages()
 
     def hide_left_layouts_buttons(self) -> None:
@@ -570,3 +570,8 @@ class GuiController:
         self.ui.frame_name.setText(f"{room_name}" if room_name != 'home' else '🏠 home') # TODO: Get label text rather than frame name
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
+    
+    def fetch_all_users_username(self):
+        usernames: List[str] = self.ui.backend.get_all_users_username()
+        for username in usernames:
+            self.api_controller.add_sender_picture(username)

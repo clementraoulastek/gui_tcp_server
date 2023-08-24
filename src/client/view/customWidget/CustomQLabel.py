@@ -11,6 +11,7 @@ from src.client.core.qt_core import (
     QPoint,
     QPen,
     QGraphicsOpacityEffect,
+    QGraphicsDropShadowEffect
 )
 
 
@@ -38,7 +39,7 @@ class RoundedLabel(QLabel):
         self.width_ = width
         self.content = content
         self.update_picture(status)
-
+        
     def update_picture(self, status, content=None):
         if content:
             self.content = content
@@ -60,11 +61,11 @@ class RoundedLabel(QLabel):
         if status == AvatarStatus.IDLE:
             self.setPixmap(icon_pixmap)
             return
-
+        
         painter = QPainter(icon_pixmap)
         painter.setRenderHint(QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
         painter.drawPixmap(0, 0, icon_pixmap)
-
+        
         if status == AvatarStatus.ACTIVATED:
             brush_color = self._update_circle_color(74, 160, 50)
         elif status == AvatarStatus.DEACTIVATED:
@@ -79,14 +80,23 @@ class RoundedLabel(QLabel):
         )
         brush = QBrush(brush_color)
         painter.setBrush(brush)
-        painter.drawEllipse(circle_center, circle_radius, circle_radius)
 
+        painter.drawEllipse(circle_center, circle_radius, circle_radius)
         painter.end()
 
         self.setPixmap(icon_pixmap)
 
     def _update_circle_color(self, r, g, b):
-        return  QColor(r, g, b)
+        return QColor(r, g, b)
+    
+    def widget_shadow(self):
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setColor(QColor(0, 0, 0, 150))
+        shadow.setOffset(0, 2)
+        shadow.setBlurRadius(1)
+        return shadow
+        
+
         
     def set_opacity(self, opacity):
         opacity_effect = QGraphicsOpacityEffect(self)

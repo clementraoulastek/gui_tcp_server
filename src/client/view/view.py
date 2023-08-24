@@ -57,13 +57,6 @@ class MainWindow(QMainWindow):
         # GUI settings
         self.setup_gui()
         
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_layout)
-        self.timer.start(1000)
-        
-    def update_layout(self):
-        # Iterate through all open windows/widgets and update them
-        self.scroll_area_avatar
 
     def setup_gui(self) -> None:
         """
@@ -89,7 +82,7 @@ class MainWindow(QMainWindow):
 
     def set_header_gui(self) -> None:
         header_widget = QWidget()
-        shadow = self.widget_shadow()
+        shadow = self.widget_shadow(header_widget)
         header_widget.setGraphicsEffect(shadow)
         header_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
@@ -136,7 +129,7 @@ class MainWindow(QMainWindow):
         """
         # --- Background
         self.right_nav_widget = QWidget()
-        shadow = self.widget_shadow()
+        shadow = self.widget_shadow(self.right_nav_widget)
         self.right_nav_widget.setGraphicsEffect(shadow)
         self.right_nav_widget.setFixedWidth(self.scroll_widget_avatar.width())
         self.right_nav_widget.setStyleSheet(
@@ -145,7 +138,8 @@ class MainWindow(QMainWindow):
             border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value};\
-            margin-left: 10px"
+            margin-left: 10px;\
+            margin-bottom: 2px"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
         self.direct_message_layout.setSpacing(15)
@@ -211,8 +205,8 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 10)
 
         self.scroll_widget_avatar = QWidget()
-        shadow = self.widget_shadow()
-        self.scroll_area_avatar.setGraphicsEffect(shadow)
+        shadow = self.widget_shadow(self.scroll_widget_avatar)
+        self.scroll_widget_avatar.setGraphicsEffect(shadow)
         self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding
@@ -223,15 +217,15 @@ class MainWindow(QMainWindow):
             background-color: {Color.GREY.value};\
             border-radius: 12px;\
             border: 1px solid;\
-            border-color: {Color.MIDDLE_GREY.value}"
+            border-color: {Color.MIDDLE_GREY.value};\
+            margin-bottom: 2px"
         )
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
         self.scroll_area_avatar.setStyleSheet(
-            "background-color: transparent;\
-            color: white"
+            "background-color: transparent;"
         )
         self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -290,7 +284,7 @@ class MainWindow(QMainWindow):
             border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
-        shadow = self.widget_shadow()
+        shadow = self.widget_shadow(self.upper_widget)
         self.upper_widget.setGraphicsEffect(shadow)
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
@@ -316,8 +310,8 @@ class MainWindow(QMainWindow):
 
         self.core_layout.addWidget(self.body_widget)
 
-    def widget_shadow(self):
-        result = QGraphicsDropShadowEffect(self)
+    def widget_shadow(self, obj):
+        result = QGraphicsDropShadowEffect(obj)
         result.setColor(QColor(0, 0, 0, 150))
         result.setOffset(0, 2)
         result.setBlurRadius(1)

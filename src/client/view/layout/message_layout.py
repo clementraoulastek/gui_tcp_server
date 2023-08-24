@@ -20,7 +20,7 @@ from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
-
+from src.client.view.customWidget.CustomQLabel import AvatarStatus
 
 @unique
 class EnumReact(Enum):
@@ -66,8 +66,6 @@ class Contener(QFrame):
 
 
 class MessageLayout(QHBoxLayout):
-    MAX_CHAR: int = 60
-
     def __init__(
         self,
         controller,
@@ -111,7 +109,7 @@ class MessageLayout(QHBoxLayout):
         right_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 12px;\
-            border: 1px solid {Color.MIDDLE_GREY.value}; "
+            border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         right_layout = QVBoxLayout()
         right_layout.setSpacing(10)
@@ -119,7 +117,7 @@ class MessageLayout(QHBoxLayout):
 
         main_layout.addWidget(right_widget)
 
-        right_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         if not content:
             icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(15, 15))
@@ -128,7 +126,7 @@ class MessageLayout(QHBoxLayout):
             copy_icon.setPixmap(icon)
         else:
             icon_label, copy_icon = RoundedLabel(content=content), RoundedLabel(
-                content=content
+                content=content, status=AvatarStatus.DM
             )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.left_layout.addWidget(icon_label)

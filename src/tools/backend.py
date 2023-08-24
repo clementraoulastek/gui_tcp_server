@@ -45,6 +45,16 @@ class Backend:
             return response.content
         else:
             return False
+        
+    def get_all_users_username(self) -> Union[bool, bytes]:
+        endpoint = f"http://{self.ip}:{self.port}/users"
+        response = requests.get(
+            url=f"{endpoint}/username",
+        )
+        if response.status_code == 200 and response.content:
+            return response.json()
+        else:
+            return False
 
     def get_older_messages(self):
         endpoint = f"http://{self.ip}:{self.port}/messages/"

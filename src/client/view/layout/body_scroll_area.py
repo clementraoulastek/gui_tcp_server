@@ -53,6 +53,7 @@ class BodyScrollArea(QScrollArea):
         """
         Update the scrollbar vertical position to the bottom
         """
+        self.update()
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
         
 
