@@ -416,6 +416,7 @@ class GuiController:
             self.show_right_layout()
             self.show_footer_layout()
             self.ui.upper_widget.show()
+            self.update_gui_for_mp_layout("home")
         elif status == False:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
         else:
