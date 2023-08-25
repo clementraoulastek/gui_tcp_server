@@ -1,4 +1,4 @@
-from src.client.core.qt_core import QPushButton, Signal
+from src.client.core.qt_core import QPushButton, Signal, QGraphicsDropShadowEffect, QColor
 from src.tools.utils import Color
 
 style = """
@@ -42,7 +42,6 @@ class CustomQPushButton(QPushButton):
         self.setText(text)
         self.setFixedHeight(40)
         disabled_color = Color.BLACK.value
-
         self.set_stylesheet(
             radius,
             border_size,
@@ -53,7 +52,7 @@ class CustomQPushButton(QPushButton):
             context_color,
             disabled_color,
         )
-
+        
     def set_stylesheet(
         self,
         radius,
@@ -80,3 +79,10 @@ class CustomQPushButton(QPushButton):
 
     def clicked(self):
         self.signal.emit()
+        
+    def widget_shadow(self):
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setColor(QColor(0, 0, 0, 150))
+        shadow.setOffset(0, 2)
+        shadow.setBlurRadius(1)
+        self.setGraphicsEffect(shadow)

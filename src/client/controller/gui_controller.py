@@ -307,17 +307,17 @@ class GuiController:
                 user_name = CustomQPushButton(username_label)
                 user_name.clicked.connect(
                     partial(self.add_gui_for_mp_layout, username_label, dm_pic, True)
-                )
+                ) 
                 style_ = """
-                    QPushButton {{
-                    font-weight: bold;
-                    text-align: left;
-                    border: none;
-                    }} 
-                    QPushButton:hover {{
-                    text-decoration: underline;
-                    }}
-                    """
+                QPushButton {{
+                font-weight: bold;\
+                border-radius: none;
+                border: none;
+                }} 
+                QPushButton:hover {{
+                text-decoration: underline;
+                }}
+                """
                 user_name.setStyleSheet(style_.format())
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
@@ -347,15 +347,15 @@ class GuiController:
                     partial(self.add_gui_for_mp_layout, username_label, dm_pic, True)
                 )
                 style_ = """
-                    QPushButton {{
-                    font-weight: bold;
-                    text-align: left;
-                    border: none;
-                    }} 
-                    QPushButton:hover {{
-                    text-decoration: underline;
-                    }}
-                    """
+                QPushButton {{
+                font-weight: bold;\
+                border-radius: none;
+                border: none;
+                }} 
+                QPushButton:hover {{
+                text-decoration: underline;
+                }}
+                """
                 user_name.setStyleSheet(style_.format())
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
@@ -384,6 +384,7 @@ class GuiController:
         """
         for i in reversed(range(getattr(self.ui, parent_layout).count())):
             if layout := getattr(self.ui, parent_layout).itemAt(i).layout():
+                print(f"{parent_layout} {i}")
                 if (
                     layout_name
                     and layout_name == layout.objectName()
@@ -392,7 +393,7 @@ class GuiController:
                     for j in reversed(range(layout.count())):
                         layout.itemAt(j).widget().deleteLater()
 
-        getattr(self.ui, parent_layout).update()  # ? wtf
+        getattr(self.ui, parent_layout).update()
 
     def login(self) -> None:
         """
@@ -406,7 +407,8 @@ class GuiController:
             self.ui.login_form.password_entry.returnPressed.connect(self.login_form)
             self.ui.login_form.send_button.clicked.connect(self.login_form)
             self.ui.login_form.register_button.clicked.connect(self.register_form)
-
+        
+        
     def login_form(self) -> None:
         if status := self.api_controller.send_login_form():
             self._clean_gui_and_connect(update_avatar=True)
@@ -493,19 +495,30 @@ class GuiController:
         """
         Disconnect the client
         """
+        # --------------------------- Socket disconnection --------------------------- #
         self.ui.client.close_connection()
-        self.update_buttons()
-        self.clear_avatar("user_inline")
+        
+        # -------------------------------- Dict clear -------------------------------- #
         global_variables.user_connected.clear()
         global_variables.user_disconnect.clear()
-        self.clear_avatar("user_offline")
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
         self.ui.users_connected.clear()
+        self.ui.room_list.clear()
+        
+        # --------------------------------- UI update -------------------------------- #
+        self.update_buttons()
+        self.clear_avatar("user_inline")
+        self.clear_avatar("user_offline")
+        self.clear_avatar("direct_message_layout")
+        #self.clear_avatar(self.ui.body_gui_dict["home"].main_layout.objectName())
+        
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
+        
         self.login()
-
+    
+ 
     def update_buttons(self) -> None:
         if self.ui.client.is_connected:
             self._set_buttons_status(False, "Enter your message")
@@ -530,30 +543,29 @@ class GuiController:
         self, room_name: str, icon, switch_frame: Optional[bool] = False
     ) -> None:
         if room_name not in self.ui.room_list:
-            direct_message_widget = QWidget()
-            direct_message_widget.setStyleSheet("border: none;")
             direct_message_layout = QHBoxLayout()
             direct_message_layout.setSpacing(0)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
-            direct_message_widget.setLayout(direct_message_layout)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             btn = CustomQPushButton(room_name)
             btn.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
             style_ = """
             QPushButton {{
-            font-weight: bold;
-            text-align: left;
+            font-weight: bold;\
+            border-radius: none;
+            border: none;
             }} 
             QPushButton:hover {{
             text-decoration: underline;
             }}
             """
             btn.setStyleSheet(style_.format())
+            btn.update()
             btn.setContentsMargins(0, 0, 0, 0)
             direct_message_layout.addWidget(icon)
             direct_message_layout.addWidget(btn)
-            self.ui.room_list[room_name] = direct_message_widget
-            self.ui.direct_message_layout.addWidget(direct_message_widget)
+            self.ui.room_list[room_name] = direct_message_layout
+            self.ui.direct_message_layout.addLayout(direct_message_layout)
 
             # --- Add Body Scroll Area --- #
             self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}")

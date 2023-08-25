@@ -1,4 +1,4 @@
-from src.client.core.qt_core import QLineEdit, Qt, Signal, QToolButton
+from src.client.core.qt_core import QLineEdit, Qt, Signal, QToolButton, QGraphicsDropShadowEffect, QColor
 from src.tools.utils import Color
 
 style = """
@@ -52,6 +52,7 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         )
 
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.widget_shadow()
 
     def set_stylesheet(
         self,
@@ -74,3 +75,10 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             _context_color=context_color,
         )
         self.setStyleSheet(style_format)
+    
+    def widget_shadow(self):
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setColor(QColor(0, 0, 0, 150))
+        shadow.setOffset(0, 2)
+        shadow.setBlurRadius(1)
+        self.setGraphicsEffect(shadow)

@@ -84,6 +84,7 @@ class LoginLayout(QHBoxLayout):
 
     def create_title_widgets(self):
         self.icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
+        
         self.icon_soft.setStyleSheet(
             "font-weight: bold;\
             border: none"
@@ -103,7 +104,8 @@ class LoginLayout(QHBoxLayout):
         self.error_label = QLabel("Please login or register if you havn't account yet")
         self.error_label.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
-            border: none"
+            border: none;\
+            font-weight: bold"
         )
         self.error_layout.addWidget(self.error_label)
 
@@ -116,8 +118,9 @@ class LoginLayout(QHBoxLayout):
         )
         self.username_entry = CustomQLineEdit(
             place_holder_text="Enter your username",
-            border_size=1,
             text=os.environ["USERNAME"],
+            bg_color=Color.DARK_GREY.value,
+            bg_color_active=Color.DARK_GREY.value
         )
         self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
@@ -133,8 +136,9 @@ class LoginLayout(QHBoxLayout):
         )
         self.password_entry = CustomQLineEdit(
             place_holder_text="Enter your password",
-            border_size=1,
             text=os.environ["PASSWORD"],
+            bg_color=Color.DARK_GREY.value,
+            bg_color_active=Color.DARK_GREY.value
         )
         self.password_entry.setFixedWidth(300)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
@@ -144,11 +148,13 @@ class LoginLayout(QHBoxLayout):
 
     def create_button_widgets(self):
         self.send_button = CustomQPushButton(" Login")
+        self.send_button.widget_shadow()
         self.send_button.setFixedWidth(120)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
 
         self.register_button = CustomQPushButton(" Register")
+        self.register_button.widget_shadow()
         self.register_button.setFixedWidth(120)
         self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
         self.register_button.setIcon(self.register_icon)

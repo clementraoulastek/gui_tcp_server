@@ -146,6 +146,8 @@ class MainWindow(QMainWindow):
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         rooms_label = QLabel("Rooms")
+        shadow = self.widget_shadow(self.scroll_widget_avatar)
+        rooms_label.setGraphicsEffect(shadow)
         rooms_label.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum
         )
@@ -159,6 +161,8 @@ class MainWindow(QMainWindow):
         )
 
         dm_label = QLabel("Messages")
+        shadow = self.widget_shadow(self.scroll_widget_avatar)
+        dm_label.setGraphicsEffect(shadow)
         dm_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         dm_label.setContentsMargins(15, 5, 15, 5)
         dm_label.setStyleSheet(
@@ -235,6 +239,8 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("Welcome")
+        shadow = self.widget_shadow(self.scroll_widget_avatar)
+        self.info_label.setGraphicsEffect(shadow)
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.message_label = QLabel("Login session")
@@ -251,6 +257,8 @@ class MainWindow(QMainWindow):
         self.user_inline_layout.addLayout(self.user_inline)
 
         self.info_disconnected_label = QLabel("")
+        shadow = self.widget_shadow(self.scroll_widget_avatar)
+        self.info_disconnected_label.setGraphicsEffect(shadow)
         self.info_disconnected_label.hide()
         self.info_disconnected_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
@@ -290,6 +298,8 @@ class MainWindow(QMainWindow):
         self.upper_widget.setLayout(upper_layout)
 
         self.frame_name = QLabel("🏠 home")
+        shadow = shadow = self.widget_shadow(self.upper_widget)
+        self.frame_name.setGraphicsEffect(shadow)
         self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.frame_name.setContentsMargins(15, 5, 15, 5)
         self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -322,6 +332,7 @@ class MainWindow(QMainWindow):
         Update the footer GUI
         """
         self.logout_button = CustomQPushButton(" Logout")
+        self.logout_button.widget_shadow()
         self.logout_button.clicked.connect(self.controller.logout)
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
         self.logout_button.setIcon(self.logout_icon)
@@ -371,6 +382,7 @@ class MainWindow(QMainWindow):
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         self.custom_user_button = CustomQPushButton("")
+        self.custom_user_button.widget_shadow()
 
         self.user_picture = RoundedLabel(content="")
         self.user_picture.setStyleSheet("border: 0px")
@@ -397,18 +409,17 @@ class MainWindow(QMainWindow):
 
         self.entry = CustomQLineEdit(place_holder_text="Please login")
         self.entry.returnPressed.connect(self.controller.send_message_to_server)
-        self.entry.setDisabled(True)
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
         self.send_button = CustomQPushButton("")
+        self.send_button.widget_shadow()
         self.send_button.clicked.connect(self.controller.send_message_to_server)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
-        self.send_button.setDisabled(True)
 
         version_widget = QLabel(f"Version: {SOFT_VERSION}")
-        version_widget.setStyleSheet("font-style: italic")
+        version_widget.setStyleSheet(f"font-style: italic; color: {Color.LIGHT_GREY.value}")
         version_widget.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         version_widget.setMinimumWidth(self.scroll_widget_avatar.width())
 
@@ -429,18 +440,21 @@ class MainWindow(QMainWindow):
 
         # --- Close left nav button
         self.close_left_nav_button = CustomQPushButton("")
+        self.close_left_nav_button.widget_shadow()
         self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
         self.close_left_nav_button.setIcon(self.close_icon)
         self.close_left_nav_button.setFixedWidth(50)
 
         # --- Close right nav button
         self.close_right_nav_button = CustomQPushButton("")
+        self.close_right_nav_button.widget_shadow()
         self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
         self.close_right_nav_button.setIcon(self.show_icon)
         self.close_right_nav_button.setFixedWidth(50)
 
         # --- Show left button
         self.show_left_nav_button = CustomQPushButton("")
+        self.show_left_nav_button.widget_shadow()
         self.show_left_nav_button.clicked.connect(self.controller.show_left_layout)
         self.show_left_nav_button.setIcon(self.show_icon)
         self.show_left_nav_button.setFixedWidth(50)
@@ -448,6 +462,7 @@ class MainWindow(QMainWindow):
 
         # --- Show right button
         self.show_right_nav_button = CustomQPushButton("")
+        self.show_right_nav_button.widget_shadow()
         self.show_right_nav_button.clicked.connect(self.controller.show_right_layout)
         self.show_right_nav_button.setIcon(self.close_icon)
         self.show_right_nav_button.setFixedWidth(50)

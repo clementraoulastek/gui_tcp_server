@@ -153,8 +153,6 @@ class MessageLayout(QHBoxLayout):
             style_ = """
             QPushButton {{
             font-weight: bold;
-            border: 0px;
-            color: {color};
             }} 
             QPushButton:hover {{
             text-decoration: underline;
@@ -169,7 +167,7 @@ class MessageLayout(QHBoxLayout):
             color: {color};
             }}
             """
-        self.sender_btn.setStyleSheet(style_.format(color=Color.WHITE.value))
+        self.sender_btn.setStyleSheet(style_.format())
 
         if message_id:
             # ------------------------------- React Button ------------------------------- #
@@ -192,6 +190,7 @@ class MessageLayout(QHBoxLayout):
             react_layout.setSpacing(5)
             react_layout.setContentsMargins(3, 2, 3, 2)
             self.react_widget = QWidget()
+            shadow = self.widget_shadow(self.react_widget)
             self.react_widget.setStyleSheet(
                 f"color: {Color.LIGHT_GREY.value};\
                 background-color: {Color.DARK_GREY.value};\
@@ -199,6 +198,7 @@ class MessageLayout(QHBoxLayout):
                 font-weight: bold;\
                 border: 1px solid {Color.MIDDLE_GREY.value};"
             )
+            self.react_widget.setGraphicsEffect(shadow)
             self.react_widget.setLayout(react_layout)
             self.react_emot = RoundedLabel(
                 content=Icon.SMILEY.value,

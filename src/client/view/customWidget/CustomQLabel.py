@@ -39,6 +39,7 @@ class RoundedLabel(QLabel):
         self.width_ = width
         self.content = content
         self.update_picture(status)
+        self.setStyleSheet("border: none")
         
     def update_picture(self, status, content=None):
         if content:
@@ -70,7 +71,6 @@ class RoundedLabel(QLabel):
             brush_color = self._update_circle_color(74, 160, 50)
         elif status == AvatarStatus.DEACTIVATED:
             brush_color = self._update_circle_color(255, 0, 0)
-            self.setDisabled(True)
         elif status == AvatarStatus.DM:
             brush_color = self._update_circle_color(50, 88, 160)
         painter.setPen(QPen(Qt.NoPen))
@@ -83,7 +83,6 @@ class RoundedLabel(QLabel):
 
         painter.drawEllipse(circle_center, circle_radius, circle_radius)
         painter.end()
-
         self.setPixmap(icon_pixmap)
 
     def _update_circle_color(self, r, g, b):
@@ -95,8 +94,6 @@ class RoundedLabel(QLabel):
         shadow.setOffset(0, 2)
         shadow.setBlurRadius(1)
         return shadow
-        
-
         
     def set_opacity(self, opacity):
         opacity_effect = QGraphicsOpacityEffect(self)
