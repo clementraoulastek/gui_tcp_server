@@ -22,7 +22,6 @@ from src.client.core.qt_core import (
     QLayout,
     QGraphicsDropShadowEffect,
     QColor,
-    QTimer,
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION

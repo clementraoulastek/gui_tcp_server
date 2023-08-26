@@ -117,7 +117,6 @@ class GuiController:
             self,
             comming_msg,
             content=self.ui.users_pict[id_sender],
-            reversed_=self.ui.client.user_name == id_sender,
             message_id=self.last_message_id,
             nb_react=nb_react,
             date=date,

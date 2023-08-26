@@ -73,7 +73,6 @@ class MessageLayout(QHBoxLayout):
         coming_msg: dict,
         nb_react: Optional[int] = 0,
         content: Optional[None] = None,
-        reversed_: Optional[bool] = False,
         message_id: Optional[None] = None,
         date: Optional[str] = "",
     ):
@@ -88,7 +87,10 @@ class MessageLayout(QHBoxLayout):
         # --- Main widget
         main_widget = QWidget()
         self.addWidget(main_widget)
-        main_widget.setStyleSheet(f"color: {Color.LIGHT_GREY.value};margin-bottom: 1px")
+        main_widget.setStyleSheet(
+            f"color: {Color.LIGHT_GREY.value};\
+            margin-bottom: 1px;"
+        )
 
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
