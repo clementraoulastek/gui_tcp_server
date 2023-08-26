@@ -84,7 +84,7 @@ class LoginLayout(QHBoxLayout):
 
     def create_title_widgets(self):
         self.icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
-        
+
         self.icon_soft.setStyleSheet(
             "font-weight: bold;\
             border: none"
@@ -120,7 +120,7 @@ class LoginLayout(QHBoxLayout):
             place_holder_text="Enter your username",
             text=os.environ["USERNAME"],
             bg_color=Color.DARK_GREY.value,
-            bg_color_active=Color.DARK_GREY.value
+            bg_color_active=Color.DARK_GREY.value,
         )
         self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
@@ -138,7 +138,7 @@ class LoginLayout(QHBoxLayout):
             place_holder_text="Enter your password",
             text=os.environ["PASSWORD"],
             bg_color=Color.DARK_GREY.value,
-            bg_color_active=Color.DARK_GREY.value
+            bg_color_active=Color.DARK_GREY.value,
         )
         self.password_entry.setFixedWidth(300)
         self.password_entry.setContentsMargins(0, 0, 0, 0)

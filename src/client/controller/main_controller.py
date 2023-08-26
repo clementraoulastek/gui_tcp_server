@@ -34,6 +34,7 @@ class MainController:
             self.gui_controller.diplay_self_message_on_gui(
                 self.ui.client.user_name, message
             )
+            self.ui.entry.clearFocus()
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()

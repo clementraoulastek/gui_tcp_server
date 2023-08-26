@@ -14,13 +14,14 @@ from src.client.core.qt_core import (
     QFrame,
     QSizePolicy,
     QGraphicsDropShadowEffect,
-    QColor
+    QColor,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.CustomQLabel import RoundedLabel
 from src.client.view.customWidget.CustomQLabel import AvatarStatus
+
 
 @unique
 class EnumReact(Enum):
@@ -184,7 +185,7 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.setIcon(react_icon)
             self.react_buttton.hide()
             # ---------------------------------------------------------------------------- #
-            
+
             # -------------------------------- React widget ------------------------------- #
             react_layout = QHBoxLayout()
             react_layout.setSpacing(5)
@@ -216,9 +217,7 @@ class MessageLayout(QHBoxLayout):
 
             self.react_emot.setAlignment(Qt.AlignLeft)
             self.react_nb.setAlignment(Qt.AlignLeft)
-            self.react_nb.setStyleSheet(
-                "border: 0px"
-            )
+            self.react_nb.setStyleSheet("border: 0px")
             react_layout.addWidget(self.react_emot)
             react_layout.addWidget(self.react_nb)
             # ---------------------------------------------------------------------------- #
@@ -280,8 +279,8 @@ class MessageLayout(QHBoxLayout):
 
     def display_menu(self):
         if self.user_menu.isHidden():
-            self.user_menu.show()
             self.user_menu.setFocus()
+            self.user_menu.show()
 
     def hide_menu(self):
         if not self.user_menu.isHidden():
@@ -292,7 +291,7 @@ class MessageLayout(QHBoxLayout):
             self.username_label, icon_label, switch_frame=True
         )
         self.hide_menu()
-    
+
     def widget_shadow(self, widget):
         result = QGraphicsDropShadowEffect(widget)
         result.setColor(QColor(0, 0, 0, 150))

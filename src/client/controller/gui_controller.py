@@ -156,7 +156,10 @@ class GuiController:
                 direct_message_name = (
                     receiver if sender == self.ui.client.user_name else sender
                 )
-                icon = RoundedLabel(content=self.ui.users_pict[direct_message_name], status=AvatarStatus.DM)
+                icon = RoundedLabel(
+                    content=self.ui.users_pict[direct_message_name],
+                    status=AvatarStatus.DM,
+                )
                 self.add_gui_for_mp_layout(direct_message_name, icon)
                 self.diplay_self_message_on_gui(
                     sender,
@@ -196,7 +199,15 @@ class GuiController:
         else:
             dict_key = global_variables.comming_msg["id"]
 
+        self.add_gui_for_mp_layout(
+            dict_key,
+            RoundedLabel(
+                content=self.ui.users_pict[global_variables.comming_msg["id"]],
+                status=AvatarStatus.DM,
+            ),
+        )
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
+
         (
             global_variables.comming_msg["id"],
             global_variables.comming_msg["receiver"],
@@ -306,8 +317,8 @@ class GuiController:
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
                 user_name.clicked.connect(
-                    partial(self.add_gui_for_mp_layout, username_label, dm_pic, True)
-                ) 
+                    partial(self.add_gui_for_mp_layout, username, dm_pic, True)
+                )
                 style_ = """
                 QPushButton {{
                 font-weight: bold;\
@@ -344,7 +355,7 @@ class GuiController:
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
                 user_name.clicked.connect(
-                    partial(self.add_gui_for_mp_layout, username_label, dm_pic, True)
+                    partial(self.add_gui_for_mp_layout, username, dm_pic, True)
                 )
                 style_ = """
                 QPushButton {{
@@ -384,7 +395,6 @@ class GuiController:
         """
         for i in reversed(range(getattr(self.ui, parent_layout).count())):
             if layout := getattr(self.ui, parent_layout).itemAt(i).layout():
-                print(f"{parent_layout} {i}")
                 if (
                     layout_name
                     and layout_name == layout.objectName()
@@ -407,8 +417,7 @@ class GuiController:
             self.ui.login_form.password_entry.returnPressed.connect(self.login_form)
             self.ui.login_form.send_button.clicked.connect(self.login_form)
             self.ui.login_form.register_button.clicked.connect(self.register_form)
-        
-        
+
     def login_form(self) -> None:
         if status := self.api_controller.send_login_form():
             self._clean_gui_and_connect(update_avatar=True)
@@ -498,28 +507,27 @@ class GuiController:
         """
         # --------------------------- Socket disconnection --------------------------- #
         self.ui.client.close_connection()
-        
+
         # -------------------------------- Dict clear -------------------------------- #
         global_variables.user_connected.clear()
         global_variables.user_disconnect.clear()
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
         self.ui.users_connected.clear()
         self.ui.room_list.clear()
-        
+
         # --------------------------------- UI update -------------------------------- #
         self.update_buttons()
         self.clear_avatar("user_inline")
         self.clear_avatar("user_offline")
         self.clear_avatar("direct_message_layout")
-        #self.clear_avatar(self.ui.body_gui_dict["home"].main_layout.objectName())
-        
+        # self.clear_avatar(self.ui.body_gui_dict["home"].main_layout.objectName())
+
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
-        
+
         self.login()
-    
- 
+
     def update_buttons(self) -> None:
         if self.ui.client.is_connected:
             self._set_buttons_status(False, "Enter your message")
@@ -548,7 +556,8 @@ class GuiController:
             direct_message_layout.setSpacing(0)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            btn = CustomQPushButton(room_name)
+            partial_room_name = check_str_len(room_name)
+            btn = CustomQPushButton(partial_room_name)
             btn.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
             style_ = """
             QPushButton {{
@@ -569,7 +578,7 @@ class GuiController:
             self.ui.direct_message_layout.addLayout(direct_message_layout)
 
             # --- Add Body Scroll Area --- #
-            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=f"{room_name}")
+            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=room_name)
         if switch_frame:
             self.update_gui_for_mp_layout(room_name)
 
@@ -580,10 +589,12 @@ class GuiController:
         index = self.ui.body_layout.indexOf(old_widget)
         self.ui.body_layout.removeWidget(old_widget)
         self.ui.body_layout.insertWidget(index, widget)
-        self.ui.frame_name.setText(f"{room_name}" if room_name != 'home' else '🏠 home') # TODO: Get label text rather than frame name
+        self.ui.frame_name.setText(
+            f"{room_name}" if room_name != "home" else "🏠 home"
+        )  # TODO: Get label text rather than frame name
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
-    
+
     def fetch_all_users_username(self):
         usernames: List[str] = self.ui.backend.get_all_users_username()
         for username in usernames:

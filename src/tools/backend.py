@@ -45,7 +45,7 @@ class Backend:
             return response.content
         else:
             return False
-        
+
     def get_all_users_username(self) -> Union[bool, bytes]:
         endpoint = f"http://{self.ip}:{self.port}/users"
         response = requests.get(

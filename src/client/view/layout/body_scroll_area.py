@@ -8,7 +8,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
 )
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
-from src.tools.utils import Color
+from src.tools.utils import Color, check_str_len
 
 
 class BodyScrollArea(QScrollArea):
@@ -26,6 +26,8 @@ class BodyScrollArea(QScrollArea):
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(5)
         self.main_layout.setObjectName(f"{name}_layout")
+
+        self.partial_name = check_str_len(name)
 
         # ----------------- Scroll Area ----------------- #
         self.setMinimumWidth(600)
@@ -55,7 +57,6 @@ class BodyScrollArea(QScrollArea):
         """
         self.update()
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
-        
 
     def def_upper_widget(self):
         self.upper_widget = QWidget()
