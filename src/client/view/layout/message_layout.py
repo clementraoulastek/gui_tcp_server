@@ -75,6 +75,7 @@ class MessageLayout(QHBoxLayout):
         content: Optional[None] = None,
         reversed_: Optional[bool] = False,
         message_id: Optional[None] = None,
+        date: Optional[str] = "",
     ):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
@@ -175,13 +176,21 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton = CustomQPushButton(
                 " Add react", bg_color=Color.GREY.value, radius=6
             )
+            style_ = """
+            QPushButton {{
+            text-align: center;
+            border: none;
+            }} 
+            QPushButton:hover {{
+            text-decoration: underline;
+            }}
+            """
+            self.react_buttton.setStyleSheet(style_.format())
             self.react_buttton.clicked.connect(self.add_react)
-            sp_retain = self.react_buttton.sizePolicy()
-            sp_retain.setRetainSizeWhenHidden(True)
-            self.react_buttton.setSizePolicy(sp_retain)
-            self.react_buttton.setFixedHeight(20)
+            self.react_buttton.setFixedHeight(13)
             self.react_buttton.setContentsMargins(0, 0, 0, 0)
             react_icon = QIcon(QIcon_from_svg(Icon.SMILEY.value))
+
             self.react_buttton.setIcon(react_icon)
             self.react_buttton.hide()
             # ---------------------------------------------------------------------------- #
@@ -208,10 +217,6 @@ class MessageLayout(QHBoxLayout):
                 color=Color.LIGHT_GREY.value,
             )
             self.react_emot.setContentsMargins(0, 0, 0, 0)
-            sp_retain = self.react_widget.sizePolicy()
-            sp_retain.setRetainSizeWhenHidden(True)
-            self.react_widget.setSizePolicy(sp_retain)
-
             self.react_emot.setStyleSheet("border: 0px;")
             self.react_nb = QLabel("1")
 
@@ -222,7 +227,11 @@ class MessageLayout(QHBoxLayout):
             react_layout.addWidget(self.react_nb)
             # ---------------------------------------------------------------------------- #
 
-        date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
+        if not date:
+            date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
+        else:
+            dt_object = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f%z")
+            date_time = dt_object.strftime("%m/%d/%Y à %H:%M:%S")
         date_label = QLabel(date_time)
         date_label.setStyleSheet(
             "border: 0px;\

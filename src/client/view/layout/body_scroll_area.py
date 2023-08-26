@@ -31,8 +31,7 @@ class BodyScrollArea(QScrollArea):
 
         # ----------------- Scroll Area ----------------- #
         self.setMinimumWidth(600)
-        self.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
-
+        # self.verticalScrollBar().rangeChanged.connect(self.scrollToBottom) # TODO: only when connected, not working atm
         self.setContentsMargins(0, 0, 0, 0)
         self.setMinimumHeight(380)
 
@@ -55,7 +54,6 @@ class BodyScrollArea(QScrollArea):
         """
         Update the scrollbar vertical position to the bottom
         """
-        self.update()
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
     def def_upper_widget(self):

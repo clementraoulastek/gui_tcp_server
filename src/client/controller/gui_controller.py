@@ -98,8 +98,9 @@ class GuiController:
         id_sender: str,
         message: str,
         frame_name: Optional[Union[str, None]] = None,
-        messsage_id: Union[int, None] = None,
-        nb_react: int = 0,
+        messsage_id: Optional[Union[int, None]] = None,
+        nb_react: Optional[int] = 0,
+        date: Optional[str] = "",
     ) -> None:
         """
             Display message on gui and clear the message entry
@@ -119,6 +120,7 @@ class GuiController:
             reversed_=self.ui.client.user_name == id_sender,
             message_id=self.last_message_id,
             nb_react=nb_react,
+            date=date,
         )
         if not frame_name:
             self.ui.scroll_area.main_layout.addLayout(message)
@@ -134,12 +136,13 @@ class GuiController:
         sender_list: list = []
         messages_dict = self.api_controller.get_older_messages()
         for message in messages_dict:
-            message_id, sender, receiver, message, reaction_nb = (
+            message_id, sender, receiver, message, reaction_nb, date = (
                 message["message_id"],
                 message["sender"],
                 message["receiver"],
                 message["message"],
                 message["reaction_nb"],
+                message["created_at"],
             )
             message = message.replace("$replaced$", ":")
             if sender not in sender_list:
@@ -151,6 +154,7 @@ class GuiController:
                     frame_name="home",
                     messsage_id=message_id,
                     nb_react=int(reaction_nb),
+                    date=date,
                 )
             elif self.ui.client.user_name in (sender, receiver):
                 direct_message_name = (
@@ -167,6 +171,7 @@ class GuiController:
                     frame_name=direct_message_name,
                     messsage_id=message_id,
                     nb_react=int(reaction_nb),
+                    date=date,
                 )
 
         # Reset dict to handle new avatar images from conn
@@ -207,7 +212,7 @@ class GuiController:
             ),
         )
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
-
+        self.ui.scroll_area.scrollToBottom()  # ? Not working
         (
             global_variables.comming_msg["id"],
             global_variables.comming_msg["receiver"],
