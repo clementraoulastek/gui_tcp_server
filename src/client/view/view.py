@@ -126,6 +126,21 @@ class MainWindow(QMainWindow):
         """
         Update the header GUI
         """
+        # ---------------------------------------------------------------------------- #
+        #                                  Scroll Area                                 #
+        # ---------------------------------------------------------------------------- #
+        self.scroll_area_dm = QScrollArea()
+        self.scroll_area_dm.setFixedWidth(self.scroll_widget_avatar.width() + 10)
+        self.scroll_area_dm.verticalScrollBar().setStyleSheet(
+            scroll_bar_vertical_stylesheet
+        )
+
+        self.scroll_area_dm.setStyleSheet("background-color: transparent;")
+        self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_dm.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area_dm.setWidgetResizable(True)
+        # ---------------------------------------------------------------------------- #
+        
         # --- Background
         self.right_nav_widget = QWidget()
         shadow = self.widget_shadow(self.right_nav_widget)
@@ -186,7 +201,10 @@ class MainWindow(QMainWindow):
         self.direct_message_layout.addWidget(rooms_label)
         self.direct_message_layout.addWidget(room_btn)
         self.direct_message_layout.addWidget(dm_label)
-        self.core_layout.addWidget(self.right_nav_widget)
+        
+        self.scroll_area_dm.setWidget(self.right_nav_widget)
+        
+        self.core_layout.addWidget(self.scroll_area_dm)
 
     def set_left_nav(self) -> None:
         # --- Left layout with scroll area

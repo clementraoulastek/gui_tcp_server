@@ -486,12 +486,12 @@ class GuiController:
         self.ui.close_left_nav_button.show()
 
     def hide_right_layout(self) -> None:
-        self.ui.right_nav_widget.hide()
+        self.ui.scroll_area_dm.hide()
         self.ui.close_right_nav_button.hide()
         self.ui.show_right_nav_button.show()
 
     def show_right_layout(self) -> None:
-        self.ui.right_nav_widget.show()
+        self.ui.scroll_area_dm.show()
         self.ui.show_right_nav_button.hide()
         self.ui.close_right_nav_button.show()
 
