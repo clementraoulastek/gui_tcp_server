@@ -15,7 +15,7 @@ from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
-from src.client.view.customWidget.CustomQLabel import AvatarStatus, RoundedLabel
+from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
 from src.tools.utils import ImageAvatar, check_str_len
 from src.client.controller.api_controller import ApiController
@@ -159,7 +159,7 @@ class GuiController:
                 direct_message_name = (
                     receiver if sender == self.ui.client.user_name else sender
                 )
-                icon = RoundedLabel(
+                icon = AvatarLabel(
                     content=self.ui.users_pict[direct_message_name],
                     status=AvatarStatus.DM,
                 )
@@ -205,7 +205,7 @@ class GuiController:
 
         self.add_gui_for_mp_layout(
             dict_key,
-            RoundedLabel(
+            AvatarLabel(
                 content=self.ui.users_pict[global_variables.comming_msg["id"]],
                 status=AvatarStatus.DM,
             ),
@@ -313,9 +313,9 @@ class GuiController:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout")
-                user_pic, dm_pic = RoundedLabel(
+                user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.ACTIVATED
-                ), RoundedLabel(content=content, status=AvatarStatus.DM)
+                ), AvatarLabel(content=content, status=AvatarStatus.DM)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
@@ -350,9 +350,9 @@ class GuiController:
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
-                user_pic, dm_pic = RoundedLabel(
+                user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.DEACTIVATED
-                ), RoundedLabel(content=content, status=AvatarStatus.DM)
+                ), AvatarLabel(content=content, status=AvatarStatus.DM)
                 user_pic.set_opacity(0.2)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")

@@ -19,8 +19,8 @@ from src.client.core.qt_core import (
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
-from src.client.view.customWidget.CustomQLabel import RoundedLabel
-from src.client.view.customWidget.CustomQLabel import AvatarStatus
+from src.client.view.customWidget.AvatarQLabel import AvatarLabel
+from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 
 
 @unique
@@ -129,7 +129,7 @@ class MessageLayout(QHBoxLayout):
             icon_label.setPixmap(icon)
             copy_icon.setPixmap(icon)
         else:
-            icon_label, copy_icon = RoundedLabel(content=content), RoundedLabel(
+            icon_label, copy_icon = AvatarLabel(content=content), AvatarLabel(
                 content=content, status=AvatarStatus.DM
             )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -212,7 +212,7 @@ class MessageLayout(QHBoxLayout):
             )
             self.react_widget.setGraphicsEffect(shadow)
             self.react_widget.setLayout(react_layout)
-            self.react_emot = RoundedLabel(
+            self.react_emot = AvatarLabel(
                 content=Icon.SMILEY.value,
                 height=15,
                 width=15,

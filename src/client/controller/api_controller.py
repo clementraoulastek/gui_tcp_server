@@ -1,5 +1,5 @@
 from typing import Optional
-from src.client.view.customWidget.CustomQLabel import AvatarStatus
+from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
 

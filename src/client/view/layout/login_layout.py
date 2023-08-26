@@ -1,4 +1,4 @@
-from src.client.view.customWidget.CustomQLabel import RoundedLabel
+from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from dotenv import load_dotenv
@@ -83,7 +83,7 @@ class LoginLayout(QHBoxLayout):
         self.button_layout.setContentsMargins(0, 15, 0, 0)
 
     def create_title_widgets(self):
-        self.icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
+        self.icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
 
         self.icon_soft.setStyleSheet(
             "font-weight: bold;\

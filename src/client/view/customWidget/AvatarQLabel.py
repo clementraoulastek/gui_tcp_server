@@ -23,7 +23,7 @@ class AvatarStatus(Enum):
     DM = 3
 
 
-class RoundedLabel(QLabel):
+class AvatarLabel(QLabel):
     def __init__(
         self,
         *args,
@@ -33,7 +33,7 @@ class RoundedLabel(QLabel):
         color=None,
         status=AvatarStatus.IDLE
     ):
-        super(RoundedLabel, self).__init__(*args)
+        super(AvatarLabel, self).__init__(*args)
         self.color = color
         self.height_ = height
         self.width_ = width

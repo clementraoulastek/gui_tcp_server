@@ -3,7 +3,7 @@ import sys
 from typing import Dict, List
 from src.client.client import Client
 from src.client.controller.main_controller import MainController
-from src.client.view.customWidget.CustomQLabel import RoundedLabel
+from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         logo_widget.setStyleSheet("border: none")
         logo_widget.setLayout(logo_layout)
         logo_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        icon_soft = RoundedLabel(content=ImageAvatar.SERVER.value)
+        icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
         icon_soft.setStyleSheet(
             "font-weight: bold;\
             border: none"
@@ -395,7 +395,7 @@ class MainWindow(QMainWindow):
         self.custom_user_button = CustomQPushButton("")
         self.custom_user_button.widget_shadow()
 
-        self.user_picture = RoundedLabel(content="")
+        self.user_picture = AvatarLabel(content="")
         self.user_picture.setStyleSheet("border: 0px")
         self.user_name = QLabel("User disconnected")
         self.user_name.setStyleSheet(
