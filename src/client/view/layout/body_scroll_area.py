@@ -33,6 +33,8 @@ class BodyScrollArea(QScrollArea):
         self.setMinimumWidth(600)
         self.setContentsMargins(0, 0, 0, 0)
         self.setMinimumHeight(380)
+        
+        self.verticalScrollBar().rangeChanged.connect(self.scrollToBottom)
 
         self.scroll_widget = QWidget()
         self.scroll_widget.setContentsMargins(0, 0, 0, 0)

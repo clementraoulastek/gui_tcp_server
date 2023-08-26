@@ -8,7 +8,7 @@ from src.client.core.qt_core import (
     QThread,
     Signal,
     QWidget,
-    QLayout,
+    QLayout
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -86,6 +86,13 @@ class GuiController:
             self.__update_gui_with_disconnected_avatar
         )
         self.read_outdated_avatar_worker.start()
+        
+        # Worker for react 
+        self.read_react_message_worker = Worker()
+        self.read_react_message_worker.signal.connect(
+            self.__update_react_message_on_gui
+        )
+        self.read_react_message_worker.start()
 
         self.worker_thread = Thread(
             target=self.__callback_routing_messages_on_ui, daemon=True
@@ -177,9 +184,7 @@ class GuiController:
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
             sender_list.remove(self.ui.client.user_name)
-        # for sender in sender_list:
-        #     self.ui.users_pict.pop(sender)
-
+            
     def __diplay_coming_message_on_gui(self) -> None:
         """
         Callback to update gui with input messages
@@ -221,12 +226,25 @@ class GuiController:
             global_variables.comming_msg["receiver"],
             global_variables.comming_msg["message"],
         ) = ("", "", "")
+        
+    def __update_react_message_on_gui(self) -> None:
+        """
+        Callback to update gui with input messages
+        """
+        if not global_variables.comming_msg["reaction"]:
+            return
+        message_id, nb_reaction = global_variables.comming_msg["id"], global_variables.comming_msg["reaction"]
+        message: MessageLayout = self.messages_dict[int(message_id)]
+        message.update_react(int(nb_reaction))
+        
+        # Reset global variables
+        global_variables.comming_msg["reaction"], global_variables.comming_msg["id"] = "", ""
 
     def __callback_routing_messages_on_ui(self) -> None:
         """
         Read messages comming from server
         """
-        waiting_time = 0.1
+        waiting_time = 0.01
         while self.ui.client.is_connected:
             header, payload = self.ui.client.read_data()
             if payload:
@@ -259,11 +277,11 @@ class GuiController:
                 payload = payload.split(":")[-1].replace(" ", "")
                 payload_list = payload.split(";")
                 message_id, nb_reaction = payload_list[0], payload_list[1]
-                message: MessageLayout = self.messages_dict[int(message_id)]
-                message.update_react(int(nb_reaction))
+                global_variables.comming_msg["id"] = message_id
+                global_variables.comming_msg["reaction"] = nb_reaction
             else:
-                id, receiver, message = payload.split(":")
-                global_variables.comming_msg["id"] = id
+                message_id, receiver, message = payload.split(":")
+                global_variables.comming_msg["id"] = message_id
                 global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
                 global_variables.comming_msg["message"] = message.replace(
                     "$replaced$", ":"
