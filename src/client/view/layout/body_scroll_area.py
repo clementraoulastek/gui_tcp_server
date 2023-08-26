@@ -31,7 +31,6 @@ class BodyScrollArea(QScrollArea):
 
         # ----------------- Scroll Area ----------------- #
         self.setMinimumWidth(600)
-        # self.verticalScrollBar().rangeChanged.connect(self.scrollToBottom) # TODO: only when connected, not working atm
         self.setContentsMargins(0, 0, 0, 0)
         self.setMinimumHeight(380)
 

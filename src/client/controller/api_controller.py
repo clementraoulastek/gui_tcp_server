@@ -56,16 +56,19 @@ class ApiController:
                 self.ui.user_picture.update_picture(
                     status=AvatarStatus.ACTIVATED, content=content
                 )
-            if (
-                username in self.ui.users_connected.keys()
-                and self.ui.users_connected[username] == True
-            ):
-                global_variables.user_connected[username] = [content, False]
-            else:
-                self.ui.users_connected["username"] = False
-                global_variables.user_disconnect[username] = [content, False]
+            self.update_user_connected(username, content)
         else:
             self.ui.users_pict[username] = ""
+            
+    def update_user_connected(self, username: str, content: bytes) -> None:
+        if (
+            username in self.ui.users_connected.keys()
+            and self.ui.users_connected[username] == True
+        ):
+            global_variables.user_connected[username] = [content, False]
+        else:
+            self.ui.users_connected["username"] = False
+            global_variables.user_disconnect[username] = [content, False]
 
     def get_older_messages(self) -> dict:
         older_messages: dict = self.ui.backend.get_older_messages()
@@ -79,3 +82,5 @@ class ApiController:
         """
         if sender_id not in list(self.ui.users_pict.keys()):
             self.get_user_icon(sender_id)
+            
+    

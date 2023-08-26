@@ -182,8 +182,10 @@ class MainWindow(QMainWindow):
             background-color: {Color.DARK_GREY.value};\
             border-radius: 6px;"
         )
-        room_btn = CustomQPushButton("🏠 Home")
-        room_btn.clicked.connect(self.show_home_layout)
+        self.room_btn = CustomQPushButton("home")
+        self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
+        self.room_btn.setIcon(self.room_icon)
+        self.room_btn.clicked.connect(self.show_home_layout)
         style_ = """
             QPushButton {{
             font-weight: bold;
@@ -194,11 +196,11 @@ class MainWindow(QMainWindow):
             text-decoration: underline;
             }}
             """
-        room_btn.setStyleSheet(style_.format())
+        self.room_btn.setStyleSheet(style_.format())
         self.room_list: Dict[str, QWidget] = {}
         # Adding widgets to the main layout
         self.direct_message_layout.addWidget(rooms_label)
-        self.direct_message_layout.addWidget(room_btn)
+        self.direct_message_layout.addWidget(self.room_btn)
         self.direct_message_layout.addWidget(dm_label)
 
         self.scroll_area_dm.setWidget(self.right_nav_widget)
@@ -308,7 +310,7 @@ class MainWindow(QMainWindow):
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
 
-        self.frame_name = QLabel("🏠 home")
+        self.frame_name = QLabel("home")
         shadow = shadow = self.widget_shadow(self.upper_widget)
         self.frame_name.setGraphicsEffect(shadow)
         self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)

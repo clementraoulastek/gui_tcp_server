@@ -67,6 +67,7 @@ class GuiController:
         self.last_message_id = last_message_id
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
+        self.dm_avatar_dict: dict[str, AvatarLabel] = {}
 
     def __init_working_signals(self) -> None:
         # Worker for incoming messages
@@ -161,7 +162,7 @@ class GuiController:
                 )
                 icon = AvatarLabel(
                     content=self.ui.users_pict[direct_message_name],
-                    status=AvatarStatus.DM,
+                    status=AvatarStatus.IDLE,
                 )
                 self.add_gui_for_mp_layout(direct_message_name, icon)
                 self.diplay_self_message_on_gui(
@@ -176,8 +177,8 @@ class GuiController:
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
             sender_list.remove(self.ui.client.user_name)
-        for sender in sender_list:
-            self.ui.users_pict.pop(sender)
+        # for sender in sender_list:
+        #     self.ui.users_pict.pop(sender)
 
     def __diplay_coming_message_on_gui(self) -> None:
         """
@@ -203,15 +204,18 @@ class GuiController:
         else:
             dict_key = global_variables.comming_msg["id"]
 
-        self.add_gui_for_mp_layout(
-            dict_key,
-            AvatarLabel(
-                content=self.ui.users_pict[global_variables.comming_msg["id"]],
-                status=AvatarStatus.DM,
-            ),
-        )
+        if dict_key != "home":
+            self.add_gui_for_mp_layout(
+                dict_key,
+                AvatarLabel(
+                    content=self.ui.users_pict[global_variables.comming_msg["id"]],
+                    status=AvatarStatus.DM,
+                ),
+            )
+            # Update avatar status with DM circle popup
+            self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM)
+            
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
-        self.ui.scroll_area.scrollToBottom()  # ? Not working
         (
             global_variables.comming_msg["id"],
             global_variables.comming_msg["receiver"],
@@ -278,21 +282,22 @@ class GuiController:
         user_disconnect: dict[str, List[Union[str, bool]]],
     ) -> None:
         id_, _ = payload.split(":", 1)
-        self.ui.users_connected[id_] = False
         self.clear_avatar("user_inline", f"{id_}_layout")
         self.api_controller.add_sender_picture(id_)
         user_disconnect[id_] = [user_connected[id_][0], False]
-        self.ui.users_pict.pop(id_)
+        self.ui.users_connected.pop(id_)
 
     def __add_sender_avatar(
         self, payload: str, user_disconnect: dict[str, List[Union[str, bool]]]
     ) -> None:
         id_, _ = payload.split(":", 1)
-        self.ui.users_connected[id_] = True
         if id_ in user_disconnect:
             self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
             user_disconnect.pop(id_)
-        self.api_controller.add_sender_picture(id_)
+        
+        if id_ not in self.ui.users_connected.keys():
+            self.ui.users_connected[id_] = True
+            self.api_controller.update_user_connected(id_, self.ui.users_pict[id_])
 
     def update_user_icon(self) -> None:
         username = self.ui.client.user_name
@@ -315,7 +320,7 @@ class GuiController:
                 user_layout.setObjectName(f"{username}_layout")
                 user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.ACTIVATED
-                ), AvatarLabel(content=content, status=AvatarStatus.DM)
+                ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
@@ -325,7 +330,8 @@ class GuiController:
                 )
                 style_ = """
                 QPushButton {{
-                font-weight: bold;\
+                text-align: left;
+                font-weight: bold;
                 border-radius: none;
                 border: none;
                 }} 
@@ -352,7 +358,7 @@ class GuiController:
                 user_layout.setObjectName(f"{username}_layout_disconnected")
                 user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.DEACTIVATED
-                ), AvatarLabel(content=content, status=AvatarStatus.DM)
+                ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
                 user_pic.set_opacity(0.2)
                 user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")
@@ -363,7 +369,8 @@ class GuiController:
                 )
                 style_ = """
                 QPushButton {{
-                font-weight: bold;\
+                text-align: left;
+                font-weight: bold;
                 border-radius: none;
                 border: none;
                 }} 
@@ -524,7 +531,6 @@ class GuiController:
         self.clear_avatar("user_inline")
         self.clear_avatar("user_offline")
         self.clear_avatar("direct_message_layout")
-        # self.clear_avatar(self.ui.body_gui_dict["home"].main_layout.objectName())
 
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
@@ -562,10 +568,12 @@ class GuiController:
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             partial_room_name = check_str_len(room_name)
             btn = CustomQPushButton(partial_room_name)
+            self.dm_avatar_dict[room_name] = icon
             btn.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
             style_ = """
             QPushButton {{
-            font-weight: bold;\
+            text-align: left;
+            font-weight: bold;
             border-radius: none;
             border: none;
             }} 
@@ -586,7 +594,10 @@ class GuiController:
         if switch_frame:
             self.update_gui_for_mp_layout(room_name)
 
-    def update_gui_for_mp_layout(self, room_name):
+    def update_gui_for_mp_layout(self, room_name: str) -> None:
+        if room_name != "home":
+            # Update avatar status with iddle 
+            self.dm_avatar_dict[room_name].update_pixmap(AvatarStatus.IDLE)
         old_widget = self.ui.scroll_area
         old_widget.hide()
         widget = self.ui.body_gui_dict[room_name]
@@ -594,8 +605,8 @@ class GuiController:
         self.ui.body_layout.removeWidget(old_widget)
         self.ui.body_layout.insertWidget(index, widget)
         self.ui.frame_name.setText(
-            f"{room_name}" if room_name != "home" else "🏠 home"
-        )  # TODO: Get label text rather than frame name
+            f"{room_name}"
+        ) 
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
 
