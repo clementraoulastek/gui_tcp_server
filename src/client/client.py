@@ -19,7 +19,6 @@ class Client:
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.host, self.port))
-            self.send_data(Commands.HELLO_WORLD, "")
             self.is_connected = True
         except Exception as error:
             logging.error(error)
@@ -31,7 +30,7 @@ class Client:
         """
         # close the connection
         logging.debug("Closing client connection")
-        self.send_data(Commands.GOOD_BYE, "")
+        self.send_data(Commands.GOOD_BYE, Commands.GOOD_BYE.name)
         self.sock.close()
         self.is_connected = False
 

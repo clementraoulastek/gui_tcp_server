@@ -49,6 +49,7 @@ class QtGui:
             self.main_window.controller.gui_controller.read_outdated_avatar_worker.stop()
             self.main_window.controller.gui_controller.read_react_message_worker.stop()
         
+        
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
@@ -138,7 +139,7 @@ class MainWindow(QMainWindow):
         #                                  Scroll Area                                 #
         # ---------------------------------------------------------------------------- #
         self.scroll_area_dm = QScrollArea()
-        self.scroll_area_dm.setFixedWidth(self.scroll_widget_avatar.width() + 10)
+        self.scroll_area_dm.setFixedWidth(self.scroll_area_avatar.width())
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
@@ -153,14 +154,13 @@ class MainWindow(QMainWindow):
         self.right_nav_widget = QWidget()
         shadow = self.widget_shadow(self.right_nav_widget)
         self.right_nav_widget.setGraphicsEffect(shadow)
-        self.right_nav_widget.setFixedWidth(self.scroll_widget_avatar.width())
+        self.right_nav_widget.setFixedWidth(self.scroll_area_avatar.width())
         self.right_nav_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value};\
-            margin-left: 10px;\
             margin-bottom: 2px"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
@@ -171,26 +171,11 @@ class MainWindow(QMainWindow):
         shadow = self.widget_shadow(self.scroll_widget_avatar)
         rooms_label.setGraphicsEffect(shadow)
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        rooms_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        rooms_label.setContentsMargins(15, 5, 15, 5)
-        rooms_label.setStyleSheet(
-            f"font-weight: bold;\
-            color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;"
-        )
-
+        self._update_label_style(rooms_label)
         dm_label = QLabel("Messages")
         shadow = self.widget_shadow(self.scroll_widget_avatar)
         dm_label.setGraphicsEffect(shadow)
-        dm_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        dm_label.setContentsMargins(15, 5, 15, 5)
-        dm_label.setStyleSheet(
-            f"font-weight: bold;\
-            color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;"
-        )
+        self._update_label_style(dm_label)
         self.room_btn = CustomQPushButton("home")
         self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
         self.room_btn.setIcon(self.room_icon)
@@ -216,6 +201,16 @@ class MainWindow(QMainWindow):
 
         self.core_layout.addWidget(self.scroll_area_dm)
 
+    def _update_label_style(self, label: QLabel):
+        label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        label.setContentsMargins(15, 5, 15, 5)
+        label.setStyleSheet(
+            f"font-weight: bold;\
+            color: {Color.LIGHT_GREY.value};\
+            background-color: {Color.DARK_GREY.value};\
+            border-radius: 6px;"
+        )
+
     def set_left_nav(self) -> None:
         # --- Left layout with scroll area
         self.left_nav_layout = QHBoxLayout()
@@ -230,7 +225,7 @@ class MainWindow(QMainWindow):
 
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 10)
+        self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 2)
 
         self.scroll_widget_avatar = QWidget()
         shadow = self.widget_shadow(self.scroll_widget_avatar)
@@ -241,12 +236,13 @@ class MainWindow(QMainWindow):
         )
         self.scroll_widget_avatar.setFixedWidth(self.scroll_widget_avatar.width() / 4)
         self.scroll_widget_avatar.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
+            f"font-weight: bold;\
+            color: {Color.LIGHT_GREY.value};\
             background-color: {Color.GREY.value};\
             border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value};\
-            margin-bottom: 2px"
+            margin-bottom: 2px;"
         )
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(

@@ -265,7 +265,7 @@ class GuiController:
             elif header == Commands.HELLO_WORLD.value:
                 self.__add_sender_avatar(payload, global_variables.user_disconnect)
                 # Return welcome to hello world
-                self.ui.client.send_data(Commands.WELCOME, "")
+                self.ui.client.send_data(Commands.WELCOME, Commands.WELCOME.name)
             elif header == Commands.WELCOME.value:
                 self.__add_sender_avatar(payload, global_variables.user_disconnect)
             elif header == Commands.GOOD_BYE.value:
@@ -332,7 +332,7 @@ class GuiController:
             if data[1] == False:
                 global_variables.user_connected[user] = [data[0], True]
                 user_layout = QHBoxLayout()
-                user_layout.setSpacing(0)
+                user_layout.setSpacing(10)
                 user_layout.setContentsMargins(0, 0, 0, 0)
                 username = user
                 content = data[0]
@@ -340,7 +340,7 @@ class GuiController:
                 user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.ACTIVATED
                 ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
-                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignRight)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
@@ -370,7 +370,7 @@ class GuiController:
         for user, data in global_variables.user_disconnect.items():
             if data[1] == False:
                 user_layout = QHBoxLayout()
-                user_layout.setSpacing(0)
+                user_layout.setSpacing(10)
                 user_layout.setContentsMargins(0, 0, 0, 0)
                 username = user
                 content = data[0]
@@ -379,7 +379,7 @@ class GuiController:
                     content=content, status=AvatarStatus.DEACTIVATED
                 ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
                 user_pic.set_opacity(0.2)
-                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignRight)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
@@ -481,6 +481,7 @@ class GuiController:
         self.ui.users_connected[self.ui.client.user_name] = True
         if self.tcp_controller.is_connected_to_server():
             self.__init_working_signals()
+            self.ui.client.send_data(Commands.HELLO_WORLD, Commands.HELLO_WORLD.name)
             self.ui.login_form = None
             self.clear()
             self.api_controller.get_user_icon(update_personal_avatar=update_avatar)
@@ -582,9 +583,9 @@ class GuiController:
     ) -> None:
         if room_name not in self.ui.room_list:
             direct_message_layout = QHBoxLayout()
-            direct_message_layout.setSpacing(0)
+            direct_message_layout.setSpacing(10)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
-            icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            icon.setAlignment(Qt.AlignmentFlag.AlignRight)
             partial_room_name = check_str_len(room_name)
             btn = CustomQPushButton(partial_room_name)
             self.dm_avatar_dict[room_name] = icon
