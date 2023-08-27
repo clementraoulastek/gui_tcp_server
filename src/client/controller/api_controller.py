@@ -17,9 +17,21 @@ class ApiController:
         if not username or not password:
             return False
 
-        if self.ui.backend.send_login_form(username, password):
+        status_code, is_connected = self.ui.backend.send_login_form(username, password)
+        if status_code == 200 and not is_connected:
             self.ui.client.user_name = username
-            return True
+            return bool(self.send_login_status(username=username, status=True))
+        else:
+            return False
+        
+    def send_login_status(self, username: str, status: bool) -> bool:
+        """
+        Send login status to the server
+
+        :param status: status of the login if True the user is connected
+        :type status: bool
+        """
+        return self.ui.backend.send_login_status(username, status)
 
     def send_register_form(self) -> bool:
         """

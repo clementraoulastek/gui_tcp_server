@@ -15,8 +15,18 @@ class Backend:
         response = requests.get(
             url=f"{endpoint}{username}?password={password}",
         )
-        return response.status_code == 200
+        is_connected: bool = False
+        if response.status_code == 200 and response.content:
+            is_connected: bool = response.json()["is_connected"]
 
+        return response.status_code, is_connected
+    
+    def send_login_status(self, username: str, status: bool) -> bool:
+        endpoint = f"http://{self.ip}:{self.port}/user/{username}/?is_connected={status}"
+        response = requests.patch(url=endpoint)
+        
+        return response.status_code == 200
+            
     def send_register_form(self, username: str, password: str) -> bool:
         endpoint = f"http://{self.ip}:{self.port}/register"
         data = {"username": username, "password": password}

@@ -315,10 +315,16 @@ class GuiController:
         self, payload: str, user_disconnect: dict[str, List[Union[str, bool]]]
     ) -> None:
         id_, _ = payload.split(":", 1)
+        # In case of new user not register before
+        if id_ not in self.ui.users_pict.keys():
+            self.api_controller.add_sender_picture(id_)
+            
+        # Remove user's icon disconnected from the disconnected layout
         if id_ in user_disconnect:
             self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
             user_disconnect.pop(id_)
-
+            
+        # Add the user icon to the connected layout
         if id_ not in self.ui.users_connected.keys():
             self.ui.users_connected[id_] = True
             self.api_controller.update_user_connected(id_, self.ui.users_pict[id_])
@@ -551,6 +557,9 @@ class GuiController:
         """
         Disconnect the client
         """
+        # --------------------- Update backend connection status --------------------- #
+        self.api_controller.send_login_status(username=self.ui.client.user_name, status=False)
+        
         # --------------------------- Socket disconnection --------------------------- #
         self.ui.client.close_connection()
 
