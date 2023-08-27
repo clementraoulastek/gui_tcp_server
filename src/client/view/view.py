@@ -35,24 +35,39 @@ class QtGui:
         self.app.setWindowIcon(QIcon(ImageAvatar.SERVER.value))
         self.app.setApplicationName(title)
         self.main_window.show()
-
-    def run(self):
-        sys.exit(self.run_app())
-
-    def run_app(self):
-        self.app.exec()
-        # Kill all workers
+        
+        self.app.aboutToQuit.connect(self.quit)
+        
+    def quit(self):
         # ? I don't know why but in a list comprehension it doesn't work
         if hasattr(self.main_window.controller.gui_controller, "read_worker"):
-            self.main_window.controller.gui_controller.read_worker.stop()
-            self.main_window.controller.gui_controller.read_avatar_worker.stop()
-            self.main_window.controller.gui_controller.read_outdated_avatar_worker.stop()
-            self.main_window.controller.gui_controller.read_react_message_worker.stop()
+            self.main_window.controller.api_controller.send_login_status(username=self.main_window.client.user_name, status=False)
+            self.main_window.client.close_connection()
+            
+            # Kill all workers
+            while not self.main_window.controller.gui_controller.read_worker.isFinished():
+                self.main_window.controller.gui_controller.read_worker.stop()
+                
+            while not self.main_window.controller.gui_controller.read_avatar_worker.isFinished():
+                self.main_window.controller.gui_controller.read_avatar_worker.stop()
+                
+            while not self.main_window.controller.gui_controller.read_outdated_avatar_worker.isFinished():
+                self.main_window.controller.gui_controller.read_outdated_avatar_worker.stop()
+            
+            while not self.main_window.controller.gui_controller.read_react_message_worker.isFinished():
+                self.main_window.controller.gui_controller.read_react_message_worker.stop()
+                
+        logging.debug("Client disconnected successfully")
+        sys.exit()
+
+    def run(self):
+        self.app.exec()
 
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
+        
         # self.showMaximized()
         self.setWindowTitle(title)
 
@@ -65,6 +80,7 @@ class MainWindow(QMainWindow):
 
         # GUI settings
         self.setup_gui()
+        
 
     def setup_gui(self) -> None:
         """
@@ -256,7 +272,7 @@ class MainWindow(QMainWindow):
         self.scroll_widget_avatar.setLayout(self.user_inline_layout)
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
-        self.info_label = QLabel("Welcome")
+        self.info_label = QLabel("")
         shadow = self.widget_shadow(self.scroll_widget_avatar)
         self.info_label.setGraphicsEffect(shadow)
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -507,12 +523,3 @@ class MainWindow(QMainWindow):
     def show_home_layout(self) -> None:
         self.controller.gui_controller.update_gui_for_mp_layout("home")
 
-    def closeEvent(self, event) -> None:
-        """
-        Close the socket and destroy the gui
-        """
-        if hasattr(self.client, "sock"):
-            logging.debug("Client disconnecting...")
-            self.client.close_connection()
-            logging.debug("Client disconnected")
-        logging.debug("GUI closing ...")

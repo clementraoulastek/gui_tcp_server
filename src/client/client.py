@@ -29,8 +29,10 @@ class Client:
         Socket disconection
         """
         # close the connection
-        logging.debug("Closing client connection")
+        logging.debug("Sending Good Bye ...")
         self.send_data(Commands.GOOD_BYE, Commands.GOOD_BYE.name)
+        logging.debug("Good Bye sended sucessfully")
+        logging.debug("Closing client connection ...")
         self.sock.close()
         self.is_connected = False
 
@@ -43,7 +45,7 @@ class Client:
         """
         raw_data = b""
         try:
-            while "Server connected":
+            while self.is_connected:
                 chunk = self.sock.recv(1)
                 if chunk != b"\n":
                     raw_data += chunk
@@ -53,7 +55,7 @@ class Client:
             return header, payload
         except Exception:
             self.sock.close()
-            logging.debug("Closing connection")
+            logging.debug("Read data Thread closed")
             self.is_connected = False
             return False, False
 

@@ -42,6 +42,7 @@ class Backend:
             return
         endpoint = f"http://{self.ip}:{self.port}/user/{username}"
 
+        
         files = {"file": open(path[0], "rb")}
         response = requests.put(url=endpoint, files=files)
         return response.status_code == 200
@@ -87,3 +88,5 @@ class Backend:
         endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}?new_reaction_nb={reaction_nb}"
         response = requests.patch(url=endpoint)
         return response.status_code
+    
+

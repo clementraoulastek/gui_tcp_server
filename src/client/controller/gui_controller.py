@@ -255,7 +255,11 @@ class GuiController:
             header, payload = self.ui.client.read_data()
             if payload:
                 self.__routing_coming_messages(header, payload)
+            else:
+                break
             time.sleep(waiting_time)
+        
+        logging.error("Connection lost with the server")
 
     def __routing_coming_messages(self, header: int, payload: str) -> None:
         """
