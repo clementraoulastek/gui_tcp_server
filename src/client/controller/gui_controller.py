@@ -34,8 +34,8 @@ class Worker(QThread):
 
     signal = Signal()
 
-    def __init__(self, polling_interval: Optional[int] = 0.01) -> None:
-        super(Worker, self).__init__()
+    def __init__(self, parent, polling_interval: Optional[int] = 0.01) -> None:
+        super(Worker, self).__init__(parent)
         self._is_running = True
         self.polling_interval = polling_interval
 
@@ -71,24 +71,24 @@ class GuiController:
 
     def __init_working_signals(self) -> None:
         # Worker for incoming messages
-        self.read_worker = Worker()
+        self.read_worker = Worker(parent=self.ui)
         self.read_worker.signal.connect(self.__diplay_coming_message_on_gui)
         self.read_worker.start()
 
         # Worker for incoming avatar
-        self.read_avatar_worker = Worker()
+        self.read_avatar_worker = Worker(parent=self.ui)
         self.read_avatar_worker.signal.connect(self.__update_gui_with_connected_avatar)
         self.read_avatar_worker.start()
 
         # Worker for outdated avatar
-        self.read_outdated_avatar_worker = Worker()
+        self.read_outdated_avatar_worker = Worker(parent=self.ui)
         self.read_outdated_avatar_worker.signal.connect(
             self.__update_gui_with_disconnected_avatar
         )
         self.read_outdated_avatar_worker.start()
         
         # Worker for react 
-        self.read_react_message_worker = Worker()
+        self.read_react_message_worker = Worker(parent=self.ui)
         self.read_react_message_worker.signal.connect(
             self.__update_react_message_on_gui
         )
@@ -100,6 +100,7 @@ class GuiController:
         self.worker_thread.start()
 
         self.update_buttons()
+        
 
     def diplay_self_message_on_gui(
         self,

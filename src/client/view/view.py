@@ -37,9 +37,18 @@ class QtGui:
         self.main_window.show()
 
     def run(self):
-        sys.exit(self.app.exec())
-
-
+        sys.exit(self.run_app())
+        
+    def run_app(self):
+        self.app.exec()
+        # Kill all workers 
+        # ? I don't know why but in a list comprehension it doesn't work
+        if hasattr(self.main_window.controller.gui_controller, "read_worker"):
+            self.main_window.controller.gui_controller.read_worker.stop()
+            self.main_window.controller.gui_controller.read_avatar_worker.stop()
+            self.main_window.controller.gui_controller.read_outdated_avatar_worker.stop()
+            self.main_window.controller.gui_controller.read_react_message_worker.stop()
+        
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
