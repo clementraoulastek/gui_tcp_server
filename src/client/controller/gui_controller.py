@@ -349,20 +349,30 @@ class GuiController:
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
-                user_name.clicked.connect(
-                    partial(self.add_gui_for_mp_layout, username, dm_pic, True)
-                )
-                style_ = """
-                QPushButton {{
-                text-align: left;
-                font-weight: bold;
-                border-radius: none;
-                border: none;
-                }} 
-                QPushButton:hover {{
-                text-decoration: underline;
-                }}
-                """
+                if username != self.ui.client.user_name:
+                    user_name.clicked.connect(
+                        partial(self.add_gui_for_mp_layout, username, dm_pic, True)
+                    )
+                    style_ = """
+                    QPushButton {{
+                    text-align: left;
+                    font-weight: bold;
+                    border-radius: none;
+                    border: none;
+                    }} 
+                    QPushButton:hover {{
+                    text-decoration: underline;
+                    }}
+                    """
+                else:
+                    style_ = """
+                    QPushButton {{
+                    text-align: left;
+                    font-weight: bold;
+                    border-radius: none;
+                    border: none;
+                    }} 
+                    """
                 user_name.setStyleSheet(style_.format())
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
