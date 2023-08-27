@@ -15,7 +15,6 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QGraphicsDropShadowEffect,
     QColor,
-    Slot,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -151,7 +150,7 @@ class MessageLayout(QHBoxLayout):
         )
         self.user_menu.hide()
         self.left_layout.addWidget(self.sender_btn)
-        if message_id:
+        if message_id and sender != self.controller.ui.client.user_name:
             self.sender_btn.clicked.connect(self.display_menu)
             main_layout.addChildWidget(self.user_menu)
             self.user_menu.move(self.user_menu.x() + 50, self.user_menu.y() + 40)
@@ -169,12 +168,11 @@ class MessageLayout(QHBoxLayout):
             QPushButton {{
             font-weight: bold;
             border: 0px;
-            color: {color};
             }}
             """
         self.sender_btn.setStyleSheet(style_.format())
 
-        if message_id:
+        if message_id and sender != self.controller.ui.client.user_name:
             # ------------------------------- React Button ------------------------------- #
             self.react_buttton = CustomQPushButton(
                 " Add react", bg_color=Color.GREY.value, radius=6
@@ -221,7 +219,7 @@ class MessageLayout(QHBoxLayout):
                 content=Icon.SMILEY.value,
                 height=15,
                 width=15,
-                color=Color.LIGHT_GREY.value,
+                color=Color.WHITE.value,
             )
             self.react_emot.setContentsMargins(0, 0, 0, 0)
             self.react_emot.setStyleSheet("border: 0px;")
@@ -247,7 +245,7 @@ class MessageLayout(QHBoxLayout):
         )
         sender_layout.addWidget(date_label)
 
-        if message_id:
+        if message_id and sender != self.controller.ui.client.user_name:
             sender_layout.addWidget(self.react_widget)
             sender_layout.addWidget(self.react_buttton)
 
@@ -259,7 +257,8 @@ class MessageLayout(QHBoxLayout):
 
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
-        if message_id:
+        
+        if message_id and sender != self.controller.ui.client.user_name:
             self.update_react(self.nb_react)
 
     def add_react(self):
@@ -285,7 +284,6 @@ class MessageLayout(QHBoxLayout):
         else:
             self.react_widget.show()
 
-    @Slot()
     def update_react(self, react_nb: int):
         self.nb_react = react_nb
         if self.nb_react == 0:

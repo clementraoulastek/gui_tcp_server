@@ -325,11 +325,11 @@ class MainWindow(QMainWindow):
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         self.frame_layout = QHBoxLayout(self.frame_title)
-        self.frame_layout.setContentsMargins(5, 5, 5, 5)
+        self.frame_layout.setContentsMargins(10, 5, 10, 5)
         self.frame_layout.setSpacing(10)
         self.frame_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.frame_icon = AvatarLabel(
-            content=Icon.ROOM.value, color=Color.LIGHT_GREY.value, height=15, width=15
+            content=Icon.ROOM.value, color=Color.WHITE.value, height=15, width=15
         )
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("home")
