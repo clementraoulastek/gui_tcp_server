@@ -35,7 +35,8 @@ class UserMenu(QWidget):
         self.setStyleSheet("background-color: red;")
         self.setContentsMargins(0, 0, 0, 0)
         self.setFixedWidth(170)
-
+        shadow = self.widget_shadow(self)
+        self.setGraphicsEffect(shadow)
         self.layout_ = QVBoxLayout()
         self.layout_.setSpacing(0)
         self.layout_.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -49,6 +50,13 @@ class UserMenu(QWidget):
         self.setLayout(self.layout_)
         for widget in list_buttons:
             self.layout_.addWidget(widget)
+            
+    def widget_shadow(self, obj):
+        result = QGraphicsDropShadowEffect(obj)
+        result.setColor(QColor(0, 0, 0, 150))
+        result.setOffset(0, 2)
+        result.setBlurRadius(1)
+        return result
 
 
 class Contener(QFrame):
