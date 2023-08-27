@@ -43,7 +43,7 @@ class Server:
         except (KeyboardInterrupt, ConnectionAbortedError):
             Thread(
                 target=self.close_connection,
-                name="Close Connection thread, no deamon thread",
+                name="Close server thread",
             ).start()
 
     def close_connection(self, *args) -> None:
@@ -134,6 +134,8 @@ class Server:
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
         except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
             self._display_disconnection(conn, addr)
+        except KeyError as error:
+            logging.error(error)
 
     def send_message_to_backend(self, header: int, payload: str) -> None:
         if Commands(header) == Commands.MESSAGE:
@@ -179,6 +181,13 @@ class Server:
         logging.debug("Connection aborted by the client")
         conn.close()
         self.conn_dict.pop(addr)
+        
+        # Remove user from user_dict
+        for key, value in self.user_dict.items():
+            if value == addr:
+                self.user_dict.pop(key)
+                break
+            
         already_connected = len(self.conn_dict) >= 1
         if already_connected:
             for address in self.conn_dict:

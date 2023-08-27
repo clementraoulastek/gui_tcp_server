@@ -98,3 +98,6 @@ class ApiController:
         """
         if sender_id not in list(self.ui.users_pict.keys()):
             self.get_user_icon(sender_id)
+            
+    def update_is_readed_status(self, sender, receiver, is_readed=True):
+        self.ui.backend.update_is_readed_status(sender, receiver, is_readed)

@@ -143,13 +143,14 @@ class GuiController:
         sender_list: list = []
         messages_dict = self.api_controller.get_older_messages()
         for message in messages_dict:
-            message_id, sender, receiver, message, reaction_nb, date = (
+            message_id, sender, receiver, message, reaction_nb, date, is_readed = (
                 message["message_id"],
                 message["sender"],
                 message["receiver"],
                 message["message"],
                 message["reaction_nb"],
                 message["created_at"],
+                message["is_readed"],
             )
             message = message.replace("$replaced$", ":")
             if sender not in sender_list:
@@ -172,6 +173,11 @@ class GuiController:
                     status=AvatarStatus.IDLE,
                 )
                 self.add_gui_for_mp_layout(direct_message_name, icon)
+                
+                # Update avatar status with DM circle popup
+                if is_readed == False and self.ui.client.user_name == receiver:
+                    self.update_pixmap_avatar(direct_message_name, AvatarStatus.DM)
+                    
                 self.diplay_self_message_on_gui(
                     sender,
                     message,
@@ -648,7 +654,8 @@ class GuiController:
     def update_gui_for_mp_layout(self, room_name: str) -> None:
         if room_name != "home":
             # Update avatar status with iddle
-            self.dm_avatar_dict[room_name].update_pixmap(AvatarStatus.IDLE)
+            self.update_pixmap_avatar(room_name, AvatarStatus.IDLE)
+            self.api_controller.update_is_readed_status(room_name, self.ui.client.user_name)
         old_widget = self.ui.scroll_area
         old_widget.hide()
         widget = self.ui.body_gui_dict[room_name]
@@ -662,6 +669,9 @@ class GuiController:
         self.ui.frame_name.setText(f"{room_name}")
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
+        
+    def update_pixmap_avatar(self, room_name: str, status: AvatarStatus) -> None:
+        self.dm_avatar_dict[room_name].update_pixmap(status)
 
     def fetch_all_users_username(self):
         usernames: List[str] = self.ui.backend.get_all_users_username()

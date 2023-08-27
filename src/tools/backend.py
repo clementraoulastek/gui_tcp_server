@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 import requests
 from src.client.core.qt_core import QFileDialog, QMainWindow
 from src.tools.commands import Commands
@@ -85,7 +85,12 @@ class Backend:
         return response.status_code
 
     def update_reaction_nb(self, message_id: int, reaction_nb: int):
-        endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}?new_reaction_nb={reaction_nb}"
+        endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}/reaction/?new_reaction_nb={reaction_nb}"
+        response = requests.patch(url=endpoint)
+        return response.status_code
+    
+    def update_is_readed_status(self, sender: str, receiver: str, is_readed: Optional[bool] = True):
+        endpoint = f"http://{self.ip}:{self.port}/messages/readed/?sender={sender}&receiver={receiver}&is_readed={is_readed}"
         response = requests.patch(url=endpoint)
         return response.status_code
     
