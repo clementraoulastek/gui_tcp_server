@@ -7,6 +7,7 @@ from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
+from src.client.view.layout.message_layout import UserMenu
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.core.qt_core import (
     QApplication,
@@ -22,6 +23,7 @@ from src.client.core.qt_core import (
     QLayout,
     QGraphicsDropShadowEffect,
     QColor,
+    QFrame
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
@@ -96,6 +98,8 @@ class MainWindow(QMainWindow):
         self.main_layout.setSpacing(5)
         self.set_header_gui()
         self.core_widget = QWidget()
+        #self.menu = UserMenu(self.main_widget)
+    
         self.core_widget.setContentsMargins(0, 0, 0, 0)
         self.core_layout = QHBoxLayout(self.core_widget)
         self.core_layout.setContentsMargins(0, 0, 0, 0)

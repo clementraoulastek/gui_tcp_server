@@ -57,7 +57,7 @@ class Client:
             self.sock.close()
             logging.debug("Read data Thread closed")
             self.is_connected = False
-            return False, False
+            return (False, False)
 
     def send_data(
         self, header: Commands, payload: str, receiver: Optional[str] = "home"

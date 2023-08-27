@@ -52,7 +52,6 @@ class Worker(QThread):
         self.terminate()
         self.exit()
 
-
 class GuiController:
     def __init__(
         self,
@@ -122,6 +121,7 @@ class GuiController:
         else:
             self.last_message_id += 1
         message = MessageLayout(
+            self.ui.main_widget,
             self,
             comming_msg,
             content=self.ui.users_pict[id_sender],
@@ -200,6 +200,7 @@ class GuiController:
         if global_variables.comming_msg["id"] != "server":
             self.last_message_id += 1
         message = MessageLayout(
+            self.ui.main_widget,
             self,
             global_variables.comming_msg,
             content=self.ui.users_pict[global_variables.comming_msg["id"]],

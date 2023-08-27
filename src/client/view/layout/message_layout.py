@@ -15,6 +15,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QGraphicsDropShadowEffect,
     QColor,
+    QPoint
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -32,8 +33,8 @@ class EnumReact(Enum):
 
 
 class UserMenu(QWidget):
-    def __init__(self, user):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setStyleSheet("background-color: red;")
         self.setContentsMargins(0, 0, 0, 0)
         self.setFixedWidth(170)
@@ -52,6 +53,8 @@ class UserMenu(QWidget):
         self.setLayout(self.layout_)
         for widget in list_buttons:
             self.layout_.addWidget(widget)
+            
+        self.hide()
             
     def widget_shadow(self, obj):
         result = QGraphicsDropShadowEffect(obj)
@@ -79,6 +82,7 @@ class Contener(QFrame):
 class MessageLayout(QHBoxLayout):
     def __init__(
         self,
+        ui_widget: QWidget,
         controller,
         coming_msg: dict,
         nb_react: Optional[int] = 0,
@@ -153,17 +157,15 @@ class MessageLayout(QHBoxLayout):
         self.username_label = check_str_len(sender)
 
         self.sender_btn = CustomQPushButton(self.username_label)
-        self.user_menu = UserMenu(self.username_label)
+        self.user_menu = UserMenu(ui_widget)
 
         self.user_menu.send_msg_btn.clicked.connect(
             functools.partial(self.add_dm_layout, copy_icon)
         )
-        self.user_menu.hide()
+        
         self.left_layout.addWidget(self.sender_btn)
         if message_id and sender != self.controller.ui.client.user_name:
             self.sender_btn.clicked.connect(self.display_menu)
-            main_layout.addChildWidget(self.user_menu)
-            self.user_menu.move(self.user_menu.x() + 50, self.user_menu.y() + 40)
             style_ = """
             QPushButton {{
             font-weight: bold;
@@ -173,6 +175,15 @@ class MessageLayout(QHBoxLayout):
             }}
             """
             self.user_menu.leaveEvent = lambda e: self.hide_menu()
+            source_global_pos = self.user_menu.mapToGlobal(
+                QPoint(
+                    -right_widget.width()//2 + self.left_widget.width(), 
+                    10
+                )
+            )
+            central_local_pos = self.sender_btn.mapFromGlobal(source_global_pos)
+
+            self.user_menu.move(central_local_pos)
         else:
             style_ = """
             QPushButton {{
