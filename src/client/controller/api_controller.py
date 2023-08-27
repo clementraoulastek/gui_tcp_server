@@ -7,6 +7,7 @@ import src.client.controller.global_variables as global_variables
 class ApiController:
     def __init__(self, ui) -> None:
         self.ui = ui
+        self.is_connected = False
 
     def send_login_form(self) -> bool:
         """
@@ -18,9 +19,12 @@ class ApiController:
             return False
 
         status_code, is_connected = self.ui.backend.send_login_form(username, password)
-        if status_code == 200 and not is_connected:
-            self.ui.client.user_name = username
-            return bool(self.send_login_status(username=username, status=True))
+        if status_code != 200 or is_connected:
+            return False
+        self.ui.client.user_name = username
+        if self.send_login_status(username=username, status=True):
+            self.is_connected = True
+            return True
         else:
             return False
         

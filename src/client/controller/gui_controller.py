@@ -341,7 +341,7 @@ class GuiController:
 
     def __update_gui_with_connected_avatar(self) -> None:
         """
-        Callback to update gui with input avatar
+        Callback to update gui with input connected avatar
         """
         for user, data in global_variables.user_connected.items():
             if data[1] == False:
@@ -355,7 +355,8 @@ class GuiController:
                 user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.ACTIVATED
                 ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
-                user_pic.setAlignment(Qt.AlignmentFlag.AlignRight)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px;")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
@@ -390,7 +391,7 @@ class GuiController:
 
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
-        Callback to update gui with input avatar
+        Callback to update gui with input disconnected avatar
         """
         for user, data in global_variables.user_disconnect.items():
             if data[1] == False:
@@ -404,7 +405,8 @@ class GuiController:
                     content=content, status=AvatarStatus.DEACTIVATED
                 ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
                 user_pic.set_opacity(0.2)
-                user_pic.setAlignment(Qt.AlignmentFlag.AlignRight)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet("border: 0px")
                 username_label = check_str_len(username)
                 user_name = CustomQPushButton(username_label)
@@ -563,6 +565,7 @@ class GuiController:
         """
         # --------------------- Update backend connection status --------------------- #
         self.api_controller.send_login_status(username=self.ui.client.user_name, status=False)
+        self.api_controller.is_connected = False
         
         # --------------------------- Socket disconnection --------------------------- #
         self.ui.client.close_connection()
@@ -613,7 +616,7 @@ class GuiController:
             direct_message_layout = QHBoxLayout()
             direct_message_layout.setSpacing(10)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
-            icon.setAlignment(Qt.AlignmentFlag.AlignRight)
+            icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             partial_room_name = check_str_len(room_name)
             btn = CustomQPushButton(partial_room_name)
             self.dm_avatar_dict[room_name] = icon

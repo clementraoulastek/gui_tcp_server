@@ -41,9 +41,12 @@ class QtGui:
     def quit(self):
         # ? I don't know why but in a list comprehension it doesn't work
         if hasattr(self.main_window.controller.gui_controller, "read_worker"):
-            self.main_window.controller.api_controller.send_login_status(username=self.main_window.client.user_name, status=False)
-            self.main_window.client.close_connection()
-            
+            if self.main_window.controller.api_controller.is_connected:
+                self.main_window.controller.api_controller.send_login_status(username=self.main_window.client.user_name, status=False)
+                
+            if self.main_window.client.is_connected:
+                self.main_window.client.close_connection()
+
             # Kill all workers
             while not self.main_window.controller.gui_controller.read_worker.isFinished():
                 self.main_window.controller.gui_controller.read_worker.stop()
@@ -57,7 +60,7 @@ class QtGui:
             while not self.main_window.controller.gui_controller.read_react_message_worker.isFinished():
                 self.main_window.controller.gui_controller.read_react_message_worker.stop()
                 
-        logging.debug("Client disconnected successfully")
+        logging.debug("GUI killed successfully")
         sys.exit()
 
     def run(self):

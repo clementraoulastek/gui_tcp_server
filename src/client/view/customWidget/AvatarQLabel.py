@@ -122,7 +122,7 @@ class AvatarLabel(QLabel):
         painter.setPen(QPen(Qt.NoPen))
         circle_radius = 5
         circle_center = QPoint(
-            self.width_ - circle_radius, self.height_ - circle_radius
+            self.width_ - 2*circle_radius, self.height_ - circle_radius
         )
         brush = QBrush(brush_color)
         painter.setBrush(brush)
