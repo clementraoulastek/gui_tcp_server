@@ -59,7 +59,7 @@ class ApiController:
             self.update_user_connected(username, content)
         else:
             self.ui.users_pict[username] = ""
-            
+
     def update_user_connected(self, username: str, content: bytes) -> None:
         if (
             username in self.ui.users_connected.keys()
@@ -82,5 +82,3 @@ class ApiController:
         """
         if sender_id not in list(self.ui.users_pict.keys()):
             self.get_user_icon(sender_id)
-            
-    

@@ -14,7 +14,7 @@ from src.client.core.qt_core import (
     QGraphicsDropShadowEffect,
     QFont,
     QFontMetrics,
-    QRect
+    QRect,
 )
 import math
 
@@ -76,7 +76,6 @@ class AvatarLabel(QLabel):
             brush_color = self._update_circle_color(255, 0, 0)
         self.__create_ellipse(painter, brush_color, icon_pixmap)
 
-
     def _update_circle_color(self, r, g, b):
         return QColor(r, g, b)
 
@@ -91,7 +90,7 @@ class AvatarLabel(QLabel):
         opacity_effect = QGraphicsOpacityEffect(self)
         opacity_effect.setOpacity(opacity)
         self.setGraphicsEffect(opacity_effect)
-        
+
     def update_pixmap(self, status: AvatarStatus) -> None:
         icon_pixmap = self.__init_pixmap()
         painter = self.__create_painter(icon_pixmap)
@@ -103,7 +102,7 @@ class AvatarLabel(QLabel):
             painter.end()
             self.setPixmap(icon_pixmap)
             return
-            
+
         self.__create_ellipse(painter, brush_color, icon_pixmap)
 
     def __create_painter(self, icon_pixmap: QPixmap) -> QPainter:
@@ -117,7 +116,9 @@ class AvatarLabel(QLabel):
         pm.loadFromData(self.content)
         return QIcon(pm).pixmap(QSize(self.height_, self.width_))
 
-    def __create_ellipse(self, painter: QPainter, brush_color: QColor, icon_pixmap: QPixmap) -> None:
+    def __create_ellipse(
+        self, painter: QPainter, brush_color: QColor, icon_pixmap: QPixmap
+    ) -> None:
         painter.setPen(QPen(Qt.NoPen))
         circle_radius = 5
         circle_center = QPoint(

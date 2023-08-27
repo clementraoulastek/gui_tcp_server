@@ -8,7 +8,7 @@ from src.client.core.qt_core import (
     QThread,
     Signal,
     QWidget,
-    QLayout
+    QLayout,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -17,7 +17,7 @@ from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
-from src.tools.utils import ImageAvatar, check_str_len
+from src.tools.utils import Icon, ImageAvatar, check_str_len
 from src.client.controller.api_controller import ApiController
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
@@ -86,8 +86,8 @@ class GuiController:
             self.__update_gui_with_disconnected_avatar
         )
         self.read_outdated_avatar_worker.start()
-        
-        # Worker for react 
+
+        # Worker for react
         self.read_react_message_worker = Worker(parent=self.ui)
         self.read_react_message_worker.signal.connect(
             self.__update_react_message_on_gui
@@ -100,7 +100,6 @@ class GuiController:
         self.worker_thread.start()
 
         self.update_buttons()
-        
 
     def diplay_self_message_on_gui(
         self,
@@ -185,7 +184,7 @@ class GuiController:
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
             sender_list.remove(self.ui.client.user_name)
-            
+
     def __diplay_coming_message_on_gui(self) -> None:
         """
         Callback to update gui with input messages
@@ -220,26 +219,32 @@ class GuiController:
             )
             # Update avatar status with DM circle popup
             self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM)
-            
+
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
         (
             global_variables.comming_msg["id"],
             global_variables.comming_msg["receiver"],
             global_variables.comming_msg["message"],
         ) = ("", "", "")
-        
+
     def __update_react_message_on_gui(self) -> None:
         """
         Callback to update gui with input messages
         """
         if not global_variables.comming_msg["reaction"]:
             return
-        message_id, nb_reaction = global_variables.comming_msg["id"], global_variables.comming_msg["reaction"]
+        message_id, nb_reaction = (
+            global_variables.comming_msg["id"],
+            global_variables.comming_msg["reaction"],
+        )
         message: MessageLayout = self.messages_dict[int(message_id)]
         message.update_react(int(nb_reaction))
-        
+
         # Reset global variables
-        global_variables.comming_msg["reaction"], global_variables.comming_msg["id"] = "", ""
+        global_variables.comming_msg["reaction"], global_variables.comming_msg["id"] = (
+            "",
+            "",
+        )
 
     def __callback_routing_messages_on_ui(self) -> None:
         """
@@ -313,7 +318,7 @@ class GuiController:
         if id_ in user_disconnect:
             self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
             user_disconnect.pop(id_)
-        
+
         if id_ not in self.ui.users_connected.keys():
             self.ui.users_connected[id_] = True
             self.api_controller.update_user_connected(id_, self.ui.users_pict[id_])
@@ -616,7 +621,7 @@ class GuiController:
 
     def update_gui_for_mp_layout(self, room_name: str) -> None:
         if room_name != "home":
-            # Update avatar status with iddle 
+            # Update avatar status with iddle
             self.dm_avatar_dict[room_name].update_pixmap(AvatarStatus.IDLE)
         old_widget = self.ui.scroll_area
         old_widget.hide()
@@ -624,9 +629,11 @@ class GuiController:
         index = self.ui.body_layout.indexOf(old_widget)
         self.ui.body_layout.removeWidget(old_widget)
         self.ui.body_layout.insertWidget(index, widget)
-        self.ui.frame_name.setText(
-            f"{room_name}"
-        ) 
+        self.ui.frame_icon.update_picture(
+            None,
+            content=Icon.ROOM.value if room_name == "home" else Icon.MESSAGE.value,
+        )
+        self.ui.frame_name.setText(f"{room_name}")
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
 

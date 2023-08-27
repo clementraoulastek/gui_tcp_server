@@ -38,18 +38,18 @@ class QtGui:
 
     def run(self):
         sys.exit(self.run_app())
-        
+
     def run_app(self):
         self.app.exec()
-        # Kill all workers 
+        # Kill all workers
         # ? I don't know why but in a list comprehension it doesn't work
         if hasattr(self.main_window.controller.gui_controller, "read_worker"):
             self.main_window.controller.gui_controller.read_worker.stop()
             self.main_window.controller.gui_controller.read_avatar_worker.stop()
             self.main_window.controller.gui_controller.read_outdated_avatar_worker.stop()
             self.main_window.controller.gui_controller.read_react_message_worker.stop()
-        
-        
+
+
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
@@ -315,20 +315,33 @@ class MainWindow(QMainWindow):
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
 
-        self.frame_name = QLabel("home")
-        shadow = shadow = self.widget_shadow(self.upper_widget)
-        self.frame_name.setGraphicsEffect(shadow)
-        self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.frame_name.setContentsMargins(15, 5, 15, 5)
-        self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.frame_name.setStyleSheet(
+        self.frame_title = QWidget()
+        self.frame_title.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.frame_title.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
             border-radius: 6px;\
             font-weight: bold;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
-        upper_layout.addWidget(self.frame_name)
+        self.frame_layout = QHBoxLayout(self.frame_title)
+        self.frame_layout.setContentsMargins(5, 5, 5, 5)
+        self.frame_layout.setSpacing(10)
+        self.frame_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.frame_icon = AvatarLabel(
+            content=Icon.ROOM.value, color=Color.LIGHT_GREY.value, height=15, width=15
+        )
+        self.frame_icon.setStyleSheet("border: none")
+        self.frame_name = QLabel("home")
+        shadow = self.widget_shadow(self.upper_widget)
+        self.frame_title.setGraphicsEffect(shadow)
+        self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.frame_name.setStyleSheet("border: 0px")
+        self.frame_layout.addWidget(self.frame_icon)
+        self.frame_layout.addWidget(self.frame_name)
+        upper_layout.addWidget(self.frame_title)
+
         self.body_layout.addWidget(self.upper_widget)
 
         self.body_gui_dict = {"home": BodyScrollArea(name="home")}

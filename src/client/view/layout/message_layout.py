@@ -15,7 +15,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QGraphicsDropShadowEffect,
     QColor,
-    Slot
+    Slot,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.commands import Commands
@@ -206,7 +206,7 @@ class MessageLayout(QHBoxLayout):
             sp_retain = self.react_widget.sizePolicy()
             sp_retain.setRetainSizeWhenHidden(True)
             self.react_widget.setSizePolicy(sp_retain)
-            
+
             shadow = self.widget_shadow(self.react_widget)
             self.react_widget.setStyleSheet(
                 f"color: {Color.LIGHT_GREY.value};\
@@ -284,6 +284,7 @@ class MessageLayout(QHBoxLayout):
             self.react_widget.hide()
         else:
             self.react_widget.show()
+
     @Slot()
     def update_react(self, react_nb: int):
         self.nb_react = react_nb
@@ -293,7 +294,6 @@ class MessageLayout(QHBoxLayout):
             self.react_widget.show()
         self.react_widget.update()
         self.react_nb.setText(f"{self.nb_react}")
-
 
     def display_menu(self):
         if self.user_menu.isHidden():
