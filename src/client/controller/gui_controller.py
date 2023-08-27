@@ -95,7 +95,7 @@ class GuiController:
         self.read_react_message_worker.start()
 
         self.worker_thread = Thread(
-            target=self.__callback_routing_messages_on_ui, daemon=True
+            target=self.__callback_routing_messages_on_ui, daemon=False
         )
         self.worker_thread.start()
 
@@ -265,7 +265,7 @@ class GuiController:
                 break
             time.sleep(waiting_time)
         
-        logging.error("Connection lost with the server")
+        logging.debug("Connection lost with the server")
 
     def __routing_coming_messages(self, header: int, payload: str) -> None:
         """

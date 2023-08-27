@@ -84,7 +84,6 @@ class MainWindow(QMainWindow):
         # GUI settings
         self.setup_gui()
         
-
     def setup_gui(self) -> None:
         """
         Add elements to the main window
@@ -92,19 +91,20 @@ class MainWindow(QMainWindow):
         self.main_widget = QWidget()
         self.setCentralWidget(self.main_widget)
         self.main_widget.setStyleSheet(f"background-color: {Color.DARK_GREY.value};")
-        self.main_layout = QVBoxLayout()
+        self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setContentsMargins(5, 5, 5, 5)
-        self.main_widget.setLayout(self.main_layout)
-
+        self.main_layout.setSpacing(5)
         self.set_header_gui()
-        self.core_layout = QHBoxLayout()
+        self.core_widget = QWidget()
+        self.core_widget.setContentsMargins(0, 0, 0, 0)
+        self.core_layout = QHBoxLayout(self.core_widget)
+        self.core_layout.setContentsMargins(0, 0, 0, 0)
         self.set_left_nav()
         self.set_body_gui()
         self.set_right_nav()
-        self.main_layout.addLayout(self.core_layout)
+        self.main_layout.addWidget(self.core_widget)
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.set_footer_gui()
-
         self.controller.login()
 
     def set_header_gui(self) -> None:
@@ -118,10 +118,9 @@ class MainWindow(QMainWindow):
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value};"
         )
-        logo_layout = QHBoxLayout()
         logo_widget = QWidget()
+        logo_layout = QHBoxLayout(logo_widget)
         logo_widget.setStyleSheet("border: none")
-        logo_widget.setLayout(logo_layout)
         logo_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
         icon_soft.setStyleSheet(
@@ -129,7 +128,6 @@ class MainWindow(QMainWindow):
             border: none"
         )
         icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-
         status_server_label = QLabel("Robot Messenger")
         status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         status_server_label.setStyleSheet(
@@ -233,8 +231,7 @@ class MainWindow(QMainWindow):
     def set_left_nav(self) -> None:
         # --- Left layout with scroll area
         self.left_nav_layout = QHBoxLayout()
-        self.user_inline_layout = QVBoxLayout()
-        self.user_inline_layout.setSpacing(25)
+
 
         self.user_inline = QVBoxLayout()
         self.user_inline.setSpacing(15)
@@ -242,7 +239,6 @@ class MainWindow(QMainWindow):
         self.user_offline = QVBoxLayout()
         self.user_offline.setSpacing(15)
 
-        self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 2)
 
@@ -263,6 +259,10 @@ class MainWindow(QMainWindow):
             border-color: {Color.MIDDLE_GREY.value};\
             margin-bottom: 2px;"
         )
+        
+        self.user_inline_layout = QVBoxLayout(self.scroll_widget_avatar)
+        self.user_inline_layout.setSpacing(25)
+        self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
@@ -272,7 +272,6 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
 
-        self.scroll_widget_avatar.setLayout(self.user_inline_layout)
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("")
@@ -316,9 +315,8 @@ class MainWindow(QMainWindow):
         Update the core GUI
         """
         self.body_widget = QWidget()
-        self.body_layout = QVBoxLayout()
+        self.body_layout = QVBoxLayout(self.body_widget)
         self.body_layout.setContentsMargins(0, 0, 0, 0)
-        self.body_widget.setLayout(self.body_layout)
 
         self.upper_widget = QWidget()
         self.upper_widget.setContentsMargins(0, 0, 0, 0)
@@ -331,8 +329,7 @@ class MainWindow(QMainWindow):
         )
         shadow = self.widget_shadow(self.upper_widget)
         self.upper_widget.setGraphicsEffect(shadow)
-        upper_layout = QHBoxLayout()
-        self.upper_widget.setLayout(upper_layout)
+        upper_layout = QHBoxLayout(self.upper_widget)
 
         self.frame_title = QWidget()
         self.frame_title.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
@@ -398,16 +395,13 @@ class MainWindow(QMainWindow):
 
         self.main_layout.addLayout(self.button_layout)
         self.send_widget = QWidget()
-
-        self.send_layout = QHBoxLayout()
-        self.send_widget.setLayout(self.send_layout)
+        self.send_layout = QHBoxLayout(self.send_widget)
         self.send_layout.setObjectName("send layout")
         self.send_layout.setContentsMargins(0, 0, 0, 0)
         self.send_layout.setSpacing(5)
 
         # --- Client information
         self.user_info_widget = QWidget()
-
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
@@ -428,8 +422,7 @@ class MainWindow(QMainWindow):
         shadow.update()
 
         self.user_widget.setStyleSheet(
-            f"border: 1px solid;\
-            border: 1px solid {Color.MIDDLE_GREY.value};"
+            f"border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         self.custom_user_button = CustomQPushButton("")
         self.custom_user_button.widget_shadow()
@@ -447,8 +440,7 @@ class MainWindow(QMainWindow):
         self.custom_user_button.clicked.connect(self.controller.update_user_icon)
         self.custom_user_button.setEnabled(False)
 
-        avatar_layout = QHBoxLayout()
-        self.user_widget.setLayout(avatar_layout)
+        avatar_layout = QHBoxLayout(self.user_widget)
 
         avatar_layout.addWidget(self.user_picture)
         avatar_layout.addWidget(self.user_name)
@@ -475,9 +467,9 @@ class MainWindow(QMainWindow):
         version_widget.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         version_widget.setMinimumWidth(self.scroll_widget_avatar.width())
 
-        self.main_layout.addWidget(self.send_widget)
         self.send_layout.addWidget(self.send_button)
         self.send_layout.addWidget(version_widget)
+        self.main_layout.addWidget(self.send_widget)
 
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
         self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
@@ -485,7 +477,7 @@ class MainWindow(QMainWindow):
 
         # --- Button horizontal layout
         self.button_layout = QHBoxLayout()
-        self.button_layout.setContentsMargins(5, 0, 0, 0)
+        self.button_layout.setContentsMargins(0, 0, 0, 0)
         self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.button_layout.setObjectName("button layout")
         self.button_layout.setSpacing(5)

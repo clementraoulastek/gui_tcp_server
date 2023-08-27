@@ -38,7 +38,7 @@ class Client:
 
     def read_data(self) -> Union[Tuple[str, str], Tuple[bool, bool]]:
         """
-            Read data from the socket
+        Read data from the socket
 
         Returns:
             str, bool: return
@@ -48,7 +48,7 @@ class Client:
             while self.is_connected:
                 chunk = self.sock.recv(1)
                 if chunk != b"\n":
-                    raw_data += chunk
+                    raw_data += chunk 
                 else:
                     break
             header, payload = int(raw_data[0]), raw_data[1:].decode("utf-8")
