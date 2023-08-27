@@ -21,6 +21,8 @@ from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus
+import pytz
+from tzlocal import get_localzone
 
 
 @unique
@@ -244,7 +246,9 @@ class MessageLayout(QHBoxLayout):
             date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         else:
             dt_object = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f%z")
-            date_time = dt_object.strftime("%m/%d/%Y à %H:%M:%S")
+            local_timezone = get_localzone()
+            local_dt_object = dt_object.replace(tzinfo=pytz.utc).astimezone(local_timezone) 
+            date_time = local_dt_object.strftime("%m/%d/%Y à %H:%M:%S")
             
         date_label = QLabel(date_time)
         date_label.setStyleSheet(
