@@ -204,47 +204,48 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.hide()
             # ---------------------------------------------------------------------------- #
 
-            # -------------------------------- React widget ------------------------------- #
-            react_layout = QHBoxLayout()
-            react_layout.setSpacing(5)
-            react_layout.setContentsMargins(3, 2, 3, 2)
-            self.react_widget = QWidget()
-            sp_retain = self.react_widget.sizePolicy()
-            sp_retain.setRetainSizeWhenHidden(True)
-            self.react_widget.setSizePolicy(sp_retain)
+        # -------------------------------- React widget ------------------------------- #
+        react_layout = QHBoxLayout()
+        react_layout.setSpacing(5)
+        react_layout.setContentsMargins(3, 2, 3, 2)
+        self.react_widget = QWidget()
+        sp_retain = self.react_widget.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.react_widget.setSizePolicy(sp_retain)
 
-            shadow = self.widget_shadow(self.react_widget)
-            self.react_widget.setStyleSheet(
-                f"color: {Color.LIGHT_GREY.value};\
-                background-color: {Color.DARK_GREY.value};\
-                border-radius: 6px;\
-                font-weight: bold;\
-                border: 1px solid {Color.MIDDLE_GREY.value};"
-            )
-            self.react_widget.setGraphicsEffect(shadow)
-            self.react_widget.setLayout(react_layout)
-            self.react_emot = AvatarLabel(
-                content=Icon.SMILEY.value,
-                height=15,
-                width=15,
-                color=Color.WHITE.value,
-            )
-            self.react_emot.setContentsMargins(0, 0, 0, 0)
-            self.react_emot.setStyleSheet("border: 0px;")
-            self.react_nb = QLabel("1")
+        shadow = self.widget_shadow(self.react_widget)
+        self.react_widget.setStyleSheet(
+            f"color: {Color.LIGHT_GREY.value};\
+            background-color: {Color.DARK_GREY.value};\
+            border-radius: 6px;\
+            font-weight: bold;\
+            border: 1px solid {Color.MIDDLE_GREY.value};"
+        )
+        self.react_widget.setGraphicsEffect(shadow)
+        self.react_widget.setLayout(react_layout)
+        self.react_emot = AvatarLabel(
+            content=Icon.SMILEY.value,
+            height=15,
+            width=15,
+            color=Color.WHITE.value,
+        )
+        self.react_emot.setContentsMargins(0, 0, 0, 0)
+        self.react_emot.setStyleSheet("border: 0px;")
+        self.react_nb = QLabel("1")
 
-            self.react_emot.setAlignment(Qt.AlignLeft)
-            self.react_nb.setAlignment(Qt.AlignLeft)
-            self.react_nb.setStyleSheet("border: 0px")
-            react_layout.addWidget(self.react_emot)
-            react_layout.addWidget(self.react_nb)
-            # ---------------------------------------------------------------------------- #
+        self.react_emot.setAlignment(Qt.AlignLeft)
+        self.react_nb.setAlignment(Qt.AlignLeft)
+        self.react_nb.setStyleSheet("border: 0px")
+        react_layout.addWidget(self.react_emot)
+        react_layout.addWidget(self.react_nb)
+        # ---------------------------------------------------------------------------- #
 
         if not date:
             date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
         else:
             dt_object = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f%z")
             date_time = dt_object.strftime("%m/%d/%Y à %H:%M:%S")
+            
         date_label = QLabel(date_time)
         date_label.setStyleSheet(
             "border: 0px;\
@@ -253,9 +254,10 @@ class MessageLayout(QHBoxLayout):
         )
         sender_layout.addWidget(date_label)
 
-        if message_id and sender != self.controller.ui.client.user_name:
+        if message_id:
             sender_layout.addWidget(self.react_widget)
-            sender_layout.addWidget(self.react_buttton)
+            if sender != self.controller.ui.client.user_name:
+                sender_layout.addWidget(self.react_buttton)    
 
         message_label = QLabel(str_message)
         message_label.setStyleSheet("border: 0px; color: white;")
@@ -266,7 +268,7 @@ class MessageLayout(QHBoxLayout):
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
         
-        if message_id and sender != self.controller.ui.client.user_name:
+        if message_id:
             self.update_react(self.nb_react)
 
     def add_react(self):
