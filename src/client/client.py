@@ -6,6 +6,7 @@ from src.tools.commands import Commands
 
 
 class Client:
+    SPECIAL_CHAR = "$replaced$"
     def __init__(self, host: str, port: int, name: str) -> None:
         self.user_name = name
         self.port = port
