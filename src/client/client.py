@@ -69,7 +69,7 @@ class Client:
         Args:
             data (str): string data to send
         """
-        payload = payload.replace(":", "$replaced$")
+        payload = payload.replace(":", Client.SPECIAL_CHAR)
         message = f"{self.user_name}:{receiver}:{payload}\n"
 
         bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")

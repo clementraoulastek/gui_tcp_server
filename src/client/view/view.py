@@ -23,7 +23,6 @@ from src.client.core.qt_core import (
     QLayout,
     QGraphicsDropShadowEffect,
     QColor,
-    QFrame
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
@@ -48,19 +47,6 @@ class QtGui:
                 
             if self.main_window.client.is_connected:
                 self.main_window.client.close_connection()
-
-            # Kill all workers
-            while not self.main_window.controller.gui_controller.read_worker.isFinished():
-                self.main_window.controller.gui_controller.read_worker.stop()
-                
-            while not self.main_window.controller.gui_controller.read_avatar_worker.isFinished():
-                self.main_window.controller.gui_controller.read_avatar_worker.stop()
-                
-            while not self.main_window.controller.gui_controller.read_outdated_avatar_worker.isFinished():
-                self.main_window.controller.gui_controller.read_outdated_avatar_worker.stop()
-            
-            while not self.main_window.controller.gui_controller.read_react_message_worker.isFinished():
-                self.main_window.controller.gui_controller.read_react_message_worker.stop()
                 
         logging.debug("GUI killed successfully")
         sys.exit()
@@ -98,7 +84,6 @@ class MainWindow(QMainWindow):
         self.main_layout.setSpacing(5)
         self.set_header_gui()
         self.core_widget = QWidget()
-        #self.menu = UserMenu(self.main_widget)
     
         self.core_widget.setContentsMargins(0, 0, 0, 0)
         self.core_layout = QHBoxLayout(self.core_widget)

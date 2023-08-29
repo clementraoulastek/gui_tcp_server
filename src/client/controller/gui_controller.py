@@ -712,14 +712,18 @@ class GuiController:
         self, room_name: str, icon, switch_frame: Optional[bool] = False
     ) -> None:
         if room_name not in self.ui.room_list:
+            # Layout
             direct_message_layout = QHBoxLayout()
             direct_message_layout.setSpacing(10)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            
             partial_room_name = check_str_len(room_name)
+            
             btn = CustomQPushButton(partial_room_name)
             self.dm_avatar_dict[room_name] = icon
             btn.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
+            
             style_ = """
             QPushButton {{
             text-align: left;
@@ -734,6 +738,7 @@ class GuiController:
             btn.setStyleSheet(style_.format())
             btn.update()
             btn.setContentsMargins(0, 0, 0, 0)
+            
             direct_message_layout.addWidget(icon)
             direct_message_layout.addWidget(btn)
             self.ui.room_list[room_name] = direct_message_layout

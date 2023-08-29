@@ -12,11 +12,7 @@ from src.client.core.qt_core import (
     QPen,
     QGraphicsOpacityEffect,
     QGraphicsDropShadowEffect,
-    QFont,
-    QFontMetrics,
-    QRect,
 )
-import math
 
 
 @unique
@@ -79,19 +75,34 @@ class AvatarLabel(QLabel):
     def _update_circle_color(self, r, g, b):
         return QColor(r, g, b)
 
-    def widget_shadow(self):
+    def widget_shadow(self) -> None:
+        """
+        Update shadow
+        """
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setColor(QColor(0, 0, 0, 150))
         shadow.setOffset(0, 2)
         shadow.setBlurRadius(1)
         return shadow
 
-    def set_opacity(self, opacity):
+    def set_opacity(self, opacity: int) -> None:
+        """
+        Update opacity
+
+        Args:
+            opacity (int): opacity value
+        """
         opacity_effect = QGraphicsOpacityEffect(self)
         opacity_effect.setOpacity(opacity)
         self.setGraphicsEffect(opacity_effect)
 
     def update_pixmap(self, status: AvatarStatus) -> None:
+        """
+        Update pixmap of the icon
+
+        Args:
+            status (AvatarStatus): avatar status
+        """
         icon_pixmap = self.__init_pixmap()
         painter = self.__create_painter(icon_pixmap)
         if status == AvatarStatus.ACTIVATED:

@@ -29,10 +29,12 @@ class Server:
         """
         Launch the server
         """
+        TIME_SLEEP = 0.1
+        
         try:
             while "Server connected":
                 conn, addr = self.sock.accept()
-                time.sleep(0.1)
+                time.sleep(TIME_SLEEP)
                 conn_thread = Thread(
                     target=self.create_connection,
                     args=(conn, addr),
@@ -41,6 +43,7 @@ class Server:
                 )
                 conn_thread.start()
         except (KeyboardInterrupt, ConnectionAbortedError):
+            # Thread on kill process
             Thread(
                 target=self.close_connection,
                 name="Close server thread",
@@ -55,18 +58,14 @@ class Server:
         self.sock.close()
         sys.exit(0)
 
-    def read_data(self, conn) -> tuple:
+    def read_data(self, conn: socket) -> tuple:
         """
-            Read raw data from the client
+        Read raw data from the client
 
         Args:
             conn (socket): socket of the client
-
-        Raises:
-            ConnectionAbortedError: raise error if the client disconnects
-
         Returns:
-            str: return string of the received data
+            tuple: return header and payload
         """
         raw_data: bytes = b""
         header, payload = None, None
@@ -82,27 +81,28 @@ class Server:
 
     def send_data(
         self,
-        conn,
+        conn: socket,
         header: Commands,
         payload: str,
         is_from_server: Optional[bool] = False,
     ) -> None:
         """
-            Send data to the client
+        Send data to the client
 
         Args:
-            conn (socket): socket of the client
-            data (str): data to send
-            is_from_server (bool, optional): if msg come from server. Defaults to False.
+            conn (socket): connection with the client
+            header (Commands): header of the cmd
+            payload (str): payload of the cmd
+            is_from_server (Optional[bool], optional): cmd from server. Defaults to False.
         """
         message = f"server:{payload}\n" if is_from_server else f"{payload}\n"
 
         bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         conn.send(bytes_message)
 
-    def create_connection(self, conn, addr) -> None:
+    def create_connection(self, conn: socket, addr: str) -> None:
         """
-            Create a new connection
+        Create a new connection
 
         Args:
             conn (socket): Socket of the client
@@ -111,20 +111,23 @@ class Server:
         self.handle_new_connection(addr, conn)
 
         logging.debug(f"Connected by {addr}")
-        # receive the data in small chunks and retransmit it
+        
+        # Receive the data in small chunks and retransmit it
         try:
-            while "Client connected":
+            while True:
                 header, payload = self.read_data(conn)
                 if not payload:
                     raise ConnectionAbortedError
                 receiver = self.__match_username_and_address(addr, payload)
                 self.send_message_to_backend(header, payload)
+                # If receiver is home, send messages to all users
                 if receiver == "home":
                     for address in self.conn_dict:
                         if address != addr:
                             self.send_data(
                                 self.conn_dict[address], Commands(header), payload
                             )
+                # If receiver, send message to the user
                 elif receiver in self.user_dict:
                     self.send_data(
                         self.conn_dict[self.user_dict[receiver]],
@@ -138,6 +141,13 @@ class Server:
             logging.error(error)
 
     def send_message_to_backend(self, header: int, payload: str) -> None:
+        """
+        Send message to the API
+
+        Args:
+            header (int): header of the message
+            payload (str): payload of the message
+        """
         if Commands(header) == Commands.MESSAGE:
             payload_list = payload.split(":")
             sender, receiver, message = (
@@ -151,14 +161,27 @@ class Server:
             self._update_reaction(payload)
 
     def _update_reaction(self, payload: str) -> None:
+        """
+        Add backend message to update reaction
+
+        Args:
+            payload (str): payload
+        """
         payload_list = payload.split(":")
-        sender, receiver, message = payload_list[0], payload_list[1], payload_list[2]
+        _, _, message = payload_list[0], payload_list[1], payload_list[2]
         message_list = message.split(";")
         message_id, reaction_nb = message_list[0], message_list[1]
         logging.info(message)
         self.backend.update_reaction_nb(message_id, reaction_nb)
 
-    def handle_new_connection(self, addr, conn) -> None:
+    def handle_new_connection(self, addr: str, conn: socket) -> None:
+        """
+        Handle a new connection with a client
+
+        Args:
+            addr (_type_): _description_
+            conn (_type_): _description_
+        """
         self.conn_dict[addr] = conn
 
         # Send nb of conn
@@ -170,9 +193,9 @@ class Server:
                 self.conn_dict[address], Commands.CONN_NB, message, is_from_server=True
             )
 
-    def _display_disconnection(self, conn, addr: str) -> None:
+    def _display_disconnection(self, conn: socket, addr: str) -> None:
         """
-            Display disconnection on gui
+        Display disconnection on gui
 
         Args:
             conn (socket): socket of the client
@@ -201,6 +224,13 @@ class Server:
                     )
 
     def __match_username_and_address(self, address: str, payload: str) -> None:
+        """
+        Match the IP addresse with the username in db
+
+        Args:
+            address (str): address
+            payload (str): payload 
+        """
         username, receiver = payload.split(":")[0], payload.split(":")[1]
         receiver = receiver.replace(" ", "")
         username = username.replace(" ", "")
