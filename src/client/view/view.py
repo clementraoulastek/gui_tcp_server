@@ -141,9 +141,6 @@ class MainWindow(QMainWindow):
         """
         Update the header GUI
         """
-        # ---------------------------------------------------------------------------- #
-        #                                  Scroll Area                                 #
-        # ---------------------------------------------------------------------------- #
         self.scroll_area_dm = QScrollArea()
         self.scroll_area_dm.setFixedWidth(self.scroll_area_avatar.width())
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
@@ -154,7 +151,6 @@ class MainWindow(QMainWindow):
         self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area_dm.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_dm.setWidgetResizable(True)
-        # ---------------------------------------------------------------------------- #
 
         # --- Background
         self.right_nav_widget = QWidget()
