@@ -41,8 +41,9 @@ class CustomQPushButton(QPushButton):
         bg_color=Color.DARK_GREY.value,
         bg_color_active=Color.GREY.value,
         context_color=Color.GREY.value,
+        parent=None
     ):
-        super().__init__()
+        super().__init__(parent)
 
         self.setText(text)
         self.setFixedHeight(40)
