@@ -22,8 +22,9 @@ class RightNavView:
         
     def set_right_nav(self) -> None:
         """
-        Update the header GUI
+        Create a right navigation widget
         """
+        # Scroll area
         self.scroll_area_dm = QScrollArea()
         self.scroll_area_dm.setFixedWidth(self.width) #self.scroll_area_avatar.width()
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(

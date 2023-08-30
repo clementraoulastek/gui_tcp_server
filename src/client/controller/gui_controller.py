@@ -272,7 +272,7 @@ class GuiController:
         if ":" in payload:
             if header == Commands.CONN_NB.value:
                 nb_of_users = payload.split(":")[1]
-                self.ui.info_label.setText(f"Users online   |   {nb_of_users}")
+                self.ui.left_nav_widget.info_label.setText(f"Users online   |   {nb_of_users}")
             elif header == Commands.HELLO_WORLD.value:
                 self.__add_sender_avatar(payload, global_variables.user_disconnect)
                 # Return welcome to hello world
@@ -416,7 +416,7 @@ class GuiController:
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
             user_layout.addWidget(user_name)
-            self.ui.user_inline.addLayout(user_layout)
+            self.ui.left_nav_widget.user_inline.addLayout(user_layout)
 
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
@@ -468,11 +468,11 @@ class GuiController:
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
             user_layout.addWidget(user_name)
-            self.ui.user_offline.addLayout(user_layout)
+            self.ui.left_nav_widget.user_offline.addLayout(user_layout)
             
             global_variables.user_disconnect[user] = [data[0], True]
             
-        self.ui.info_disconnected_label.setText(
+        self.ui.left_nav_widget.info_disconnected_label.setText(
             f"Users offline   |   {len(global_variables.user_disconnect)}"
         )
 
@@ -572,8 +572,8 @@ class GuiController:
             self.ui.login_form = None
             self.clear()
             self.api_controller.get_user_icon(update_personal_avatar=update_avatar)
-            self.ui.message_label.hide()
-            self.ui.info_disconnected_label.show()
+            self.ui.left_nav_widget.message_label.hide()
+            self.ui.left_nav_widget.info_disconnected_label.show()
             self.fetch_all_users_username()
             self.display_older_messages()
 
@@ -609,7 +609,7 @@ class GuiController:
         """
         Hide left layout
         """
-        self.ui.scroll_area_avatar.hide()
+        self.ui.left_nav_widget.scroll_area_avatar.hide()
         self.ui.header.close_left_nav_button.hide()
         self.ui.header.show_left_nav_button.show()
 
@@ -617,7 +617,7 @@ class GuiController:
         """
         Show left layout
         """
-        self.ui.scroll_area_avatar.show()
+        self.ui.left_nav_widget.scroll_area_avatar.show()
         self.ui.header.show_left_nav_button.hide()
         self.ui.header.close_left_nav_button.show()
 
@@ -669,12 +669,12 @@ class GuiController:
 
         # UI update
         self.update_buttons()
-        self.clear_avatar("user_inline", self.ui)
-        self.clear_avatar("user_offline", self.ui)
+        self.clear_avatar("user_inline", self.ui.left_nav_widget)
+        self.clear_avatar("user_offline", self.ui.left_nav_widget)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
 
-        self.ui.message_label.show()
-        self.ui.info_disconnected_label.hide()
+        self.ui.left_nav_widget.message_label.show()
+        self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
 
         self.login()
@@ -690,7 +690,7 @@ class GuiController:
         else:
             self._set_buttons_status(True, "Please login")
             self.ui.user_name.setText("User disconnected")
-            self.ui.info_label.setText("Welcome")
+            self.ui.left_nav_widget.info_label.setText("Welcome")
             self.ui.user_picture.update_picture(
                 status=AvatarStatus.DEACTIVATED, content=""
             )
