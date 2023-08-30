@@ -60,7 +60,7 @@ class LeftNavView():
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("")
-        widget_shadow(self.scroll_widget_avatar)
+        widget_shadow(self.info_label)
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.message_label = QLabel("Login session")
@@ -77,7 +77,7 @@ class LeftNavView():
         self.user_inline_layout.addLayout(self.user_inline)
 
         self.info_disconnected_label = QLabel("")
-        widget_shadow(self.scroll_widget_avatar)
+        widget_shadow(self.info_disconnected_label)
         self.info_disconnected_label.hide()
         self.info_disconnected_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)

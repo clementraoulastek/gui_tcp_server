@@ -26,7 +26,7 @@ class RightNavView:
         """
         # Scroll area
         self.scroll_area_dm = QScrollArea()
-        self.scroll_area_dm.setFixedWidth(self.width) #self.scroll_area_avatar.width()
+        self.scroll_area_dm.setFixedWidth(self.width) 
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
@@ -53,10 +53,11 @@ class RightNavView:
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         rooms_label = QLabel("Rooms")
-        
+        widget_shadow(rooms_label)
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self._update_label_style(rooms_label)
         dm_label = QLabel("Messages")
+        widget_shadow(dm_label)
         self._update_label_style(dm_label)
         self.room_btn = CustomQPushButton("home")
         self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))

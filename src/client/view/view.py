@@ -111,12 +111,12 @@ class MainWindow(QMainWindow):
         self.core_layout.setContentsMargins(0, 0, 0, 0)
         
         # Update core layout
-        self.left_nav_widget = LeftNavView(width=300)
+        self.left_nav_widget = LeftNavView(width=150)
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
         
         self.set_body_gui()
         
-        self.right_nav_widget = RightNavView(self.controller, width=300)
+        self.right_nav_widget = RightNavView(self.controller, width=150)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
         
         self.main_layout.addWidget(self.core_widget)
@@ -150,6 +150,7 @@ class MainWindow(QMainWindow):
         upper_layout = QHBoxLayout(self.upper_widget)
 
         self.frame_title = QWidget()
+        widget_shadow(self.frame_title)
         self.frame_title.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.frame_title.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
@@ -167,7 +168,7 @@ class MainWindow(QMainWindow):
         )
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("home")
-        widget_shadow(self.upper_widget)
+
         self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.frame_name.setStyleSheet("border: 0px")

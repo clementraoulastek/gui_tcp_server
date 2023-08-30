@@ -35,6 +35,7 @@ class EnumReact(Enum):
 class UserMenu(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
+        
         # Stylesheet
         self.setStyleSheet("background-color: red;")
         self.setContentsMargins(0, 0, 0, 0)
@@ -121,8 +122,10 @@ class MessageLayout(QHBoxLayout):
 
         # --- Left widget
         self.left_layout = QVBoxLayout()
+        self.left_layout.setContentsMargins(0, 2, 0, 0)
         self.left_layout.setSpacing(0)
         self.left_widget = QWidget()
+        self.left_widget.setStyleSheet("padding: 0px;")
         self.left_widget.setMaximumWidth(80)
         self.left_widget.setMinimumWidth(80)
 
@@ -133,13 +136,13 @@ class MessageLayout(QHBoxLayout):
         # --- Right widget
         right_widget = Contener()
         shadow = self.widget_shadow(right_widget)
-        right_widget.setGraphicsEffect(shadow)
+        #right_widget.setGraphicsEffect(shadow)
         right_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
-            border-radius: 12px;\
-            border: 1px solid {Color.MIDDLE_GREY.value};"
+            f"background-color: transparent;\
+            border-radius: 12px;"
         )
         right_layout = QVBoxLayout()
+        right_layout.setContentsMargins(0, 2, 0, 0)
         right_layout.setSpacing(10)
         right_widget.setLayout(right_layout)
 
@@ -157,6 +160,7 @@ class MessageLayout(QHBoxLayout):
                 content=content, status=AvatarStatus.DM
             )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            
         self.left_layout.addWidget(icon_label)
         str_message = coming_msg["message"]
         sender = coming_msg["id"]
@@ -167,11 +171,11 @@ class MessageLayout(QHBoxLayout):
         self.username_label = check_str_len(sender)
 
         self.sender_btn = CustomQPushButton(self.username_label)
-        self.user_menu = UserMenu(right_widget)
+        #self.user_menu = UserMenu(right_widget)
 
-        self.user_menu.send_msg_btn.clicked.connect(
-            functools.partial(self.add_dm_layout, copy_icon)
-        )
+        # self.user_menu.send_msg_btn.clicked.connect(
+        #     functools.partial(self.add_dm_layout, copy_icon)
+        # )
         
         self.left_layout.addWidget(self.sender_btn)
         if message_id and sender != self.controller.ui.client.user_name:
@@ -184,7 +188,7 @@ class MessageLayout(QHBoxLayout):
             text-decoration: underline;
             }}
             """
-            self.user_menu.leaveEvent = lambda e: self.hide_menu()
+            #self.user_menu.leaveEvent = lambda e: self.hide_menu()
         else:
             style_ = """
             QPushButton {{
