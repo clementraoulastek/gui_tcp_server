@@ -6,6 +6,7 @@ from src.client.controller.main_controller import MainController
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
+from src.client.view.header import HeaderView
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import UserMenu
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
@@ -27,7 +28,7 @@ from src.client.core.qt_core import (
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
-
+from src.client.view.tools.graphical_effects import widget_shadow
 
 class QtGui:
     def __init__(self, title):
@@ -42,13 +43,17 @@ class QtGui:
     def quit(self):
         # ? I don't know why but in a list comprehension it doesn't work
         if hasattr(self.main_window.controller.gui_controller, "read_worker"):
+            
             if self.main_window.controller.api_controller.is_connected:
-                self.main_window.controller.api_controller.send_login_status(username=self.main_window.client.user_name, status=False)
+                self.main_window.controller.api_controller.send_login_status(
+                    username=self.main_window.client.user_name, 
+                    status=False
+                )
                 
             if self.main_window.client.is_connected:
                 self.main_window.client.close_connection()
                 
-        logging.debug("GUI killed successfully")
+        logging.info("GUI killed successfully")
         sys.exit()
 
     def run(self):
@@ -62,11 +67,17 @@ class MainWindow(QMainWindow):
         # self.showMaximized()
         self.setWindowTitle(title)
 
+        # TODO: this attr should be in the controller
         self.users_pict = {"server": ImageAvatar.SERVER.value}
         self.users_connected = {}
 
+        # Init controller
         self.controller = MainController(self)
+        
+        # Init client socket to the server
         self.client = Client(IP_SERVER, PORT_SERVER, "Default")
+        
+        # Init connection to the API
         self.backend = Backend(IP_API, PORT_API, self)
 
         # GUI settings
@@ -76,66 +87,41 @@ class MainWindow(QMainWindow):
         """
         Add elements to the main window
         """
+        # Main widget
         self.main_widget = QWidget()
-        self.setCentralWidget(self.main_widget)
         self.main_widget.setStyleSheet(f"background-color: {Color.DARK_GREY.value};")
+        self.setCentralWidget(self.main_widget)
+
+        # Main layout
         self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setContentsMargins(5, 5, 5, 5)
         self.main_layout.setSpacing(5)
-        self.set_header_gui()
+        
+        # Header 
+        self.header = HeaderView(self.controller)
+        self.main_layout.addWidget(self.header.main_widget)
+        
+        # Core widget
         self.core_widget = QWidget()
-    
         self.core_widget.setContentsMargins(0, 0, 0, 0)
+        
+        # Core layout
         self.core_layout = QHBoxLayout(self.core_widget)
         self.core_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Update core layout
         self.set_left_nav()
         self.set_body_gui()
         self.set_right_nav()
+        
         self.main_layout.addWidget(self.core_widget)
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        
+        # Footer
         self.set_footer_gui()
+        
+        # Show the login layout
         self.controller.login()
-
-    def set_header_gui(self) -> None:
-        header_widget = QWidget()
-        shadow = self.widget_shadow(header_widget)
-        header_widget.setGraphicsEffect(shadow)
-        header_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
-            color: {Color.LIGHT_GREY.value};\
-            border-radius: 12px;\
-            border: 1px solid;\
-            border-color: {Color.MIDDLE_GREY.value};"
-        )
-        logo_widget = QWidget()
-        logo_layout = QHBoxLayout(logo_widget)
-        logo_widget.setStyleSheet("border: none")
-        logo_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
-        icon_soft.setStyleSheet(
-            "font-weight: bold;\
-            border: none"
-        )
-        icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        status_server_label = QLabel("Robot Messenger")
-        status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        status_server_label.setStyleSheet(
-            "font-weight: bold;\
-            border: none"
-        )
-        header_layout = QHBoxLayout(header_widget)
-
-        self.set_buttons_nav_gui(header_layout)
-
-        logo_layout.addWidget(icon_soft)
-        logo_layout.addWidget(status_server_label)
-
-        header_layout.addWidget(logo_widget)
-
-        header_layout.addWidget(self.show_right_nav_button)
-        header_layout.addWidget(self.close_right_nav_button)
-
-        self.main_layout.addWidget(header_widget)
 
     def set_right_nav(self) -> None:
         """
@@ -154,8 +140,7 @@ class MainWindow(QMainWindow):
 
         # --- Background
         self.right_nav_widget = QWidget()
-        shadow = self.widget_shadow(self.right_nav_widget)
-        self.right_nav_widget.setGraphicsEffect(shadow)
+        widget_shadow(self.right_nav_widget)
         self.right_nav_widget.setFixedWidth(self.scroll_area_avatar.width())
         self.right_nav_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
@@ -170,13 +155,11 @@ class MainWindow(QMainWindow):
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         rooms_label = QLabel("Rooms")
-        shadow = self.widget_shadow(self.scroll_widget_avatar)
-        rooms_label.setGraphicsEffect(shadow)
+        widget_shadow(self.scroll_widget_avatar)
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self._update_label_style(rooms_label)
         dm_label = QLabel("Messages")
-        shadow = self.widget_shadow(self.scroll_widget_avatar)
-        dm_label.setGraphicsEffect(shadow)
+        widget_shadow(self.scroll_widget_avatar)
         self._update_label_style(dm_label)
         self.room_btn = CustomQPushButton("home")
         self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
@@ -228,8 +211,7 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setFixedWidth(self.scroll_area_avatar.width() / 4 + 2)
 
         self.scroll_widget_avatar = QWidget()
-        shadow = self.widget_shadow(self.scroll_widget_avatar)
-        self.scroll_widget_avatar.setGraphicsEffect(shadow)
+        widget_shadow(self.scroll_widget_avatar)
         self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding
@@ -260,8 +242,7 @@ class MainWindow(QMainWindow):
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
 
         self.info_label = QLabel("")
-        shadow = self.widget_shadow(self.scroll_widget_avatar)
-        self.info_label.setGraphicsEffect(shadow)
+        widget_shadow(self.scroll_widget_avatar)
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.message_label = QLabel("Login session")
@@ -278,8 +259,7 @@ class MainWindow(QMainWindow):
         self.user_inline_layout.addLayout(self.user_inline)
 
         self.info_disconnected_label = QLabel("")
-        shadow = self.widget_shadow(self.scroll_widget_avatar)
-        self.info_disconnected_label.setGraphicsEffect(shadow)
+        widget_shadow(self.scroll_widget_avatar)
         self.info_disconnected_label.hide()
         self.info_disconnected_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
@@ -312,8 +292,7 @@ class MainWindow(QMainWindow):
             border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
-        shadow = self.widget_shadow(self.upper_widget)
-        self.upper_widget.setGraphicsEffect(shadow)
+        widget_shadow(self.upper_widget)
         upper_layout = QHBoxLayout(self.upper_widget)
 
         self.frame_title = QWidget()
@@ -334,8 +313,7 @@ class MainWindow(QMainWindow):
         )
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("home")
-        shadow = self.widget_shadow(self.upper_widget)
-        self.frame_title.setGraphicsEffect(shadow)
+        widget_shadow(self.upper_widget)
         self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.frame_name.setStyleSheet("border: 0px")
@@ -351,13 +329,6 @@ class MainWindow(QMainWindow):
         self.body_layout.addWidget(self.scroll_area)
 
         self.core_layout.addWidget(self.body_widget)
-
-    def widget_shadow(self, obj):
-        result = QGraphicsDropShadowEffect(obj)
-        result.setColor(QColor(0, 0, 0, 150))
-        result.setOffset(0, 2)
-        result.setBlurRadius(1)
-        return result
 
     def set_footer_gui(self) -> None:
         """
@@ -376,9 +347,9 @@ class MainWindow(QMainWindow):
             border-radius: 12px"
         )
 
-        self.button_layout.addWidget(info_widget)
+        self.header.button_layout.addWidget(info_widget)
 
-        self.main_layout.addLayout(self.button_layout)
+        self.main_layout.addLayout(self.header.button_layout)
         self.send_widget = QWidget()
         self.send_layout = QHBoxLayout(self.send_widget)
         self.send_layout.setObjectName("send layout")
@@ -455,50 +426,6 @@ class MainWindow(QMainWindow):
         self.send_layout.addWidget(self.send_button)
         self.send_layout.addWidget(version_widget)
         self.main_layout.addWidget(self.send_widget)
-
-    def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
-        self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
-        self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
-
-        # --- Button horizontal layout
-        self.button_layout = QHBoxLayout()
-        self.button_layout.setContentsMargins(0, 0, 0, 0)
-        self.button_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        self.button_layout.setObjectName("button layout")
-        self.button_layout.setSpacing(5)
-
-        # --- Close left nav button
-        self.close_left_nav_button = CustomQPushButton("")
-        self.close_left_nav_button.widget_shadow()
-        self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
-        self.close_left_nav_button.setIcon(self.close_icon)
-        self.close_left_nav_button.setFixedWidth(50)
-
-        # --- Close right nav button
-        self.close_right_nav_button = CustomQPushButton("")
-        self.close_right_nav_button.widget_shadow()
-        self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
-        self.close_right_nav_button.setIcon(self.show_icon)
-        self.close_right_nav_button.setFixedWidth(50)
-
-        # --- Show left button
-        self.show_left_nav_button = CustomQPushButton("")
-        self.show_left_nav_button.widget_shadow()
-        self.show_left_nav_button.clicked.connect(self.controller.show_left_layout)
-        self.show_left_nav_button.setIcon(self.show_icon)
-        self.show_left_nav_button.setFixedWidth(50)
-        self.show_left_nav_button.hide()
-
-        # --- Show right button
-        self.show_right_nav_button = CustomQPushButton("")
-        self.show_right_nav_button.widget_shadow()
-        self.show_right_nav_button.clicked.connect(self.controller.show_right_layout)
-        self.show_right_nav_button.setIcon(self.close_icon)
-        self.show_right_nav_button.setFixedWidth(50)
-        self.show_right_nav_button.hide()
-
-        header_layout.addWidget(self.close_left_nav_button)
-        header_layout.addWidget(self.show_left_nav_button)
 
     def show_home_layout(self) -> None:
         self.controller.gui_controller.update_gui_for_mp_layout("home")

@@ -5,8 +5,8 @@ requirements:
 test:
 	pytest -v -s
 
-launch-server:
+server:
 	python src/launch_server.py
 
-launch-client:
+client:
 	python src/launch_client.py

@@ -580,8 +580,8 @@ class GuiController:
         """
         Hide left button
         """
-        self.ui.show_left_nav_button.hide()
-        self.ui.close_left_nav_button.hide()
+        self.ui.header.show_left_nav_button.hide()
+        self.ui.header.close_left_nav_button.hide()
 
     def show_left_layouts_buttons(self) -> None:
         """
@@ -594,47 +594,47 @@ class GuiController:
         """
         Hide right button
         """
-        self.ui.show_right_nav_button.hide()
-        self.ui.close_right_nav_button.hide()
+        self.ui.header.show_right_nav_button.hide()
+        self.ui.header.close_right_nav_button.hide()
 
     def show_right_layouts_buttons(self) -> None:
         """
         Show right button
         """
-        self.ui.show_right_nav_button.show()
-        self.ui.close_right_nav_button.show()
+        self.ui.header.show_right_nav_button.show()
+        self.ui.header.close_right_nav_button.show()
 
     def hide_left_layout(self) -> None:
         """
         Hide left layout
         """
         self.ui.scroll_area_avatar.hide()
-        self.ui.close_left_nav_button.hide()
-        self.ui.show_left_nav_button.show()
+        self.ui.header.close_left_nav_button.hide()
+        self.ui.header.show_left_nav_button.show()
 
     def show_left_layout(self) -> None:
         """
         Show left layout
         """
         self.ui.scroll_area_avatar.show()
-        self.ui.show_left_nav_button.hide()
-        self.ui.close_left_nav_button.show()
+        self.ui.header.show_left_nav_button.hide()
+        self.ui.header.close_left_nav_button.show()
 
     def hide_right_layout(self) -> None:
         """
         Hide right layout
         """
         self.ui.scroll_area_dm.hide()
-        self.ui.close_right_nav_button.hide()
-        self.ui.show_right_nav_button.show()
+        self.ui.header.close_right_nav_button.hide()
+        self.ui.header.show_right_nav_button.show()
 
     def show_right_layout(self) -> None:
         """
         Show right layout
         """
         self.ui.scroll_area_dm.show()
-        self.ui.show_right_nav_button.hide()
-        self.ui.close_right_nav_button.show()
+        self.ui.header.show_right_nav_button.hide()
+        self.ui.header.close_right_nav_button.show()
 
     def show_footer_layout(self) -> None:
         """

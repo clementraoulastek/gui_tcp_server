@@ -29,31 +29,41 @@ from tzlocal import get_localzone
 @unique
 class EnumReact(Enum):
     REMOVE = 0
-    ADD = 1
+    ADD    = 1
 
 
 class UserMenu(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
+        # Stylesheet
         self.setStyleSheet("background-color: red;")
         self.setContentsMargins(0, 0, 0, 0)
         self.setFixedWidth(170)
+        
+        # Set shadow effect
         shadow = self.widget_shadow(self)
         self.setGraphicsEffect(shadow)
+        
+        # Set layout
         self.layout_ = QVBoxLayout()
         self.layout_.setSpacing(0)
         self.layout_.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        msg_icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value))
-
+        # Button
         self.send_msg_btn = CustomQPushButton(" Send message")
+        msg_icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value))
         self.send_msg_btn.setIcon(msg_icon)
-        list_buttons = [self.send_msg_btn]
+        
+        list_buttons = [
+            self.send_msg_btn
+        ]
+        
         self.setFixedHeight(60 * len(list_buttons))
-        self.setLayout(self.layout_)
+
         for widget in list_buttons:
             self.layout_.addWidget(widget)
-            
+        
+        self.setLayout(self.layout_)
         self.hide()
             
     def widget_shadow(self, obj):
@@ -82,7 +92,7 @@ class Contener(QFrame):
 class MessageLayout(QHBoxLayout):
     def __init__(
         self,
-        ui_widget: QWidget,
+        parent: QWidget,
         controller,
         coming_msg: dict,
         nb_react: Optional[int] = 0,
@@ -157,7 +167,7 @@ class MessageLayout(QHBoxLayout):
         self.username_label = check_str_len(sender)
 
         self.sender_btn = CustomQPushButton(self.username_label)
-        self.user_menu = UserMenu(ui_widget)
+        self.user_menu = UserMenu(right_widget)
 
         self.user_menu.send_msg_btn.clicked.connect(
             functools.partial(self.add_dm_layout, copy_icon)
@@ -175,15 +185,6 @@ class MessageLayout(QHBoxLayout):
             }}
             """
             self.user_menu.leaveEvent = lambda e: self.hide_menu()
-            source_global_pos = self.user_menu.mapToGlobal(
-                QPoint(
-                    -right_widget.width()//2 + self.left_widget.width(), 
-                    10
-                )
-            )
-            central_local_pos = self.sender_btn.mapFromGlobal(source_global_pos)
-
-            self.user_menu.move(central_local_pos)
         else:
             style_ = """
             QPushButton {{
@@ -320,6 +321,7 @@ class MessageLayout(QHBoxLayout):
 
     def display_menu(self):
         if self.user_menu.isHidden():
+            self.user_menu.raise_()
             self.user_menu.setFocus()
             self.user_menu.show()
 
