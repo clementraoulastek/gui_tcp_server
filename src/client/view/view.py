@@ -9,6 +9,7 @@ from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.header import HeaderView
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import UserMenu
+from src.client.view.right_nav import RightNavView
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.client.core.qt_core import (
     QApplication,
@@ -112,7 +113,8 @@ class MainWindow(QMainWindow):
         # Update core layout
         self.set_left_nav()
         self.set_body_gui()
-        self.set_right_nav()
+        self.right_nav_widget = RightNavView(self.controller, width=300)
+        self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
         
         self.main_layout.addWidget(self.core_widget)
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
@@ -123,84 +125,9 @@ class MainWindow(QMainWindow):
         # Show the login layout
         self.controller.login()
 
-    def set_right_nav(self) -> None:
-        """
-        Update the header GUI
-        """
-        self.scroll_area_dm = QScrollArea()
-        self.scroll_area_dm.setFixedWidth(self.scroll_area_avatar.width())
-        self.scroll_area_dm.verticalScrollBar().setStyleSheet(
-            scroll_bar_vertical_stylesheet
-        )
-
-        self.scroll_area_dm.setStyleSheet("background-color: transparent;")
-        self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_area_dm.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll_area_dm.setWidgetResizable(True)
-
-        # --- Background
-        self.right_nav_widget = QWidget()
-        widget_shadow(self.right_nav_widget)
-        self.right_nav_widget.setFixedWidth(self.scroll_area_avatar.width())
-        self.right_nav_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
-            color: {Color.LIGHT_GREY.value};\
-            border-radius: 12px;\
-            border: 1px solid;\
-            border-color: {Color.MIDDLE_GREY.value};\
-            margin-bottom: 2px"
-        )
-        self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
-        self.direct_message_layout.setSpacing(15)
-        self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
-
-        rooms_label = QLabel("Rooms")
-        widget_shadow(self.scroll_widget_avatar)
-        rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self._update_label_style(rooms_label)
-        dm_label = QLabel("Messages")
-        widget_shadow(self.scroll_widget_avatar)
-        self._update_label_style(dm_label)
-        self.room_btn = CustomQPushButton("home")
-        self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
-        self.room_btn.setIcon(self.room_icon)
-        self.room_btn.clicked.connect(self.show_home_layout)
-        style_ = """
-            QPushButton {{
-            font-weight: bold;
-            text-align: center;
-            border: none;
-            }} 
-            QPushButton:hover {{
-            text-decoration: underline;
-            }}
-            """
-        self.room_btn.setStyleSheet(style_.format())
-        self.room_list: Dict[str, QWidget] = {}
-        # Adding widgets to the main layout
-        self.direct_message_layout.addWidget(rooms_label)
-        self.direct_message_layout.addWidget(self.room_btn)
-        self.direct_message_layout.addWidget(dm_label)
-
-        self.scroll_area_dm.setWidget(self.right_nav_widget)
-
-        self.core_layout.addWidget(self.scroll_area_dm)
-
-    def _update_label_style(self, label: QLabel):
-        label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        label.setContentsMargins(15, 5, 15, 5)
-        label.setStyleSheet(
-            f"font-weight: bold;\
-            color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;"
-        )
-
     def set_left_nav(self) -> None:
         # --- Left layout with scroll area
         self.left_nav_layout = QHBoxLayout()
-
-
         self.user_inline = QVBoxLayout()
         self.user_inline.setSpacing(15)
 
@@ -427,6 +354,4 @@ class MainWindow(QMainWindow):
         self.send_layout.addWidget(version_widget)
         self.main_layout.addWidget(self.send_widget)
 
-    def show_home_layout(self) -> None:
-        self.controller.gui_controller.update_gui_for_mp_layout("home")
 

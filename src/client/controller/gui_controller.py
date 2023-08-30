@@ -320,7 +320,7 @@ class GuiController:
             user_disconnect (dict[str, List[Union[str, bool]]]): dict of disconnected users
         """
         id_, _ = payload.split(":", 1)
-        self.clear_avatar("user_inline", f"{id_}_layout")
+        self.clear_avatar("user_inline", self.ui, f"{id_}_layout")
         self.api_controller.add_sender_picture(id_)
         user_disconnect[id_] = [user_connected[id_][0], False]
         self.ui.users_connected.pop(id_)
@@ -343,7 +343,7 @@ class GuiController:
             
         # Remove user's icon disconnected from the disconnected layout
         if id_ in user_disconnect:
-            self.clear_avatar("user_offline", f"{id_}_layout_disconnected")
+            self.clear_avatar("user_offline", self.ui, f"{id_}_layout_disconnected")
             user_disconnect.pop(id_)
             
         # Add the user icon to the connected layout
@@ -357,7 +357,7 @@ class GuiController:
         """
         username = self.ui.client.user_name
         if self.ui.backend.send_user_icon(username, None):
-            self.clear_avatar("user_inline", f"{username}_layout")
+            self.clear_avatar("user_inline", self.ui, f"{username}_layout")
             self.api_controller.get_user_icon(update_personal_avatar=True)
 
     def __update_gui_with_connected_avatar(self) -> None:
@@ -488,7 +488,7 @@ class GuiController:
         self.ui.scroll_area.main_layout.update()
 
     def clear_avatar(
-        self, parent_layout: QLayout, layout_name: Optional[Union[QHBoxLayout, None]] = None
+        self, parent_layout: QLayout, parent = None, layout_name: Optional[Union[QHBoxLayout, None]] = None
     ) -> None:
         """
         Clear avatars from the layout
@@ -497,8 +497,8 @@ class GuiController:
             parent_layout (QLayout): parent layout
             layout_name (Optional[Union[QHBoxLayout, None]], optional): layout name. Defaults to None.
         """
-        for i in reversed(range(getattr(self.ui, parent_layout).count())):
-            if layout := getattr(self.ui, parent_layout).itemAt(i).layout():
+        for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
+            if layout := getattr(parent or self.ui, parent_layout).itemAt(i).layout():
                 if (
                     layout_name
                     and layout_name == layout.objectName()
@@ -507,7 +507,8 @@ class GuiController:
                     for j in reversed(range(layout.count())):
                         layout.itemAt(j).widget().deleteLater()
 
-        getattr(self.ui, parent_layout).update()
+        getattr(parent or self.ui, parent_layout).update()
+
 
     def login(self) -> None:
         """
@@ -624,7 +625,7 @@ class GuiController:
         """
         Hide right layout
         """
-        self.ui.scroll_area_dm.hide()
+        self.ui.right_nav_widget.scroll_area_dm.hide()
         self.ui.header.close_right_nav_button.hide()
         self.ui.header.show_right_nav_button.show()
 
@@ -632,7 +633,7 @@ class GuiController:
         """
         Show right layout
         """
-        self.ui.scroll_area_dm.show()
+        self.ui.right_nav_widget.scroll_area_dm.show()
         self.ui.header.show_right_nav_button.hide()
         self.ui.header.close_right_nav_button.show()
 
@@ -664,13 +665,13 @@ class GuiController:
         global_variables.user_disconnect.clear()
         self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
         self.ui.users_connected.clear()
-        self.ui.room_list.clear()
+        self.ui.right_nav_widget.room_list.clear()
 
         # UI update
         self.update_buttons()
-        self.clear_avatar("user_inline")
-        self.clear_avatar("user_offline")
-        self.clear_avatar("direct_message_layout")
+        self.clear_avatar("user_inline", self.ui)
+        self.clear_avatar("user_offline", self.ui)
+        self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
 
         self.ui.message_label.show()
         self.ui.info_disconnected_label.hide()
@@ -711,7 +712,7 @@ class GuiController:
     def add_gui_for_mp_layout(
         self, room_name: str, icon, switch_frame: Optional[bool] = False
     ) -> None:
-        if room_name not in self.ui.room_list:
+        if room_name not in self.ui.right_nav_widget.room_list:
             # Layout
             direct_message_layout = QHBoxLayout()
             direct_message_layout.setSpacing(10)
@@ -741,8 +742,8 @@ class GuiController:
             
             direct_message_layout.addWidget(icon)
             direct_message_layout.addWidget(btn)
-            self.ui.room_list[room_name] = direct_message_layout
-            self.ui.direct_message_layout.addLayout(direct_message_layout)
+            self.ui.right_nav_widget.room_list[room_name] = direct_message_layout
+            self.ui.right_nav_widget.direct_message_layout.addLayout(direct_message_layout)
 
             # --- Add Body Scroll Area --- #
             self.ui.body_gui_dict[room_name] = BodyScrollArea(name=room_name)
