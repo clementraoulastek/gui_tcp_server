@@ -103,7 +103,7 @@ class ApiController:
             
             # Update the personnal avatar if True
             if update_personal_avatar:
-                self.ui.user_picture.update_picture(
+                self.ui.footer_widget.user_picture.update_picture(
                     status=AvatarStatus.ACTIVATED, content=content
                 )
             self.update_user_connected(username, content)

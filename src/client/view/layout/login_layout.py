@@ -91,7 +91,7 @@ class LoginLayout(QHBoxLayout):
         )
         self.icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
 
-        self.title_label = QLabel("Login")
+        self.title_label = QLabel("Hello")
         self.title_label.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             border: none; font-size: 36px;\

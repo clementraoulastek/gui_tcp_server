@@ -11,6 +11,7 @@ from src.client.core.qt_core import (
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
+from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
@@ -115,7 +116,7 @@ class GuiController:
         
         # Update the dict
         self.messages_dict[self.last_message_id] = message
-        self.ui.entry.clear()
+        self.ui.footer_widget.entry.clear()
 
     def display_older_messages(self) -> None:
         """
@@ -380,7 +381,7 @@ class GuiController:
             user_pic, dm_pic = AvatarLabel(
                 content=content, status=AvatarStatus.ACTIVATED
             ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
-            
+
             # Update picture alignment
             user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
             dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -641,13 +642,13 @@ class GuiController:
         """
         Show footer layout
         """
-        self.ui.send_widget.show()
+        self.ui.footer_widget.send_widget.show()
 
     def hide_footer_layout(self) -> None:
         """
         Hide footer layout
         """
-        self.ui.send_widget.hide()
+        self.ui.footer_widget.send_widget.hide()
 
     def logout(self) -> None:
         """
@@ -686,12 +687,12 @@ class GuiController:
         if self.ui.client.is_connected:
             self._set_buttons_status(False, "Enter your message")
             username_label = check_str_len(self.ui.client.user_name)
-            self.ui.user_name.setText(username_label)
+            self.ui.footer_widget.user_name.setText(username_label)
         else:
             self._set_buttons_status(True, "Please login")
-            self.ui.user_name.setText("User disconnected")
+            self.ui.footer_widget.user_name.setText("User disconnected")
             self.ui.left_nav_widget.info_label.setText("Welcome")
-            self.ui.user_picture.update_picture(
+            self.ui.footer_widget.user_picture.update_picture(
                 status=AvatarStatus.DEACTIVATED, content=""
             )
 
@@ -703,11 +704,11 @@ class GuiController:
             activate (bool): status of the button needed
             lock_message (str): message for the entry
         """
-        self.ui.custom_user_button.setDisabled(activate)
-        self.ui.logout_button.setDisabled(activate)
-        self.ui.send_button.setDisabled(activate)
-        self.ui.entry.setDisabled(activate)
-        self.ui.entry.setPlaceholderText(lock_message)
+        self.ui.footer_widget.custom_user_button.setDisabled(activate)
+        self.ui.footer_widget.logout_button.setDisabled(activate)
+        self.ui.footer_widget.send_button.setDisabled(activate)
+        self.ui.footer_widget.entry.setDisabled(activate)
+        self.ui.footer_widget.entry.setPlaceholderText(lock_message)
 
     def add_gui_for_mp_layout(
         self, room_name: str, icon, switch_frame: Optional[bool] = False
@@ -760,6 +761,7 @@ class GuiController:
         if room_name != "home":
             # Update avatar status with iddle
             self.update_pixmap_avatar(room_name, AvatarStatus.IDLE)
+            
             self.api_controller.update_is_readed_status(room_name, self.ui.client.user_name)
             
         old_widget = self.ui.scroll_area

@@ -18,6 +18,7 @@ from src.client.core.qt_core import (
     QPoint
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
+from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.commands import Commands
 from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
@@ -160,6 +161,7 @@ class MessageLayout(QHBoxLayout):
                 content=content, status=AvatarStatus.DM
             )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            widget_shadow(icon_label)
             
         self.left_layout.addWidget(icon_label)
         str_message = coming_msg["message"]

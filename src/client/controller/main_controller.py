@@ -24,17 +24,26 @@ class MainController:
 
     def send_message_to_server(self, *args) -> None:
         """
-            Send message to the server and update GUI
+        Send message to the server and update GUI
+        
         Args:
             signal (event): event coming from signal
         """
-        receiver = self.ui.scroll_area.objectName()
-        if message := self.ui.entry.text():
-            self.ui.client.send_data(Commands.MESSAGE, message, receiver=receiver)
-            self.gui_controller.diplay_self_message_on_gui(
-                self.ui.client.user_name, message
+        receiver: str = self.ui.scroll_area.objectName()
+        if message := self.ui.footer_widget.entry.text():
+            self.ui.client.send_data(
+                Commands.MESSAGE, 
+                message, 
+                receiver=receiver
             )
-            self.ui.entry.clearFocus()
+            self.gui_controller.diplay_self_message_on_gui(
+                self.ui.client.user_name, 
+                message,
+                list(self.ui.body_gui_dict.keys())[
+                    list(self.ui.body_gui_dict.values()).index(self.ui.scroll_area)
+                ]
+            )
+            self.ui.footer_widget.entry.clearFocus()
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()
