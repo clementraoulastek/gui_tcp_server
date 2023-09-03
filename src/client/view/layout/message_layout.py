@@ -73,7 +73,8 @@ class MessageLayout(QHBoxLayout):
         self.addWidget(main_widget)
         main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
-            margin-bottom: 1px;"
+            margin-bottom: 1px;\
+            margin-right: 2px;"
         )
 
         main_layout = QHBoxLayout(main_widget)
@@ -173,12 +174,7 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton = CustomQPushButton(
                 "Add react", bg_color=Color.GREY.value, radius=6
             )
-            style_ = """
-            QPushButton {{
-            border: none;
-            }} 
-            """
-            self.react_buttton.setStyleSheet(style_.format())
+            widget_shadow(self.react_buttton)
             self.react_buttton.clicked.connect(self.add_react)
             self.react_buttton.setFixedHeight(13)
             self.react_buttton.setContentsMargins(0, 0, 0, 0)

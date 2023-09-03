@@ -117,7 +117,6 @@ class GuiController:
             date=date,
         )
         self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
-        print("layout updated")
         
         # Update the dict
         self.messages_dict[self.last_message_id] = message
