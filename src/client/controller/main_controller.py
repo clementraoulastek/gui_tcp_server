@@ -44,6 +44,7 @@ class MainController:
                 ]
             )
             self.ui.footer_widget.entry.clearFocus()
+            
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()

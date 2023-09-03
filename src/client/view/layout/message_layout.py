@@ -171,15 +171,12 @@ class MessageLayout(QHBoxLayout):
         if message_id:
             # ------------------------------- React Button ------------------------------- #
             self.react_buttton = CustomQPushButton(
-                " Add react", bg_color=Color.GREY.value, radius=6
+                "Add react", bg_color=Color.GREY.value, radius=6
             )
             style_ = """
             QPushButton {{
             border: none;
             }} 
-            QPushButton:hover {{
-            text-decoration: underline;
-            }}
             """
             self.react_buttton.setStyleSheet(style_.format())
             self.react_buttton.clicked.connect(self.add_react)
@@ -196,9 +193,7 @@ class MessageLayout(QHBoxLayout):
         react_layout.setSpacing(5)
         react_layout.setContentsMargins(3, 2, 3, 2)
         self.react_widget = QWidget()
-        sp_retain = self.react_widget.sizePolicy()
-        sp_retain.setRetainSizeWhenHidden(True)
-        self.react_widget.setSizePolicy(sp_retain)
+        self.react_widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         shadow = self.widget_shadow(self.react_widget)
         self.react_widget.setStyleSheet(
@@ -244,7 +239,6 @@ class MessageLayout(QHBoxLayout):
         sender_layout.addWidget(date_label)
 
         if message_id:
-            sender_layout.addWidget(self.react_widget)
             sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
@@ -256,6 +250,7 @@ class MessageLayout(QHBoxLayout):
         
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
+        right_layout.addWidget(self.react_widget)
         
         if message_id:
             self.update_react(self.nb_react)

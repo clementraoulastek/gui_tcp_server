@@ -11,7 +11,7 @@ from src.client.core.qt_core import (
     QEvent,
     QEnterEvent,
     QIcon,
-    QVBoxLayout
+    QTimer
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -117,10 +117,13 @@ class GuiController:
             date=date,
         )
         self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
+        print("layout updated")
         
         # Update the dict
         self.messages_dict[self.last_message_id] = message
         self.ui.footer_widget.entry.clear()
+        
+        QTimer.singleShot(0, self.__update_scroll_bar)
 
     def display_older_messages(self) -> None:
         """
@@ -229,6 +232,13 @@ class GuiController:
             global_variables.comming_msg["receiver"],
             global_variables.comming_msg["message"],
         ) = ("", "", "")
+    
+    def __update_scroll_bar(self) -> None:
+        """
+        Callback to handle scroll bar update
+        """
+        self.ui.scroll_area.scrollToBottom()
+
 
     def __update_react_message_on_gui(self) -> None:
         """
@@ -325,7 +335,7 @@ class GuiController:
             user_disconnect (dict[str, List[Union[str, bool]]]): dict of disconnected users
         """
         id_, _ = payload.split(":", 1)
-        self.clear_avatar("user_inline", self.ui, f"{id_}_layout")
+        self.clear_avatar("user_inline", self.ui.left_nav_widget, f"{id_}_layout")
         self.api_controller.add_sender_picture(id_)
         user_disconnect[id_] = [user_connected[id_][0], False]
         self.ui.users_connected.pop(id_)
@@ -576,33 +586,23 @@ class GuiController:
             self.ui.login_form = LoginLayout()
             self.ui.scroll_area.main_layout.addLayout(self.ui.login_form)
             self.ui.scroll_area.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-            self.ui.login_form.password_entry.returnPressed.connect(self.login_form)
-            self.ui.login_form.send_button.clicked.connect(self.login_form)
-            self.ui.login_form.register_button.clicked.connect(self.register_form)
+            
+            # Connect signals
+            self.ui.login_form.password_entry.returnPressed.connect(
+                lambda: self.login_form(self.api_controller.send_login_form)
+            )
+            self.ui.login_form.send_button.clicked.connect(
+                lambda: self.login_form(self.api_controller.send_login_form)
+            )
+            self.ui.login_form.register_button.clicked.connect(
+                lambda: self.login_form(self.api_controller.send_register_form)
+            )
 
-    def login_form(self) -> None:
+    def login_form(self, callback) -> None:
         """
         Update the layout if login succeed
         """
-        if status := self.api_controller.send_login_form():
-            self._clean_gui_and_connect(update_avatar=True)
-            self.show_left_layout()
-            self.show_right_layout()
-            self.show_footer_layout()
-            self.ui.upper_widget.show()
-            self.update_gui_for_mp_layout("home")
-        elif status == False:
-            self.ui.login_form.error_label.setText("Error: Empty username or password")
-        else:
-            self.ui.login_form.error_label.setText(
-                "Error: Username or password incorect"
-            )
-
-    def register_form(self) -> None:
-        """
-        Update the layout if register succeed
-        """
-        if status := self.api_controller.send_register_form():
+        if status := callback():
             self._clean_gui_and_connect(update_avatar=True)
             self.show_left_layout()
             self.show_right_layout()
@@ -835,7 +835,6 @@ class GuiController:
         if room_name != "home":
             # Update avatar status with iddle
             self.update_pixmap_avatar(room_name, AvatarStatus.IDLE)
-            
             self.api_controller.update_is_readed_status(room_name, self.ui.client.user_name)
             
         old_widget = self.ui.scroll_area
@@ -854,6 +853,7 @@ class GuiController:
         self.ui.frame_name.setText(f"{room_name}")
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
+        self.ui.scroll_area.scrollToBottom()
         
     def update_pixmap_avatar(self, room_name: str, status: AvatarStatus) -> None:
         """
