@@ -5,7 +5,8 @@ from src.client.core.qt_core import (
     QGraphicsDropShadowEffect,
     QColor,
     QLabel,
-    Qt
+    Qt,
+    QLineEdit
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
@@ -93,11 +94,9 @@ class FooterView:
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
-        self.send_button = CustomQPushButton("")
-        widget_shadow(self.send_button)
-        self.send_button.clicked.connect(self.controller.send_message_to_server)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
-        self.send_button.setIcon(self.send_icon)
+        entry_action = self.entry.addAction(self.send_icon, QLineEdit.TrailingPosition)
+        entry_action.triggered.connect(self.controller.send_message_to_server)
 
         version_widget = QLabel(f"Version: {SOFT_VERSION}")
         version_widget.setStyleSheet(
@@ -106,6 +105,6 @@ class FooterView:
         version_widget.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         version_widget.setMinimumWidth(self.version_widget_width)
 
-        self.send_layout.addWidget(self.send_button)
+        #self.send_layout.addWidget(self.send_button)
         self.send_layout.addWidget(version_widget)
         

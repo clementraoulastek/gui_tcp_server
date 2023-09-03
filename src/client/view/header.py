@@ -10,6 +10,7 @@ from src.client.core.qt_core import (
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.tools.graphical_effects import widget_shadow
+from src.tools.constant import DEFAULT_CLIENT_NAME
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
 class HeaderView:
@@ -50,7 +51,7 @@ class HeaderView:
         icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         
         # Status server label
-        status_server_label = QLabel("Robot Messenger")
+        status_server_label = QLabel(DEFAULT_CLIENT_NAME)
         status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         status_server_label.setStyleSheet(
             "font-weight: bold;\

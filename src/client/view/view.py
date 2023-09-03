@@ -9,7 +9,6 @@ from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.footer import FooterView
 from src.client.view.header import HeaderView
 from src.client.view.layout.body_scroll_area import BodyScrollArea
-from src.client.view.layout.message_layout import UserMenu
 from src.client.view.left_nav import LeftNavView
 from src.client.view.right_nav import RightNavView
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet

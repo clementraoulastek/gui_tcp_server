@@ -488,7 +488,7 @@ class GuiController:
                 content=content, status=AvatarStatus.DEACTIVATED
             ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
             
-            # Update picture alignment
+            # Update picture
             user_pic.set_opacity(0.2)
             user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
             dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -552,6 +552,7 @@ class GuiController:
         for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
             if widget := getattr(parent or self.ui, parent_layout).itemAt(i).widget():
                 widget: QWidget
+                type(widget)
                 if not type(widget) == QWidget:
                     continue
                 layout = widget.layout()
@@ -760,7 +761,6 @@ class GuiController:
         """
         self.ui.footer_widget.custom_user_button.setDisabled(activate)
         self.ui.footer_widget.logout_button.setDisabled(activate)
-        self.ui.footer_widget.send_button.setDisabled(activate)
         self.ui.footer_widget.entry.setDisabled(activate)
         self.ui.footer_widget.entry.setPlaceholderText(lock_message)
 

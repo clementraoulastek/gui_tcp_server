@@ -1,6 +1,8 @@
 PORT_SERVER = 9999
+PORT_API = 8000
+
 IP_SERVER = "localhost"
 IP_API = "localhost"
-PORT_API = 8000
-DEFAULT_CLIENT_NAME = "Robot Messenger"
+
+DEFAULT_CLIENT_NAME = "Messenger"
 SOFT_VERSION = "0.0.1"

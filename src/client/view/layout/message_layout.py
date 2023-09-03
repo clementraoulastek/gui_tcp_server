@@ -15,7 +15,9 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QGraphicsDropShadowEffect,
     QColor,
-    QPoint
+    QPoint,
+    QEvent,
+    QEnterEvent
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.tools.graphical_effects import widget_shadow
@@ -31,50 +33,6 @@ from tzlocal import get_localzone
 class EnumReact(Enum):
     REMOVE = 0
     ADD    = 1
-
-
-class UserMenu(QWidget):
-    def __init__(self, parent):
-        super().__init__(parent)
-        
-        # Stylesheet
-        self.setStyleSheet("background-color: red;")
-        self.setContentsMargins(0, 0, 0, 0)
-        self.setFixedWidth(170)
-        
-        # Set shadow effect
-        shadow = self.widget_shadow(self)
-        self.setGraphicsEffect(shadow)
-        
-        # Set layout
-        self.layout_ = QVBoxLayout()
-        self.layout_.setSpacing(0)
-        self.layout_.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # Button
-        self.send_msg_btn = CustomQPushButton(" Send message")
-        msg_icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value))
-        self.send_msg_btn.setIcon(msg_icon)
-        
-        list_buttons = [
-            self.send_msg_btn
-        ]
-        
-        self.setFixedHeight(60 * len(list_buttons))
-
-        for widget in list_buttons:
-            self.layout_.addWidget(widget)
-        
-        self.setLayout(self.layout_)
-        self.hide()
-            
-    def widget_shadow(self, obj):
-        result = QGraphicsDropShadowEffect(obj)
-        result.setColor(QColor(0, 0, 0, 150))
-        result.setOffset(0, 2)
-        result.setBlurRadius(1)
-        return result
-
 
 class Contener(QFrame):
     def __init__(self):
@@ -137,7 +95,6 @@ class MessageLayout(QHBoxLayout):
         # --- Right widget
         right_widget = Contener()
         shadow = self.widget_shadow(right_widget)
-        #right_widget.setGraphicsEffect(shadow)
         right_widget.setStyleSheet(
             f"background-color: transparent;\
             border-radius: 12px;"
@@ -148,7 +105,6 @@ class MessageLayout(QHBoxLayout):
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
-
         right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         if not content:
@@ -173,24 +129,36 @@ class MessageLayout(QHBoxLayout):
         self.username_label = check_str_len(sender)
 
         self.sender_btn = CustomQPushButton(self.username_label)
-        #self.user_menu = UserMenu(right_widget)
-
-        # self.user_menu.send_msg_btn.clicked.connect(
-        #     functools.partial(self.add_dm_layout, copy_icon)
-        # )
+        self.sender_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         
+        def hover(event: QEvent, user_widget):
+            if isinstance(event, QEnterEvent):
+                color = Color.GREY.value
+            else:
+                color = "transparent"
+            style_ = """
+            QWidget {{
+            font-weight: bold;
+            background-color: {color};
+            border-radius: none;
+            border: 0px solid;
+            }} 
+            """
+            user_widget.setStyleSheet(style_.format(color=color))
+        
+        self.sender_btn.clicked.connect(
+            functools.partial(self.add_dm_layout, copy_icon)
+        )
         self.left_layout.addWidget(self.sender_btn)
+
         if message_id and sender != self.controller.ui.client.user_name:
-            self.sender_btn.clicked.connect(self.display_menu)
+            self.sender_btn.enterEvent = functools.partial(hover, user_widget=self.sender_btn)
+            self.sender_btn.leaveEvent = functools.partial(hover, user_widget=self.sender_btn)
             style_ = """
             QPushButton {{
             font-weight: bold;
             }} 
-            QPushButton:hover {{
-            text-decoration: underline;
-            }}
             """
-            #self.user_menu.leaveEvent = lambda e: self.hide_menu()
         else:
             style_ = """
             QPushButton {{
@@ -207,7 +175,6 @@ class MessageLayout(QHBoxLayout):
             )
             style_ = """
             QPushButton {{
-            text-align: center;
             border: none;
             }} 
             QPushButton:hover {{
@@ -231,7 +198,7 @@ class MessageLayout(QHBoxLayout):
         self.react_widget = QWidget()
         sp_retain = self.react_widget.sizePolicy()
         sp_retain.setRetainSizeWhenHidden(True)
-        self.react_widget.setSizePolicy(sp_retain)
+        self.react_widget.setSizePolicy(sp_retain.verticalPolicy(), sp_retain.verticalPolicy())
 
         shadow = self.widget_shadow(self.react_widget)
         self.react_widget.setStyleSheet(
@@ -279,14 +246,15 @@ class MessageLayout(QHBoxLayout):
         if message_id:
             sender_layout.addWidget(self.react_widget)
             if sender != self.controller.ui.client.user_name:
-                sender_layout.addWidget(self.react_buttton)    
+                sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
         message_label.setStyleSheet("border: 0px; color: white;")
         message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         message_label.setWordWrap(True)
-        message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-
+        message_label.setAlignment(Qt.AlignmentFlag.AlignJustify)
+        message_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        
         right_layout.addLayout(sender_layout)
         right_layout.addWidget(message_label)
         
@@ -325,21 +293,11 @@ class MessageLayout(QHBoxLayout):
         self.react_widget.update()
         self.react_nb.setText(f"{self.nb_react}")
 
-    def display_menu(self):
-        if self.user_menu.isHidden():
-            self.user_menu.raise_()
-            self.user_menu.setFocus()
-            self.user_menu.show()
-
-    def hide_menu(self):
-        if not self.user_menu.isHidden():
-            self.user_menu.hide()
 
     def add_dm_layout(self, icon_label):
         self.controller.add_gui_for_mp_layout(
             self.username_label, icon_label, switch_frame=True
         )
-        self.hide_menu()
 
     def widget_shadow(self, widget):
         result = QGraphicsDropShadowEffect(widget)
