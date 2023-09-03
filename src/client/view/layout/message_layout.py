@@ -123,7 +123,7 @@ class MessageLayout(QHBoxLayout):
 
         # --- Left widget
         self.left_layout = QVBoxLayout()
-        self.left_layout.setContentsMargins(0, 2, 0, 0)
+        self.left_layout.setContentsMargins(0, 0, 0, 0)
         self.left_layout.setSpacing(0)
         self.left_widget = QWidget()
         self.left_widget.setStyleSheet("padding: 0px;")
@@ -143,8 +143,8 @@ class MessageLayout(QHBoxLayout):
             border-radius: 12px;"
         )
         right_layout = QVBoxLayout()
-        right_layout.setContentsMargins(0, 2, 0, 0)
-        right_layout.setSpacing(10)
+        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.setSpacing(5)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)

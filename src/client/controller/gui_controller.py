@@ -7,6 +7,9 @@ from src.client.controller.worker import Worker
 from src.client.core.qt_core import (
     QHBoxLayout,
     QLayout,
+    QWidget,
+    QEvent,
+    QEnterEvent,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -16,12 +19,11 @@ from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
-from src.tools.utils import Icon, ImageAvatar, check_str_len
+from src.tools.utils import Color, Icon, ImageAvatar, check_str_len
 from src.client.controller.api_controller import ApiController
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
 from functools import partial
-
 
 class GuiController:
     def __init__(
@@ -344,7 +346,7 @@ class GuiController:
             
         # Remove user's icon disconnected from the disconnected layout
         if id_ in user_disconnect:
-            self.clear_avatar("user_offline", self.ui, f"{id_}_layout_disconnected")
+            self.clear_avatar("user_offline", self.ui.left_nav_widget, f"{id_}_layout_disconnected")
             user_disconnect.pop(id_)
             
         # Add the user icon to the connected layout
@@ -370,13 +372,30 @@ class GuiController:
                 continue
             global_variables.user_connected[user] = [data[0], True]
             # Layout
-            user_layout = QHBoxLayout()
+            user_widget = CustomQPushButton()
+            user_widget.setFixedHeight(50)
+            user_widget.setStyleSheet("border: none")
+            user_layout = QHBoxLayout(user_widget)
             user_layout.setSpacing(10)
             user_layout.setContentsMargins(0, 0, 0, 0)
             username = user
             user_layout.setObjectName(f"{username}_layout")
             content = data[0]
             
+            def hover(event: QEvent, user_widget):
+                if isinstance(event, QEnterEvent):
+                    color = Color.DARK_GREY.value
+                else:
+                    color = "transparent"
+                style_ = """
+                QWidget {{
+                background-color: {color};
+                border-radius: none;
+                border: 0px solid;
+                }} 
+                """
+                user_widget.setStyleSheet(style_.format(color=color))
+                
             # Create avatar label
             user_pic, dm_pic = AvatarLabel(
                 content=content, status=AvatarStatus.ACTIVATED
@@ -389,12 +408,11 @@ class GuiController:
             
             # Avoid gui troubles with bigger username
             username_label = check_str_len(username)
-            
-            user_name = CustomQPushButton(username_label)
+            user_name = QLabel(username_label)
             
             # StyleSheet
             style_ = """
-            QPushButton {{
+            QLabel {{
             text-align: left;
             font-weight: bold;
             border-radius: none;
@@ -403,7 +421,10 @@ class GuiController:
             """
             # Add user menu
             if username != self.ui.client.user_name:
-                user_name.clicked.connect(
+                user_widget.enterEvent = partial(hover, user_widget=user_widget)
+                user_widget.leaveEvent = partial(hover, user_widget=user_widget)
+                
+                user_widget.clicked.connect(
                     partial(self.add_gui_for_mp_layout, username, dm_pic, True)
                 )
                 hover = """
@@ -417,7 +438,7 @@ class GuiController:
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
             user_layout.addWidget(user_name)
-            self.ui.left_nav_widget.user_inline.addLayout(user_layout)
+            self.ui.left_nav_widget.user_inline.addWidget(user_widget)
 
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
@@ -427,7 +448,35 @@ class GuiController:
             if data[1] == True:
                 continue
             # Layout
-            user_layout = QHBoxLayout()
+            user_widget = CustomQPushButton()
+            user_widget.setFixedHeight(50)
+            style_ = """
+            QWidget {{
+            border-radius: none;
+            border: 0px solid;
+            }} 
+            """
+            
+            def hover(event: QEvent, user_widget):
+                if isinstance(event, QEnterEvent):
+                    color = Color.DARK_GREY.value
+                else:
+                    color = "transparent"
+                style_ = """
+                QWidget {{
+                background-color: {color};
+                border-radius: none;
+                border: 0px solid;
+                }} 
+                """
+                user_widget.setStyleSheet(style_.format(color=color))
+            
+            user_widget.enterEvent = partial(hover, user_widget=user_widget)
+            user_widget.leaveEvent = partial(hover, user_widget=user_widget)
+            user_widget.setStyleSheet(style_.format())
+            
+            user_widget.setContentsMargins(0, 0, 0, 0)
+            user_layout = QHBoxLayout(user_widget)
             user_layout.setSpacing(10)
             user_layout.setContentsMargins(0, 0, 0, 0)
             username = user
@@ -443,33 +492,35 @@ class GuiController:
             user_pic.set_opacity(0.2)
             user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
             dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            user_pic.setStyleSheet("border: 0px")
+            user_pic.setStyleSheet(
+                f"border: 0px solid;\
+                border-color: {Color.GREY.value};"
+            )
             
             # Avoid gui troubles with bigger username
             username_label = check_str_len(username)
-            user_name = CustomQPushButton(username_label)
+            user_name = QLabel(username_label)
+            user_name.setContentsMargins(0, 0, 0, 0)
             
             # Add user menu
-            user_name.clicked.connect(
+            user_widget.clicked.connect(
                 partial(self.add_gui_for_mp_layout, username, dm_pic, True)
             )
             style_ = """
-            QPushButton {{
+            QLabel {{
             text-align: left;
             font-weight: bold;
-            border-radius: none;
-            border: none;
-            }} 
-            QPushButton:hover {{
-            text-decoration: underline;
+            border-radius: 0px;
+            border: 1px solid;
+            border-color: {color};
             }}
             """
-            user_name.setStyleSheet(style_.format())
+            user_name.setStyleSheet(style_.format(color="transparent"))
             
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
             user_layout.addWidget(user_name)
-            self.ui.left_nav_widget.user_offline.addLayout(user_layout)
+            self.ui.left_nav_widget.user_offline.addWidget(user_widget)
             
             global_variables.user_disconnect[user] = [data[0], True]
             
@@ -499,14 +550,17 @@ class GuiController:
             layout_name (Optional[Union[QHBoxLayout, None]], optional): layout name. Defaults to None.
         """
         for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
-            if layout := getattr(parent or self.ui, parent_layout).itemAt(i).layout():
+            if widget := getattr(parent or self.ui, parent_layout).itemAt(i).widget():
+                widget: QWidget
+                if not type(widget) == QWidget:
+                    continue
+                layout = widget.layout()
                 if (
                     layout_name
                     and layout_name == layout.objectName()
                     or not layout_name
                 ):
-                    for j in reversed(range(layout.count())):
-                        layout.itemAt(j).widget().deleteLater()
+                    widget.setParent(None)
 
         getattr(parent or self.ui, parent_layout).update()
 
@@ -715,36 +769,53 @@ class GuiController:
     ) -> None:
         if room_name not in self.ui.right_nav_widget.room_list:
             # Layout
-            direct_message_layout = QHBoxLayout()
+            direct_message_widget = CustomQPushButton()
+            direct_message_widget.setFixedHeight(50)
+            direct_message_widget.setStyleSheet("border: 0px solid;")
+            direct_message_layout = QHBoxLayout(direct_message_widget)
             direct_message_layout.setSpacing(10)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
             
+            def hover(event: QEvent, user_widget):
+                if isinstance(event, QEnterEvent):
+                    color = Color.DARK_GREY.value
+                else:
+                    color = "transparent"
+                style_ = """
+                QWidget {{
+                background-color: {color};
+                border-radius: none;
+                border: 0px solid;
+                }} 
+                """
+                user_widget.setStyleSheet(style_.format(color=color))
+            
+            direct_message_widget.enterEvent = partial(hover, user_widget=direct_message_widget)
+            direct_message_widget.leaveEvent = partial(hover, user_widget=direct_message_widget)
+            
             partial_room_name = check_str_len(room_name)
             
-            btn = CustomQPushButton(partial_room_name)
+            btn = QLabel(partial_room_name)
             self.dm_avatar_dict[room_name] = icon
-            btn.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
+            direct_message_widget.clicked.connect(partial(self.update_gui_for_mp_layout, room_name))
             
             style_ = """
-            QPushButton {{
+            QLabel {{
             text-align: left;
             font-weight: bold;
             border-radius: none;
-            border: none;
+            border: 0px solid;
             }} 
-            QPushButton:hover {{
-            text-decoration: underline;
-            }}
             """
-            btn.setStyleSheet(style_.format())
+            btn.setStyleSheet(style_.format(color=Color.GREY.value))
             btn.update()
             btn.setContentsMargins(0, 0, 0, 0)
             
             direct_message_layout.addWidget(icon)
             direct_message_layout.addWidget(btn)
             self.ui.right_nav_widget.room_list[room_name] = direct_message_layout
-            self.ui.right_nav_widget.direct_message_layout.addLayout(direct_message_layout)
+            self.ui.right_nav_widget.direct_message_layout.addWidget(direct_message_widget)
 
             # --- Add Body Scroll Area --- #
             self.ui.body_gui_dict[room_name] = BodyScrollArea(name=room_name)

@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Dict
 from src.client.core.qt_core import (
     QLabel,
@@ -6,7 +7,9 @@ from src.client.core.qt_core import (
     Qt,
     QVBoxLayout,
     QSizePolicy,
-    QIcon
+    QIcon,
+    QEvent,
+    QEnterEvent
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.tools.graphical_effects import widget_shadow
@@ -49,7 +52,7 @@ class RightNavView:
             margin-bottom: 2px"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
-        self.direct_message_layout.setSpacing(15)
+        self.direct_message_layout.setSpacing(5)
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
 
         rooms_label = QLabel("Rooms")
@@ -63,15 +66,32 @@ class RightNavView:
         self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
         self.room_btn.setIcon(self.room_icon)
         self.room_btn.clicked.connect(self.show_home_layout)
+        
+        def hover(event: QEvent, user_widget):
+            if isinstance(event, QEnterEvent):
+                color = Color.DARK_GREY.value
+            else:
+                color = "transparent"
+            style_ = """
+            QWidget {{
+            font-weight: bold;
+            text-align: center;
+            background-color: {color};
+            border-radius: none;
+            border: 0px solid;
+            }} 
+            """
+            user_widget.setStyleSheet(style_.format(color=color))
+        
+        self.room_btn.enterEvent = partial(hover, user_widget=self.room_btn)
+        self.room_btn.leaveEvent = partial(hover, user_widget=self.room_btn)
+            
         style_ = """
             QPushButton {{
             font-weight: bold;
             text-align: center;
             border: none;
             }} 
-            QPushButton:hover {{
-            text-decoration: underline;
-            }}
             """
         self.room_btn.setStyleSheet(style_.format())
         self.room_list: Dict[str, QWidget] = {}

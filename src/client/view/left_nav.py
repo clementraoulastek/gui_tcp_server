@@ -20,10 +20,10 @@ class LeftNavView():
         # --- Left layout with scroll area
         self.left_nav_layout = QHBoxLayout()
         self.user_inline = QVBoxLayout()
-        self.user_inline.setSpacing(15)
+        self.user_inline.setSpacing(5)
 
         self.user_offline = QVBoxLayout()
-        self.user_offline.setSpacing(15)
+        self.user_offline.setSpacing(5)
 
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.width + 2)
@@ -46,7 +46,7 @@ class LeftNavView():
         )
         
         self.user_inline_layout = QVBoxLayout(self.scroll_widget_avatar)
-        self.user_inline_layout.setSpacing(25)
+        self.user_inline_layout.setSpacing(5)
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(

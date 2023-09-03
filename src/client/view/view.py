@@ -91,7 +91,6 @@ class MainWindow(QMainWindow):
         """
         # Main widget
         self.main_widget = QWidget()
-        self.main_widget.setStyleSheet(f"background-color: {Color.DARK_GREY.value};")
         self.setCentralWidget(self.main_widget)
 
         # Main layout
@@ -113,12 +112,12 @@ class MainWindow(QMainWindow):
         self.core_layout.setContentsMargins(0, 0, 0, 0)
         
         # Update core layout
-        self.left_nav_widget = LeftNavView(width=150)
+        self.left_nav_widget = LeftNavView(width=180)
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
         
         self.set_body_gui()
         
-        self.right_nav_widget = RightNavView(self.controller, width=150)
+        self.right_nav_widget = RightNavView(self.controller, width=180)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
         
         self.main_layout.addWidget(self.core_widget)
