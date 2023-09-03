@@ -24,7 +24,7 @@ class BodyScrollArea(QScrollArea):
         self.main_layout = QVBoxLayout()
         self.main_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setSpacing(5)
+        self.main_layout.setSpacing(15)
         self.main_layout.setObjectName(f"{name}_layout")
 
         self.partial_name = check_str_len(name)

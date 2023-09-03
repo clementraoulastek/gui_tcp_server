@@ -54,7 +54,12 @@ class RightNavView:
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
         self.direct_message_layout.setSpacing(5)
         self.direct_message_layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
-
+        
+        self.rooms_widget = QWidget()
+        self.rooms_widget.setStyleSheet("border: none;")
+        self.rooms_layout = QVBoxLayout(self.rooms_widget)
+        self.rooms_layout.setContentsMargins(0, 0, 0, 0)
+        
         rooms_label = QLabel("Rooms")
         widget_shadow(rooms_label)
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -62,43 +67,12 @@ class RightNavView:
         dm_label = QLabel("Messages")
         widget_shadow(dm_label)
         self._update_label_style(dm_label)
-        self.room_btn = CustomQPushButton("home")
-        self.room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
-        self.room_btn.setIcon(self.room_icon)
-        self.room_btn.clicked.connect(self.show_home_layout)
-        
-        def hover(event: QEvent, user_widget):
-            if isinstance(event, QEnterEvent):
-                color = Color.DARK_GREY.value
-            else:
-                color = "transparent"
-            style_ = """
-            QWidget {{
-            font-weight: bold;
-            text-align: center;
-            background-color: {color};
-            border-radius: none;
-            border: 0px solid;
-            }} 
-            """
-            user_widget.setStyleSheet(style_.format(color=color))
-        
-        self.room_btn.enterEvent = partial(hover, user_widget=self.room_btn)
-        self.room_btn.leaveEvent = partial(hover, user_widget=self.room_btn)
-            
-        style_ = """
-            QPushButton {{
-            font-weight: bold;
-            text-align: center;
-            border: none;
-            }} 
-            """
-        self.room_btn.setStyleSheet(style_.format())
+
         self.room_list: Dict[str, QWidget] = {}
         
         # Adding widgets to the main layout
         self.direct_message_layout.addWidget(rooms_label)
-        self.direct_message_layout.addWidget(self.room_btn)
+        self.direct_message_layout.addWidget(self.rooms_widget)
         self.direct_message_layout.addWidget(dm_label)
 
         self.scroll_area_dm.setWidget(self.right_nav_widget)
@@ -113,5 +87,3 @@ class RightNavView:
             border-radius: 6px;"
         )
     
-    def show_home_layout(self) -> None:
-        self.controller.gui_controller.update_gui_for_mp_layout("home")

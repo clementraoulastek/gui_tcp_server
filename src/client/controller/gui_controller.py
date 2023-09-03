@@ -10,6 +10,8 @@ from src.client.core.qt_core import (
     QWidget,
     QEvent,
     QEnterEvent,
+    QIcon,
+    QVBoxLayout
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -19,7 +21,7 @@ from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
-from src.tools.utils import Color, Icon, ImageAvatar, check_str_len
+from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg, check_str_len
 from src.client.controller.api_controller import ApiController
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
@@ -552,8 +554,7 @@ class GuiController:
         for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
             if widget := getattr(parent or self.ui, parent_layout).itemAt(i).widget():
                 widget: QWidget
-                type(widget)
-                if not type(widget) == QWidget:
+                if not type(widget) == CustomQPushButton:
                     continue
                 layout = widget.layout()
                 if (
@@ -631,6 +632,7 @@ class GuiController:
             self.ui.left_nav_widget.message_label.hide()
             self.ui.left_nav_widget.info_disconnected_label.show()
             self.fetch_all_users_username()
+            self.fetch_all_rooms()
             self.display_older_messages()
 
     def hide_left_layouts_buttons(self) -> None:
@@ -727,6 +729,7 @@ class GuiController:
         self.update_buttons()
         self.clear_avatar("user_inline", self.ui.left_nav_widget)
         self.clear_avatar("user_offline", self.ui.left_nav_widget)
+        self.clear_avatar("rooms_layout", self.ui.right_nav_widget)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
 
         self.ui.left_nav_widget.message_label.show()
@@ -869,3 +872,42 @@ class GuiController:
         usernames: List[str] = self.ui.backend.get_all_users_username()
         for username in usernames:
             self.api_controller.add_sender_picture(username)
+            
+    def fetch_all_rooms(self):
+        """
+        Fetch all rooms
+        """ 
+        room_btn = CustomQPushButton("home")
+        room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
+        room_btn.setIcon(room_icon)
+        room_btn.clicked.connect(lambda: self.update_gui_for_mp_layout("home"))
+        
+        def hover(event: QEvent, user_widget):
+            if isinstance(event, QEnterEvent):
+                color = Color.DARK_GREY.value
+            else:
+                color = "transparent"
+            style_ = """
+            QWidget {{
+            font-weight: bold;
+            text-align: center;
+            background-color: {color};
+            border-radius: none;
+            border: 0px solid;
+            }} 
+            """
+            user_widget.setStyleSheet(style_.format(color=color))
+        
+        room_btn.enterEvent = partial(hover, user_widget=room_btn)
+        room_btn.leaveEvent = partial(hover, user_widget=room_btn)
+
+        style_ = """
+            QPushButton {{
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            }} 
+            """
+        room_btn.setStyleSheet(style_.format())
+        
+        self.ui.right_nav_widget.rooms_layout.addWidget(room_btn)

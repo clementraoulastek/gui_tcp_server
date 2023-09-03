@@ -168,7 +168,7 @@ class MessageLayout(QHBoxLayout):
             """
         self.sender_btn.setStyleSheet(style_.format())
 
-        if message_id and sender != self.controller.ui.client.user_name:
+        if message_id:
             # ------------------------------- React Button ------------------------------- #
             self.react_buttton = CustomQPushButton(
                 " Add react", bg_color=Color.GREY.value, radius=6
@@ -198,7 +198,7 @@ class MessageLayout(QHBoxLayout):
         self.react_widget = QWidget()
         sp_retain = self.react_widget.sizePolicy()
         sp_retain.setRetainSizeWhenHidden(True)
-        self.react_widget.setSizePolicy(sp_retain.verticalPolicy(), sp_retain.verticalPolicy())
+        self.react_widget.setSizePolicy(sp_retain)
 
         shadow = self.widget_shadow(self.react_widget)
         self.react_widget.setStyleSheet(
@@ -245,8 +245,7 @@ class MessageLayout(QHBoxLayout):
 
         if message_id:
             sender_layout.addWidget(self.react_widget)
-            if sender != self.controller.ui.client.user_name:
-                sender_layout.addWidget(self.react_buttton)
+            sender_layout.addWidget(self.react_buttton)
 
         message_label = QLabel(str_message)
         message_label.setStyleSheet("border: 0px; color: white;")
