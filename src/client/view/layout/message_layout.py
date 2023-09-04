@@ -225,12 +225,12 @@ class MessageLayout(QHBoxLayout):
         # ---------------------------------------------------------------------------- #
 
         if not date:
-            date_time = datetime.datetime.now().strftime("%m/%d/%Y à %H:%M:%S")
+            date_time = datetime.datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
         else:
             dt_object = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f%z")
             local_timezone = get_localzone()
             local_dt_object = dt_object.replace(tzinfo=pytz.utc).astimezone(local_timezone) 
-            date_time = local_dt_object.strftime("%m/%d/%Y à %H:%M:%S")
+            date_time = local_dt_object.strftime("%d/%m/%Y à %H:%M:%S")
             
         date_label = QLabel(date_time)
         date_label.setStyleSheet(

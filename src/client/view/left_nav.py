@@ -70,7 +70,8 @@ class LeftNavView():
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;"
+            border-radius: 6px;\
+            margin-bottom: 10px;"
         )
         self.user_inline.addWidget(self.info_label)
         self.user_inline.addWidget(self.message_label)
@@ -85,7 +86,9 @@ class LeftNavView():
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;"
+            border-radius: 6px;\
+            margin-bottom: 10px;\
+            margin-top: 10px"
         )
         self.user_offline.addWidget(self.info_disconnected_label)
         self.user_inline_layout.addLayout(self.user_offline)

@@ -63,7 +63,7 @@ class RightNavView:
         rooms_label = QLabel("Rooms")
         widget_shadow(rooms_label)
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self._update_label_style(rooms_label)
+        self._update_label_style(rooms_label, is_top_label=True)
         dm_label = QLabel("Messages")
         widget_shadow(dm_label)
         self._update_label_style(dm_label)
@@ -77,13 +77,18 @@ class RightNavView:
 
         self.scroll_area_dm.setWidget(self.right_nav_widget)
 
-    def _update_label_style(self, label: QLabel):
+    def _update_label_style(self, label: QLabel, is_top_label: bool = False):
         label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         label.setContentsMargins(15, 5, 15, 5)
-        label.setStyleSheet(
-            f"font-weight: bold;\
+        style_ = f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;"
+            border-radius: 6px;\
+            margin-bottom: 10px;"
+        if not is_top_label:
+            style_ += "margin-top: 10px"
+            
+        label.setStyleSheet(
+            style_
         )
     

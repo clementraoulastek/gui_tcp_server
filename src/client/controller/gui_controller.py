@@ -468,11 +468,13 @@ class GuiController:
             }} 
             """
             
-            def hover(event: QEvent, user_widget):
+            def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
                 if isinstance(event, QEnterEvent):
                     color = Color.DARK_GREY.value
+                    user_pic.graphicsEffect().setEnabled(False)
                 else:
                     color = "transparent"
+                    user_pic.graphicsEffect().setEnabled(True)
                 style_ = """
                 QWidget {{
                 background-color: {color};
@@ -482,11 +484,9 @@ class GuiController:
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
             
-            user_widget.enterEvent = partial(hover, user_widget=user_widget)
-            user_widget.leaveEvent = partial(hover, user_widget=user_widget)
             user_widget.setStyleSheet(style_.format())
-            
             user_widget.setContentsMargins(0, 0, 0, 0)
+            
             user_layout = QHBoxLayout(user_widget)
             user_layout.setSpacing(10)
             user_layout.setContentsMargins(0, 0, 0, 0)
@@ -498,6 +498,9 @@ class GuiController:
             user_pic, dm_pic = AvatarLabel(
                 content=content, status=AvatarStatus.DEACTIVATED
             ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
+            
+            user_widget.enterEvent = partial(hover, user_widget=user_widget, user_pic=user_pic)
+            user_widget.leaveEvent = partial(hover, user_widget=user_widget, user_pic=user_pic)
             
             # Update picture
             user_pic.set_opacity(0.2)
@@ -874,7 +877,6 @@ class GuiController:
         Fetch all rooms
         """ 
         room_widget = CustomQPushButton()
-        room_widget.setFixedHeight(40)
         room_layout = QHBoxLayout(room_widget)
         room_layout.setContentsMargins(0, 0, 0, 0)
         room_btn = QLabel("home")
