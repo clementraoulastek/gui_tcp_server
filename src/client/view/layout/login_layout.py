@@ -13,6 +13,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QLineEdit,
 )
+from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
 load_dotenv()
@@ -84,7 +85,6 @@ class LoginLayout(QHBoxLayout):
 
     def create_title_widgets(self):
         self.icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
-
         self.icon_soft.setStyleSheet(
             "font-weight: bold;\
             border: none"
@@ -95,7 +95,8 @@ class LoginLayout(QHBoxLayout):
         self.title_label.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             border: none; font-size: 36px;\
-            font-weight: bold"
+            font-weight: bold;\
+            font-style: italic"
         )
         self.title_layout.addWidget(self.icon_soft)
         self.title_layout.addWidget(self.title_label)
@@ -119,8 +120,6 @@ class LoginLayout(QHBoxLayout):
         self.username_entry = CustomQLineEdit(
             place_holder_text="Enter your username",
             text=os.environ["USERNAME"],
-            bg_color=Color.DARK_GREY.value,
-            bg_color_active=Color.DARK_GREY.value,
         )
         self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
@@ -137,10 +136,9 @@ class LoginLayout(QHBoxLayout):
         self.password_entry = CustomQLineEdit(
             place_holder_text="Enter your password",
             text=os.environ["PASSWORD"],
-            bg_color=Color.DARK_GREY.value,
-            bg_color_active=Color.DARK_GREY.value,
         )
         self.password_entry.setFixedWidth(300)
+        self.password_entry.setTextMargins(25, 0, 0, 0)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
 
@@ -152,12 +150,7 @@ class LoginLayout(QHBoxLayout):
         self.send_button.setFixedWidth(120)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
-
-        self.register_button = CustomQPushButton(" Register")
-        self.register_button.widget_shadow()
-        self.register_button.setFixedWidth(120)
         self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
-        self.register_button.setIcon(self.register_icon)
+        self.entry_action = self.password_entry.addAction(self.register_icon, QLineEdit.TrailingPosition)
 
         self.button_layout.addWidget(self.send_button)
-        self.button_layout.addWidget(self.register_button)

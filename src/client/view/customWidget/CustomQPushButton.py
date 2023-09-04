@@ -34,12 +34,12 @@ class CustomQPushButton(QPushButton):
     def __init__(
         self,
         text="",
-        radius=6,
+        radius=12,
         border_size=1,
         color=Color.LIGHT_GREY.value,
         selection_color="#000",
-        bg_color=Color.DARK_GREY.value,
-        bg_color_active=Color.GREY.value,
+        bg_color=Color.GREY.value,
+        bg_color_active=Color.MIDDLE_GREY.value,
         context_color=Color.GREY.value,
         parent=None
     ):

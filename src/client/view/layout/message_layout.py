@@ -76,7 +76,6 @@ class MessageLayout(QHBoxLayout):
             margin-bottom: 1px;\
             margin-right: 2px;"
         )
-
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -119,15 +118,21 @@ class MessageLayout(QHBoxLayout):
             )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             widget_shadow(icon_label)
-            
-        self.left_layout.addWidget(icon_label)
+        
         str_message = coming_msg["message"]
         sender = coming_msg["id"]
-
+        
+        self.username_label = check_str_len(sender)
+        if "admin" in self.username_label:
+            crown_icon = QIcon(QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)).pixmap(QSize(15, 15))
+            sender_icon = QLabel()
+            sender_icon.setPixmap(crown_icon)
+            self.left_layout.addWidget(sender_icon, alignment=Qt.AlignCenter)
+            
+        self.left_layout.addWidget(icon_label)
         sender_layout = QHBoxLayout()
         sender_layout.setSpacing(10)
         sender_layout.setAlignment(Qt.AlignCenter | Qt.AlignLeft)
-        self.username_label = check_str_len(sender)
 
         self.sender_btn = CustomQPushButton(self.username_label)
         self.sender_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -172,11 +177,12 @@ class MessageLayout(QHBoxLayout):
         if message_id:
             # ------------------------------- React Button ------------------------------- #
             self.react_buttton = CustomQPushButton(
-                "Add react", bg_color=Color.GREY.value, radius=6
+                "", bg_color=Color.GREY.value, radius=4
             )
             widget_shadow(self.react_buttton)
             self.react_buttton.clicked.connect(self.add_react)
             self.react_buttton.setFixedHeight(13)
+            self.react_buttton.setFixedWidth(13)
             self.react_buttton.setContentsMargins(0, 0, 0, 0)
             react_icon = QIcon(QIcon_from_svg(Icon.SMILEY.value))
 
@@ -255,14 +261,12 @@ class MessageLayout(QHBoxLayout):
         if self.is_reacted:
             self.nb_react -= 1
             self.is_reacted = False
-            self.react_buttton.setText(" Add react")
             self.controller.api_controller.send_emot_react(
                 Commands.RM_REACT, self.message_id, self.nb_react
             )
         else:
             self.nb_react += 1
             self.is_reacted = True
-            self.react_buttton.setText(" Remove react")
             self.controller.api_controller.send_emot_react(
                 Commands.ADD_REACT, self.message_id, self.nb_react
             )

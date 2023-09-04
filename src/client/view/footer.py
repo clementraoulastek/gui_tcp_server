@@ -90,12 +90,16 @@ class FooterView:
         self.client_information_dashboard_layout.addWidget(self.user_widget)
 
         self.entry = CustomQLineEdit(place_holder_text="Please login")
+        self.entry.setTextMargins(50, 0, 0, 0)
         self.entry.returnPressed.connect(self.controller.send_message_to_server)
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
-
-        self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
-        entry_action = self.entry.addAction(self.send_icon, QLineEdit.TrailingPosition)
+        
+        pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, Color.LIGHT_GREY.value))
+        send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
+        
+        entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)
+        pipe_action = self.entry.addAction(pipe_icon, QLineEdit.TrailingPosition)
         entry_action.triggered.connect(self.controller.send_message_to_server)
 
         version_widget = QLabel(f"Version: {SOFT_VERSION}")

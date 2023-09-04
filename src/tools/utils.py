@@ -33,9 +33,12 @@ class Icon(Enum):
     USER_ICON = f"{ICON_PATH}/default_user_icon.svg"
     LEFT_ARROW = f"{ICON_PATH}/left_arrow.svg"
     RIGHT_ARROW = f"{ICON_PATH}/right_arrow.svg"
+    ARROW_RIGHT = f"{ICON_PATH}/arrow_right.svg"
     AVATAR = f"{ICON_PATH}/avatar_update.svg"
     SMILEY = f"{ICON_PATH}/smiley.svg"
     ROOM = f"{ICON_PATH}/home.svg"
+    SEPARATOR = f"{ICON_PATH}/separator.svg"
+    CROWN = f"{ICON_PATH}/crown.svg"
 
 
 @unique
@@ -49,12 +52,13 @@ class Color(Enum):
     RED = "#811919"
     GREEN = "#305C0A"
     BLACK = "#171717"
-
+    YELLOW = "#F6DF91"
+    
 
 @unique
 class ImageAvatar(Enum):
     SERVER = "./resources/images/server_picture.png"
-
+    ROOM = "./resources/images/room_picture.png"
 
 def image_from_svg(filename="", size=0):
     if LM_USE_SVG != 1:

@@ -3,7 +3,7 @@ import sys
 from typing import Dict, List
 from src.client.client import Client
 from src.client.controller.main_controller import MainController
-from src.client.view.customWidget.AvatarQLabel import AvatarLabel
+from src.client.view.customWidget.AvatarQLabel import AvatarLabel, AvatarStatus
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.footer import FooterView
@@ -140,6 +140,7 @@ class MainWindow(QMainWindow):
         self.body_widget = QWidget()
         self.body_layout = QVBoxLayout(self.body_widget)
         self.body_layout.setContentsMargins(0, 0, 0, 0)
+        self.body_layout.setSpacing(20)
 
         self.upper_widget = QWidget()
         self.upper_widget.setContentsMargins(0, 0, 0, 0)
@@ -147,28 +148,32 @@ class MainWindow(QMainWindow):
         self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
-            border-radius: 12px;\
+            border-radius: 8px;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         widget_shadow(self.upper_widget)
         upper_layout = QHBoxLayout(self.upper_widget)
+        upper_layout.setContentsMargins(5, 5, 5, 5)
 
         self.frame_title = QWidget()
-        widget_shadow(self.frame_title)
         self.frame_title.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.frame_title.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
-            border-radius: 6px;\
+            background-color: transparent;\
             font-weight: bold;\
-            border: 1px solid {Color.MIDDLE_GREY.value};"
+            border: none"
         )
         self.frame_layout = QHBoxLayout(self.frame_title)
-        self.frame_layout.setContentsMargins(10, 5, 10, 5)
+        self.frame_layout.setContentsMargins(10, 1, 10, 1)
         self.frame_layout.setSpacing(10)
         self.frame_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.frame_icon = AvatarLabel(
-            content=Icon.ROOM.value, color=Color.WHITE.value, height=15, width=15
+            content=Icon.RIGHT_ARROW.value, 
+            status=AvatarStatus.DEACTIVATED,
+            height=20,
+            width=20,
+            color=Color.LIGHT_GREY.value
         )
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("home")

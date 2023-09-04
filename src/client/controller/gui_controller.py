@@ -593,9 +593,10 @@ class GuiController:
             self.ui.login_form.send_button.clicked.connect(
                 lambda: self.login_form(self.api_controller.send_login_form)
             )
-            self.ui.login_form.register_button.clicked.connect(
+            self.ui.login_form.entry_action.triggered.connect(
                 lambda: self.login_form(self.api_controller.send_register_form)
             )
+
 
     def login_form(self, callback) -> None:
         """
@@ -844,10 +845,6 @@ class GuiController:
         
         self.ui.body_layout.removeWidget(old_widget)
         self.ui.body_layout.insertWidget(index, widget)
-        self.ui.frame_icon.update_picture(
-            None,
-            content=Icon.ROOM.value if room_name == "home" else Icon.MESSAGE.value,
-        )
         
         self.ui.frame_name.setText(f"{room_name}")
         self.ui.scroll_area = widget
@@ -876,10 +873,20 @@ class GuiController:
         """
         Fetch all rooms
         """ 
-        room_btn = CustomQPushButton("home")
-        room_icon = QIcon(QIcon_from_svg(Icon.ROOM.value))
-        room_btn.setIcon(room_icon)
-        room_btn.clicked.connect(lambda: self.update_gui_for_mp_layout("home"))
+        room_widget = CustomQPushButton()
+        room_widget.setFixedHeight(40)
+        room_layout = QHBoxLayout(room_widget)
+        room_layout.setContentsMargins(0, 0, 0, 0)
+        room_btn = QLabel("home")
+        room_btn.setStyleSheet("font-weight: bold;")
+        
+        room_icon = AvatarLabel(
+            content=ImageAvatar.ROOM.value, 
+            status=AvatarStatus.DEACTIVATED,
+        )
+        
+        room_icon.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        room_widget.clicked.connect(lambda: self.update_gui_for_mp_layout("home"))
         
         def hover(event: QEvent, user_widget):
             if isinstance(event, QEnterEvent):
@@ -897,8 +904,8 @@ class GuiController:
             """
             user_widget.setStyleSheet(style_.format(color=color))
         
-        room_btn.enterEvent = partial(hover, user_widget=room_btn)
-        room_btn.leaveEvent = partial(hover, user_widget=room_btn)
+        room_widget.enterEvent = partial(hover, user_widget=room_widget)
+        room_widget.leaveEvent = partial(hover, user_widget=room_widget)
 
         style_ = """
             QPushButton {{
@@ -907,6 +914,8 @@ class GuiController:
             border: none;
             }} 
             """
-        room_btn.setStyleSheet(style_.format())
+        room_widget.setStyleSheet(style_.format())
         
-        self.ui.right_nav_widget.rooms_layout.addWidget(room_btn)
+        room_layout.addWidget(room_icon)
+        room_layout.addWidget(room_btn)
+        self.ui.right_nav_widget.rooms_layout.addWidget(room_widget)

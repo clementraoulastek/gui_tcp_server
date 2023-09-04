@@ -43,7 +43,7 @@ class HeaderView:
         logo_layout = QHBoxLayout(logo_widget)
         logo_widget.setStyleSheet("border: none")
         logo_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
-        icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
+        icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
         icon_soft.setStyleSheet(
             "font-weight: bold;\
             border: none"
@@ -51,11 +51,12 @@ class HeaderView:
         icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         
         # Status server label
-        status_server_label = QLabel(DEFAULT_CLIENT_NAME)
+        status_server_label = QLabel(DEFAULT_CLIENT_NAME.upper())
         status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         status_server_label.setStyleSheet(
             "font-weight: bold;\
-            border: none"
+            border: none;\
+            font-style: italic"
         )
 
         # Set the header buttons
@@ -82,7 +83,7 @@ class HeaderView:
         self.button_layout.setSpacing(5)
 
         # --- Close left nav button
-        self.close_left_nav_button = CustomQPushButton("")
+        self.close_left_nav_button = CustomQPushButton("", radius=8)
         self.close_left_nav_button.widget_shadow()
         self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
         self.close_left_nav_button.setIcon(self.close_icon)
@@ -90,7 +91,7 @@ class HeaderView:
         self.close_left_nav_button.setFixedHeight(30)
 
         # --- Close right nav button
-        self.close_right_nav_button = CustomQPushButton("")
+        self.close_right_nav_button = CustomQPushButton("", radius=8)
         self.close_right_nav_button.widget_shadow()
         self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
         self.close_right_nav_button.setIcon(self.show_icon)
@@ -98,7 +99,7 @@ class HeaderView:
         self.close_right_nav_button.setFixedHeight(30)
 
         # --- Show left button
-        self.show_left_nav_button = CustomQPushButton("")
+        self.show_left_nav_button = CustomQPushButton("", radius=8)
         self.show_left_nav_button.widget_shadow()
         self.show_left_nav_button.clicked.connect(self.controller.show_left_layout)
         self.show_left_nav_button.setIcon(self.show_icon)
@@ -107,7 +108,7 @@ class HeaderView:
         self.show_left_nav_button.hide()
 
         # --- Show right button
-        self.show_right_nav_button = CustomQPushButton("")
+        self.show_right_nav_button = CustomQPushButton("", radius=8)
         self.show_right_nav_button.widget_shadow()
         self.show_right_nav_button.clicked.connect(self.controller.show_right_layout)
         self.show_right_nav_button.setIcon(self.close_icon)
