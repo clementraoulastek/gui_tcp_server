@@ -102,7 +102,7 @@ class FooterView:
         pipe_action = self.entry.addAction(pipe_icon, QLineEdit.TrailingPosition)
         entry_action.triggered.connect(self.controller.send_message_to_server)
 
-        version_widget = QLabel(f"Version: {SOFT_VERSION}")
+        version_widget = QLabel(f"Alpha, Version: {SOFT_VERSION}")
         version_widget.setStyleSheet(
             f"font-style: italic; color: {Color.LIGHT_GREY.value}"
         )

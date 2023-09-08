@@ -138,7 +138,7 @@ class LoginLayout(QHBoxLayout):
             text=os.environ["PASSWORD"],
         )
         self.password_entry.setFixedWidth(300)
-        self.password_entry.setTextMargins(25, 0, 0, 0)
+        self.password_entry.setTextMargins(30, 0, 0, 0)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
 

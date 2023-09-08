@@ -39,6 +39,7 @@ class Icon(Enum):
     ROOM = f"{ICON_PATH}/home.svg"
     SEPARATOR = f"{ICON_PATH}/separator.svg"
     CROWN = f"{ICON_PATH}/crown.svg"
+    REPLY = f"{ICON_PATH}/reply.svg"
 
 
 @unique

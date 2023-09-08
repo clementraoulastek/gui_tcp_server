@@ -81,25 +81,27 @@ class GuiController:
 
     def diplay_self_message_on_gui(
         self,
-        id_sender: str,
+        sender: str,
         message: str,
         frame_name: Optional[Union[str, None]] = None,
         messsage_id: Optional[Union[int, None]] = None,
         nb_react: Optional[int] = 0,
         date: Optional[str] = "",
+        response_model: Optional[Union[MessageLayout, None]] = None,
     ) -> None:
         """
         Display message on gui and clear the message entry
 
         Args:
-            id_sender (str): username
+            sender (str): username
             message (str): message
             frame_name (Optional[Union[str, None]], optional): layout name. Defaults to None.
             messsage_id (Optional[Union[int, None]], optional): message id. Defaults to None.
             nb_react (Optional[int], optional): number of reactions. Defaults to 0.
             date (Optional[str], optional): date to display. Defaults to "".
+            response_model (Optional[Union[MessageLayout, None]]): MessageLayout object. Defaults to None.
         """
-        comming_msg: dict[str, str] = {"id": id_sender, "message": message}
+        comming_msg: dict[str, str] = {"id": sender, "message": message}
         
         # Update the last message id 
         if messsage_id:
@@ -111,10 +113,11 @@ class GuiController:
             self.ui.main_widget,
             self,
             comming_msg,
-            content=self.ui.users_pict[id_sender],
+            content=self.ui.users_pict[sender],
             message_id=self.last_message_id,
             nb_react=nb_react,
             date=date,
+            response_model=response_model
         )
         self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
         
@@ -237,7 +240,6 @@ class GuiController:
         Callback to handle scroll bar update
         """
         self.ui.scroll_area.scrollToBottom()
-
 
     def __update_react_message_on_gui(self) -> None:
         """
@@ -401,8 +403,8 @@ class GuiController:
                 style_ = """
                 QWidget {{
                 background-color: {color};
-                border-radius: none;
-                border: 0px solid;
+                border-radius: 8px;
+                border: 1px solid {color};
                 }} 
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
@@ -426,8 +428,9 @@ class GuiController:
             QLabel {{
             text-align: left;
             font-weight: bold;
-            border-radius: none;
-            border: none;
+            border-radius: 8px;
+            border: 1px solid;
+            border-color: transparent;
             }} 
             """
             # Add user menu
@@ -438,13 +441,13 @@ class GuiController:
                 user_widget.clicked.connect(
                     partial(self.add_gui_for_mp_layout, username, dm_pic, True)
                 )
-                hover = """
+                hover_ = """
                 QPushButton:hover {{
                 text-decoration: underline;
                 }}
                 """
-                style_ = f"{style_}{hover}"
-            user_name.setStyleSheet(style_.format())
+                style_ = f"{style_}{hover_}"
+            user_name.setStyleSheet(style_.format(color=Color.GREY.value))
             
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
@@ -463,8 +466,8 @@ class GuiController:
             user_widget.setFixedHeight(50)
             style_ = """
             QWidget {{
-            border-radius: none;
-            border: 0px solid;
+            border-radius: 8px;
+            border: 1px solid {color};
             }} 
             """
             
@@ -473,18 +476,19 @@ class GuiController:
                     color = Color.DARK_GREY.value
                     user_pic.graphicsEffect().setEnabled(False)
                 else:
-                    color = "transparent"
+                    color = Color.GREY.value
                     user_pic.graphicsEffect().setEnabled(True)
                 style_ = """
                 QWidget {{
                 background-color: {color};
-                border-radius: none;
-                border: 0px solid;
+                border-radius: 8px;
+                border: 1px solid {color};
                 }} 
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
+                user_widget.update()
             
-            user_widget.setStyleSheet(style_.format())
+            user_widget.setStyleSheet(style_.format(color=Color.GREY.value))
             user_widget.setContentsMargins(0, 0, 0, 0)
             
             user_layout = QHBoxLayout(user_widget)
@@ -524,7 +528,7 @@ class GuiController:
             QLabel {{
             text-align: left;
             font-weight: bold;
-            border-radius: 0px;
+            border-radius: 8px;
             border: 1px solid;
             border-color: {color};
             }}
@@ -777,7 +781,7 @@ class GuiController:
             # Layout
             direct_message_widget = CustomQPushButton()
             direct_message_widget.setFixedHeight(50)
-            direct_message_widget.setStyleSheet("border: 0px solid;")
+            direct_message_widget.setStyleSheet("border: 1px solid transparent;")
             direct_message_layout = QHBoxLayout(direct_message_widget)
             direct_message_layout.setSpacing(10)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
@@ -791,8 +795,8 @@ class GuiController:
                 style_ = """
                 QWidget {{
                 background-color: {color};
-                border-radius: none;
-                border: 0px solid;
+                border-radius: 8px;
+                border: 1px solid transparent;
                 }} 
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
@@ -810,8 +814,8 @@ class GuiController:
             QLabel {{
             text-align: left;
             font-weight: bold;
-            border-radius: none;
-            border: 0px solid;
+            border-radius: 8px;
+            border: 1px solid transparent;
             }} 
             """
             btn.setStyleSheet(style_.format(color=Color.GREY.value))
@@ -877,6 +881,7 @@ class GuiController:
         Fetch all rooms
         """ 
         room_widget = CustomQPushButton()
+        room_widget.setFixedHeight(50)
         room_layout = QHBoxLayout(room_widget)
         room_layout.setContentsMargins(0, 0, 0, 0)
         room_btn = QLabel("home")
@@ -887,7 +892,7 @@ class GuiController:
             status=AvatarStatus.DEACTIVATED,
         )
         
-        room_icon.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        room_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         room_widget.clicked.connect(lambda: self.update_gui_for_mp_layout("home"))
         
         def hover(event: QEvent, user_widget):
@@ -900,8 +905,8 @@ class GuiController:
             font-weight: bold;
             text-align: center;
             background-color: {color};
-            border-radius: none;
-            border: 0px solid;
+            border-radius: 8px;
+            border: 1px solid transparent;
             }} 
             """
             user_widget.setStyleSheet(style_.format(color=color))
@@ -921,3 +926,13 @@ class GuiController:
         room_layout.addWidget(room_icon)
         room_layout.addWidget(room_btn)
         self.ui.right_nav_widget.rooms_layout.addWidget(room_widget)
+        
+    def reply_to_message(self, message_id: int) -> None:
+        """
+        Reply to a message
+
+        Args:
+            message_id (int): message id
+        """
+        self.ui.footer_widget.entry.setText(f"#{message_id}: ")
+        self.ui.footer_widget.entry.setFocus()

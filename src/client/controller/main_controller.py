@@ -31,6 +31,12 @@ class MainController:
         """
         receiver: str = self.ui.scroll_area.objectName()
         if message := self.ui.footer_widget.entry.text():
+            
+            #TODO: Check if messsage is comming from a response
+            # Get the ID of the message
+            message_id = 81
+            message_model = self.gui_controller.messages_dict[message_id]
+            
             self.ui.client.send_data(
                 Commands.MESSAGE, 
                 message, 
@@ -41,7 +47,8 @@ class MainController:
                 message,
                 list(self.ui.body_gui_dict.keys())[
                     list(self.ui.body_gui_dict.values()).index(self.ui.scroll_area)
-                ]
+                ],
+                response_model=message_model
             )
             self.ui.footer_widget.entry.clearFocus()
             
