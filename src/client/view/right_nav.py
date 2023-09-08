@@ -29,7 +29,7 @@ class RightNavView:
         """
         # Scroll area
         self.scroll_area_dm = QScrollArea()
-        self.scroll_area_dm.setFixedWidth(self.width) 
+        self.scroll_area_dm.setFixedWidth(self.width + 10) 
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )

@@ -40,6 +40,7 @@ class Icon(Enum):
     SEPARATOR = f"{ICON_PATH}/separator.svg"
     CROWN = f"{ICON_PATH}/crown.svg"
     REPLY = f"{ICON_PATH}/reply.svg"
+    REPLY_ROTATED = f"{ICON_PATH}/reply_rotated.svg"
 
 
 @unique

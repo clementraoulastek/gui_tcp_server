@@ -105,7 +105,7 @@ class MessageLayout(QHBoxLayout):
         )
         right_layout = QVBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(0)
+        right_layout.setSpacing(10)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
@@ -181,6 +181,7 @@ class MessageLayout(QHBoxLayout):
             self.event_button = QWidget()
             self.event_button.setContentsMargins(0, 0, 0, 0)
             self.event_layout = QHBoxLayout(self.event_button)
+            self.event_layout.setContentsMargins(0, 0, 0, 0)
             self.react_buttton = CustomQPushButton(
                 "", bg_color=Color.GREY.value, radius=4
             )
@@ -257,6 +258,7 @@ class MessageLayout(QHBoxLayout):
             date_time = local_dt_object.strftime("%d/%m/%Y à %H:%M:%S")
 
         date_label = QLabel(date_time)
+        date_label.setContentsMargins(0, 0, 0, 0)
         date_label.setStyleSheet(
             "border: 0px;\
             font-size: 10px;"
@@ -272,27 +274,37 @@ class MessageLayout(QHBoxLayout):
 
         top_layout.addWidget(self.event_button)
         
+        right_layout.addLayout(top_layout)
         # Add response model
         if response_model:
             response_layout = QHBoxLayout()
             response_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             response_layout.setSpacing(0)
+            
             model_icon = AvatarLabel(
                 content=response_model.content,
                 height=15,
                 width=15
             )
+            icon_label = QLabel()
+            icon_reply = QIcon(
+                QIcon_from_svg(Icon.REPLY_ROTATED.value, color=Color.WHITE.value)
+                ).pixmap(QSize(15, 15)
+            )
+            icon_label.setPixmap(icon_reply)
+            
             if len(response_model.str_message) > 30:
                 model_message = f"{response_model.str_message[:30]}..."
             else:
                 model_message = response_model.str_message
+                
             model_message = QLabel(f"{model_message}")
 
+            response_layout.addWidget(icon_label)
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_message)
             right_layout.addLayout(response_layout)
             
-        right_layout.addLayout(top_layout)
         right_layout.addWidget(message_label)
         right_layout.addWidget(self.react_widget)
     

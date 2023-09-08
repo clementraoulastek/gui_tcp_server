@@ -3,7 +3,7 @@ from src.client.controller.gui_controller import GuiController
 from src.client.controller.tcp_controller import TcpServerController
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
-
+import re
 
 class MainController:
     def __init__(self, ui) -> None:
@@ -31,17 +31,20 @@ class MainController:
         """
         receiver: str = self.ui.scroll_area.objectName()
         if message := self.ui.footer_widget.entry.text():
+
+            message_model = None
             
-            #TODO: Check if messsage is comming from a response
-            # Get the ID of the message
-            message_id = 81
-            message_model = self.gui_controller.messages_dict[message_id]
+            if message_id:=int(re.findall("#(\w+):", message)[0]):
+                message_model = self.gui_controller.messages_dict[message_id]
             
             self.ui.client.send_data(
                 Commands.MESSAGE, 
                 message, 
                 receiver=receiver
             )
+            if message_model:
+                message = message.replace(f"#{message_id}:", "")
+                
             self.gui_controller.diplay_self_message_on_gui(
                 self.ui.client.user_name, 
                 message,

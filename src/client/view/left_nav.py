@@ -26,7 +26,7 @@ class LeftNavView():
         self.user_offline.setSpacing(5)
 
         self.scroll_area_avatar = QScrollArea()
-        self.scroll_area_avatar.setFixedWidth(self.width + 2)
+        self.scroll_area_avatar.setFixedWidth(self.width + 10)
 
         self.scroll_widget_avatar = QWidget()
         widget_shadow(self.scroll_widget_avatar)
