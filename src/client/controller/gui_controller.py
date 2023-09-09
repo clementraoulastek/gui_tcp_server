@@ -321,26 +321,35 @@ class GuiController:
                 global_variables.comming_msg["id"] = message_id
                 global_variables.comming_msg["reaction"] = nb_reaction
             else:
-                payload_fields = payload.split(":")
-                message_id = payload_fields[0]
-                receiver = payload_fields[1] 
-                message = payload_fields[2]
-                
-                if len(payload_fields) == 4:
-                    response_id = payload_fields[3]
-                    global_variables.comming_msg["response_id"] = response_id
-                    
-                global_variables.comming_msg["id"] = message_id
-                global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
-                global_variables.comming_msg["message"] = message.replace(
-                    "$replaced$", ":"
-                )
+                self.__handle_message(payload)
         else:
             (
                 global_variables.comming_msg["id"],
                 global_variables.comming_msg["receiver"],
                 global_variables.comming_msg["message"],
             ) = ("unknown", "unknown", payload)
+
+    def __handle_message(self, payload: str) -> None:
+        """
+        Get the message and update global variables
+
+        Args:
+            payload (str): payload of the message
+        """
+        payload_fields = payload.split(":")
+        message_id = payload_fields[0]
+        receiver = payload_fields[1]
+        message = payload_fields[2]
+
+        if len(payload_fields) == 4:
+            response_id = payload_fields[3]
+            global_variables.comming_msg["response_id"] = response_id
+
+        global_variables.comming_msg["id"] = message_id
+        global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
+        global_variables.comming_msg["message"] = message.replace(
+            "$replaced$", ":"
+        )
 
     def __remove_sender_avatar(
         self,
@@ -591,7 +600,7 @@ class GuiController:
         for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
             if widget := getattr(parent or self.ui, parent_layout).itemAt(i).widget():
                 widget: QWidget
-                if not type(widget) == CustomQPushButton:
+                if type(widget) != CustomQPushButton:
                     continue
                 layout = widget.layout()
                 if (
@@ -934,10 +943,10 @@ class GuiController:
         room_widget.leaveEvent = partial(hover, user_widget=room_widget)
 
         style_ = """
-            QPushButton {{
+            QWidget {{
             font-weight: bold;
             text-align: center;
-            border: none;
+            border: 1px solid transparent;
             }} 
             """
         room_widget.setStyleSheet(style_.format())
