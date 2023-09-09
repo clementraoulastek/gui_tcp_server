@@ -155,7 +155,7 @@ class Server:
                 payload_list[1],
                 payload_list[2],
             )
-            response_id = payload_list[3] if len(payload_list) == 4 else None
+            response_id = payload_list[3] if len(payload_list) == 4 else 0
             receiver = receiver.replace(" ", "")
             self.backend.send_message(sender, receiver, message, response_id)
         elif Commands(header) in [Commands.ADD_REACT, Commands.RM_REACT]:

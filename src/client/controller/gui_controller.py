@@ -137,7 +137,7 @@ class GuiController:
         # Get older messages from the server
         messages_dict = self.api_controller.get_older_messages()
         for message in messages_dict:
-            message_id, sender, receiver, message, reaction_nb, date, is_readed = (
+            message_id, sender, receiver, message, reaction_nb, date, is_readed, response_id = (
                 message["message_id"],
                 message["sender"],
                 message["receiver"],
@@ -145,7 +145,11 @@ class GuiController:
                 message["reaction_nb"],
                 message["created_at"],
                 message["is_readed"],
+                message["response_id"],
             )
+
+            message_model = self.messages_dict[response_id] if response_id else None
+                
             # Add a special char to handle the ":" in the message
             message = message.replace(Client.SPECIAL_CHAR, ":")
             
@@ -162,6 +166,7 @@ class GuiController:
                     messsage_id=message_id,
                     nb_react=int(reaction_nb),
                     date=date,
+                    response_model=message_model,
                 )
             # Display message on gui on the direct message frame
             elif self.ui.client.user_name in (sender, receiver):
@@ -185,6 +190,7 @@ class GuiController:
                     messsage_id=message_id,
                     nb_react=int(reaction_nb),
                     date=date,
+                    response_model=message_model,
                 )
 
         # Reset dict to handle new avatar images from conn
