@@ -41,6 +41,9 @@ class Icon(Enum):
     CROWN = f"{ICON_PATH}/crown.svg"
     REPLY = f"{ICON_PATH}/reply.svg"
     REPLY_ROTATED = f"{ICON_PATH}/reply_rotated.svg"
+    CLOSE_USERS = f"{ICON_PATH}/close_users.svg"
+    CLOSE_DM = f"{ICON_PATH}/close_dm.svg"
+    LINK = f"{ICON_PATH}/link.svg"
 
 
 @unique

@@ -211,8 +211,8 @@ class GuiController:
         message = global_variables.comming_msg["message"]
         
         if response_id:=global_variables.comming_msg["response_id"]:
-            message_id = int(response_id)
-            message_model = self.messages_dict[message_id]
+            response_id = int(response_id)
+            message_model = self.messages_dict[response_id]
             
         message = MessageLayout(
             self.ui.main_widget,
@@ -244,12 +244,9 @@ class GuiController:
             self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM)
 
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
-        (
-            global_variables.comming_msg["id"],
-            global_variables.comming_msg["receiver"],
-            global_variables.comming_msg["message"],
-            
-        ) = ("", "", "")
+        
+        # Clear the dict values
+        global_variables.comming_msg = dict.fromkeys(global_variables.comming_msg, "")
     
     def __update_scroll_bar(self) -> None:
         """
@@ -696,8 +693,10 @@ class GuiController:
         """
         Hide left layout
         """
-        self.ui.left_nav_widget.scroll_area_avatar.hide()
-        self.ui.header.close_left_nav_button.hide()
+        if self.ui.left_nav_widget.scroll_area_avatar.isHidden():
+            self.ui.left_nav_widget.scroll_area_avatar.show()
+        else:
+            self.ui.left_nav_widget.scroll_area_avatar.hide()
 
     def show_left_layout(self) -> None:
         """
@@ -710,8 +709,10 @@ class GuiController:
         """
         Hide right layout
         """
-        self.ui.right_nav_widget.scroll_area_dm.hide()
-        self.ui.header.close_right_nav_button.hide()
+        if self.ui.right_nav_widget.scroll_area_dm.isHidden():
+            self.ui.right_nav_widget.scroll_area_dm.show()
+        else:
+            self.ui.right_nav_widget.scroll_area_dm.hide()
 
     def show_right_layout(self) -> None:
         """

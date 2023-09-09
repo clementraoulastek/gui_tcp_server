@@ -128,7 +128,7 @@ class MessageLayout(QHBoxLayout):
 
         self.username_label = check_str_len(sender)
         
-        if "admin" in self.username_label:
+        if "admin" in self.username_label: # TODO: must be a column for user tab
             crown_icon = QIcon(QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)).pixmap(QSize(15, 15))
             sender_icon = QLabel()
             sender_icon.setPixmap(crown_icon)
@@ -274,12 +274,11 @@ class MessageLayout(QHBoxLayout):
 
         top_layout.addWidget(self.event_button)
         
-        right_layout.addLayout(top_layout)
         # Add response model
         if response_model:
             response_layout = QHBoxLayout()
             response_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            response_layout.setSpacing(0)
+            response_layout.setSpacing(5)
             
             model_icon = AvatarLabel(
                 content=response_model.content,
@@ -288,13 +287,13 @@ class MessageLayout(QHBoxLayout):
             )
             icon_label = QLabel()
             icon_reply = QIcon(
-                QIcon_from_svg(Icon.REPLY_ROTATED.value, color=Color.WHITE.value)
+                QIcon_from_svg(Icon.LINK.value, color=Color.WHITE.value)
                 ).pixmap(QSize(15, 15)
             )
             icon_label.setPixmap(icon_reply)
             
-            if len(response_model.str_message) > 30:
-                model_message = f"{response_model.str_message[:30]}..."
+            if len(response_model.str_message) > 50:
+                model_message = f"{response_model.str_message[:50]}..."
             else:
                 model_message = response_model.str_message
                 
@@ -304,7 +303,8 @@ class MessageLayout(QHBoxLayout):
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_message)
             right_layout.addLayout(response_layout)
-            
+        
+        right_layout.addLayout(top_layout)
         right_layout.addWidget(message_label)
         right_layout.addWidget(self.react_widget)
     

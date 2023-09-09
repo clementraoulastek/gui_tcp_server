@@ -41,18 +41,17 @@ class HeaderView:
         
         # Logo layout
         logo_layout = QHBoxLayout(logo_widget)
+        logo_layout.setSpacing(10)
         logo_widget.setStyleSheet("border: none")
-        logo_layout.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        logo_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
         icon_soft.setStyleSheet(
             "font-weight: bold;\
             border: none"
         )
-        icon_soft.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         
         # Status server label
         status_server_label = QLabel(DEFAULT_CLIENT_NAME.upper())
-        status_server_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         status_server_label.setStyleSheet(
             "font-weight: bold;\
             border: none;\
@@ -67,12 +66,12 @@ class HeaderView:
 
         # Adding widgets to the main layout
         header_layout.addWidget(logo_widget)
-        header_layout.addWidget(self.close_right_nav_button)
+        
 
         
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
-        self.show_icon = QIcon(QIcon_from_svg(Icon.RIGHT_ARROW.value))
-        self.close_icon = QIcon(QIcon_from_svg(Icon.LEFT_ARROW.value))
+        self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value))
+        self.close_dm = QIcon(QIcon_from_svg(Icon.CLOSE_DM.value))
 
         # --- Button horizontal layout
         self.button_layout = QHBoxLayout()
@@ -85,7 +84,7 @@ class HeaderView:
         self.close_left_nav_button = CustomQPushButton("", radius=8)
         self.close_left_nav_button.widget_shadow()
         self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
-        self.close_left_nav_button.setIcon(self.close_icon)
+        self.close_left_nav_button.setIcon(self.close_users)
         self.close_left_nav_button.setFixedWidth(30)
         self.close_left_nav_button.setFixedHeight(30)
 
@@ -93,11 +92,12 @@ class HeaderView:
         self.close_right_nav_button = CustomQPushButton("", radius=8)
         self.close_right_nav_button.widget_shadow()
         self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
-        self.close_right_nav_button.setIcon(self.show_icon)
+        self.close_right_nav_button.setIcon(self.close_dm)
         self.close_right_nav_button.setFixedWidth(30)
         self.close_right_nav_button.setFixedHeight(30)
 
         header_layout.addWidget(self.close_left_nav_button)
+        header_layout.addWidget(self.close_right_nav_button)
         
         info_widget = QWidget()
         info_widget.setStyleSheet(
