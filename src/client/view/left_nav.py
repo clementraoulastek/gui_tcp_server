@@ -42,7 +42,8 @@ class LeftNavView():
             border-radius: 12px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value};\
-            margin-bottom: 2px;"
+            margin-bottom: 2px;\
+            margin-left: 10px"
         )
         
         self.user_inline_layout = QVBoxLayout(self.scroll_widget_avatar)

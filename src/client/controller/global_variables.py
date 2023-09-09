@@ -9,6 +9,7 @@ with cst_lock:
         "receiver": "",
         "message": "",
         "reaction": "",
+        "response_id": "",
     }
 
 with cst_lock:

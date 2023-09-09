@@ -61,7 +61,7 @@ class Client:
             return (False, False)
 
     def send_data(
-        self, header: Commands, payload: str, receiver: Optional[str] = "home"
+        self, header: Commands, payload: str, receiver: Optional[str] = "home", response_id: Optional[int] = None
     ) -> None:
         """
             Send data to the socket
@@ -70,7 +70,12 @@ class Client:
             data (str): string data to send
         """
         payload = payload.replace(":", Client.SPECIAL_CHAR)
-        message = f"{self.user_name}:{receiver}:{payload}\n"
-
+        message = f"{self.user_name}:{receiver}:{payload}"
+        
+        if response_id:
+            message += f":{response_id}"
+            
+        message += "\n"
+        
         bytes_message = header.value.to_bytes(1, "big") + message.encode("utf-8")
         self.sock.send(bytes_message)

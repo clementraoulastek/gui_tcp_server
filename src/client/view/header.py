@@ -67,7 +67,6 @@ class HeaderView:
 
         # Adding widgets to the main layout
         header_layout.addWidget(logo_widget)
-        header_layout.addWidget(self.show_right_nav_button)
         header_layout.addWidget(self.close_right_nav_button)
 
         
@@ -98,26 +97,7 @@ class HeaderView:
         self.close_right_nav_button.setFixedWidth(30)
         self.close_right_nav_button.setFixedHeight(30)
 
-        # --- Show left button
-        self.show_left_nav_button = CustomQPushButton("", radius=8)
-        self.show_left_nav_button.widget_shadow()
-        self.show_left_nav_button.clicked.connect(self.controller.show_left_layout)
-        self.show_left_nav_button.setIcon(self.show_icon)
-        self.show_left_nav_button.setFixedWidth(30)
-        self.show_left_nav_button.setFixedHeight(30)
-        self.show_left_nav_button.hide()
-
-        # --- Show right button
-        self.show_right_nav_button = CustomQPushButton("", radius=8)
-        self.show_right_nav_button.widget_shadow()
-        self.show_right_nav_button.clicked.connect(self.controller.show_right_layout)
-        self.show_right_nav_button.setIcon(self.close_icon)
-        self.show_right_nav_button.setFixedWidth(30)
-        self.show_right_nav_button.setFixedHeight(30)
-        self.show_right_nav_button.hide()
-
         header_layout.addWidget(self.close_left_nav_button)
-        header_layout.addWidget(self.show_left_nav_button)
         
         info_widget = QWidget()
         info_widget.setStyleSheet(

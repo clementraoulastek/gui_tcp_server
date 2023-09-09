@@ -1,4 +1,5 @@
 import logging
+import re
 from threading import Thread
 import time
 from typing import List, Optional, Union
@@ -199,6 +200,13 @@ class GuiController:
         
         if global_variables.comming_msg["id"] != "server":
             self.last_message_id += 1
+        
+        message_model = None
+        message = global_variables.comming_msg["message"]
+        
+        if response_id:=global_variables.comming_msg["response_id"]:
+            message_id = int(response_id)
+            message_model = self.messages_dict[message_id]
             
         message = MessageLayout(
             self.ui.main_widget,
@@ -208,6 +216,7 @@ class GuiController:
             message_id=self.last_message_id
             if global_variables.comming_msg["id"] != "server"
             else None,
+            response_model=message_model
         )
         if global_variables.comming_msg["id"] != "server":
             self.messages_dict[self.last_message_id] = message
@@ -233,6 +242,7 @@ class GuiController:
             global_variables.comming_msg["id"],
             global_variables.comming_msg["receiver"],
             global_variables.comming_msg["message"],
+            
         ) = ("", "", "")
     
     def __update_scroll_bar(self) -> None:
@@ -308,7 +318,15 @@ class GuiController:
                 global_variables.comming_msg["id"] = message_id
                 global_variables.comming_msg["reaction"] = nb_reaction
             else:
-                message_id, receiver, message = payload.split(":")
+                payload_fields = payload.split(":")
+                message_id = payload_fields[0]
+                receiver = payload_fields[1] 
+                message = payload_fields[2]
+                
+                if len(payload_fields) == 4:
+                    response_id = payload_fields[3]
+                    global_variables.comming_msg["response_id"] = response_id
+                    
                 global_variables.comming_msg["id"] = message_id
                 global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
                 global_variables.comming_msg["message"] = message.replace(
@@ -646,7 +664,6 @@ class GuiController:
         """
         Hide left button
         """
-        self.ui.header.show_left_nav_button.hide()
         self.ui.header.close_left_nav_button.hide()
 
     def show_left_layouts_buttons(self) -> None:
@@ -660,7 +677,6 @@ class GuiController:
         """
         Hide right button
         """
-        self.ui.header.show_right_nav_button.hide()
         self.ui.header.close_right_nav_button.hide()
 
     def show_right_layouts_buttons(self) -> None:
@@ -676,14 +692,12 @@ class GuiController:
         """
         self.ui.left_nav_widget.scroll_area_avatar.hide()
         self.ui.header.close_left_nav_button.hide()
-        self.ui.header.show_left_nav_button.show()
 
     def show_left_layout(self) -> None:
         """
         Show left layout
         """
         self.ui.left_nav_widget.scroll_area_avatar.show()
-        self.ui.header.show_left_nav_button.hide()
         self.ui.header.close_left_nav_button.show()
 
     def hide_right_layout(self) -> None:
@@ -692,14 +706,12 @@ class GuiController:
         """
         self.ui.right_nav_widget.scroll_area_dm.hide()
         self.ui.header.close_right_nav_button.hide()
-        self.ui.header.show_right_nav_button.show()
 
     def show_right_layout(self) -> None:
         """
         Show right layout
         """
         self.ui.right_nav_widget.scroll_area_dm.show()
-        self.ui.header.show_right_nav_button.hide()
         self.ui.header.close_right_nav_button.show()
 
     def show_footer_layout(self) -> None:
@@ -934,5 +946,5 @@ class GuiController:
         Args:
             message_id (int): message id
         """
-        self.ui.footer_widget.entry.setText(f"#{message_id}: ")
+        self.ui.footer_widget.entry.setText(f"#{message_id}/")
         self.ui.footer_widget.entry.setFocus()

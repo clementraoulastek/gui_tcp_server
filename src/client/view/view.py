@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
         self.upper_widget = QWidget()
         self.upper_widget.setContentsMargins(0, 0, 0, 0)
         self.upper_widget.hide()
-        self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             border-radius: 8px;\
@@ -153,6 +153,7 @@ class MainWindow(QMainWindow):
         )
         widget_shadow(self.upper_widget)
         upper_layout = QHBoxLayout(self.upper_widget)
+        upper_layout.setAlignment(Qt.AlignLeft)
         upper_layout.setContentsMargins(5, 5, 5, 5)
 
         self.frame_title = QWidget()
@@ -166,7 +167,6 @@ class MainWindow(QMainWindow):
         self.frame_layout = QHBoxLayout(self.frame_title)
         self.frame_layout.setContentsMargins(10, 1, 10, 1)
         self.frame_layout.setSpacing(10)
-        self.frame_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.frame_icon = AvatarLabel(
             content=Icon.RIGHT_ARROW.value, 
@@ -178,8 +178,6 @@ class MainWindow(QMainWindow):
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("home")
 
-        self.frame_name.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.frame_name.setStyleSheet("border: 0px")
         self.frame_layout.addWidget(self.frame_icon)
         self.frame_layout.addWidget(self.frame_name)
