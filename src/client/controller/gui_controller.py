@@ -136,6 +136,7 @@ class GuiController:
         
         # Get older messages from the server
         messages_dict = self.api_controller.get_older_messages()
+        
         for message in messages_dict:
             message_id, sender, receiver, message, reaction_nb, date, is_readed, response_id = (
                 message["message_id"],
@@ -147,7 +148,16 @@ class GuiController:
                 message["is_readed"],
                 message["response_id"],
             )
-
+            
+            # TODO: Avoid to fetch all messages
+            # Avoid to display messages from other users
+            if (receiver != "home" and 
+                sender != self.ui.client.user_name and 
+                receiver != self.ui.client.user_name
+            ):
+                self.last_message_id = message_id
+                continue
+            
             message_model = self.messages_dict[response_id] if response_id else None
                 
             # Add a special char to handle the ":" in the message
@@ -322,12 +332,8 @@ class GuiController:
                 global_variables.comming_msg["reaction"] = nb_reaction
             else:
                 self.__handle_message(payload)
-        else:
-            (
-                global_variables.comming_msg["id"],
-                global_variables.comming_msg["receiver"],
-                global_variables.comming_msg["message"],
-            ) = ("unknown", "unknown", payload)
+        elif header == Commands.LAST_ID.value:
+            self.last_message_id += 1
 
     def __handle_message(self, payload: str) -> None:
         """
@@ -964,3 +970,20 @@ class GuiController:
         """
         self.ui.footer_widget.entry.setText(f"#{message_id}/")
         self.ui.footer_widget.entry.setFocus()
+    
+    def send_emot_react(self, cmd: Commands, messageId: int, react_nb: int) -> None:
+        """
+        Send emot message to the server
+
+        Args:
+            cmd (Commands): Commands.RM_REACT ou Commands.ADD_REACT
+            messageId (int): id of the message
+            react_nb (int): number of reaction
+        """
+        receiver: str = self.ui.scroll_area.objectName()
+        
+        self.ui.client.send_data(
+            cmd, 
+            ";".join([str(messageId), str(react_nb)]),
+            receiver=receiver,
+        )

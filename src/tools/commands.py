@@ -10,3 +10,4 @@ class Commands(Enum):
     CONN_NB = 0x0004
     ADD_REACT = 0x0005
     RM_REACT = 0x0006
+    LAST_ID = 0x0007

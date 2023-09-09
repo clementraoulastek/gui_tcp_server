@@ -111,7 +111,7 @@ class Server:
         self.handle_new_connection(addr, conn)
 
         logging.debug(f"Connected by {addr}")
-        
+
         # Receive the data in small chunks and retransmit it
         try:
             while True:
@@ -127,14 +127,25 @@ class Server:
                             self.send_data(
                                 self.conn_dict[address], Commands(header), payload
                             )
-                # If receiver, send message to the user
                 elif receiver in self.user_dict:
+                    # Send to the receiver the message
                     self.send_data(
                         self.conn_dict[self.user_dict[receiver]],
                         Commands(header),
                         payload,
                     )
+                elif Commands(header) not in [Commands.ADD_REACT, Commands.RM_REACT]:
+                    # Send to other the new last ID
+                    for address in self.conn_dict:
+                        if address != addr:
+                            self.send_data(
+                                self.conn_dict[address],
+                                Commands.LAST_ID,
+                                "",
+                            )
+
                 logging.debug(f"Client {addr}: >> header: {header} payload: {payload}")
+
         except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
             self._display_disconnection(conn, addr)
         except KeyError as error:

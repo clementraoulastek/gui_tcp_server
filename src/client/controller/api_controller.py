@@ -69,17 +69,6 @@ class ApiController:
             self.ui.client.user_name = username
             return True
 
-    def send_emot_react(self, cmd: Commands, messageId: int, react_nb: int) -> None:
-        """
-        Send emot message to the server
-
-        Args:
-            cmd (Commands): Commands.RM_REACT ou Commands.ADD_REACT
-            messageId (int): id of the message
-            react_nb (int): number of reaction
-        """
-        self.ui.client.send_data(cmd, ";".join([str(messageId), str(react_nb)]))
-
     def get_user_icon(
         self,
         username: Optional[bool] = None,

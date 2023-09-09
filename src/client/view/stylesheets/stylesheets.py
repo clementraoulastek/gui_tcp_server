@@ -5,13 +5,13 @@ scroll_bar_vertical_stylesheet = """
     }
     QScrollBar:vertical {
         background: transparent;
-        width: 4px;
+        width: 6px;
         margin-left: 0px;
     }
     QScrollBar::handle:vertical {
         background: #171717;
         min-height: 25px;
-        border-radius: 1.5px;
+        border-radius: 3px;
     }
     QScrollBar::add-line:vertical {
         border: none;

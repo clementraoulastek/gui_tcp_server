@@ -316,13 +316,13 @@ class MessageLayout(QHBoxLayout):
         if self.is_reacted:
             self.nb_react -= 1
             self.is_reacted = False
-            self.controller.api_controller.send_emot_react(
+            self.controller.send_emot_react(
                 Commands.RM_REACT, self.message_id, self.nb_react
             )
         else:
             self.nb_react += 1
             self.is_reacted = True
-            self.controller.api_controller.send_emot_react(
+            self.controller.send_emot_react(
                 Commands.ADD_REACT, self.message_id, self.nb_react
             )
 
