@@ -45,7 +45,7 @@ class LoginLayout(QHBoxLayout):
         self.main_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 12px;\
+            border-radius: 0px;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         self.addWidget(self.main_widget)

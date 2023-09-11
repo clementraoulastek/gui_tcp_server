@@ -62,7 +62,7 @@ class BodyScrollArea(QScrollArea):
         self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
-            border-radius: 12px;\
+            border-radius: 0px;\
             border: 1px solid {Color.MIDDLE_GREY.value}; "
         )
         upper_layout = QHBoxLayout()

@@ -24,11 +24,11 @@ class HeaderView:
         """
         # Header widget
         self.main_widget = QWidget()
-        widget_shadow(self.main_widget)
+
         self.main_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 12px;\
+            border-radius: 0px;\
             border: 1px solid;\
             border-color: {Color.MIDDLE_GREY.value};"
         )

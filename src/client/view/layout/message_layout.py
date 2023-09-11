@@ -17,7 +17,8 @@ from src.client.core.qt_core import (
     QColor,
     QPoint,
     QEvent,
-    QEnterEvent
+    QEnterEvent,
+    QTimer
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.tools.graphical_effects import widget_shadow
@@ -70,16 +71,20 @@ class MessageLayout(QHBoxLayout):
         self.nb_react = nb_react
         self.content = content
         
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        
+        
         # --- Main widget
-        main_widget = QWidget()
+        self.main_widget = QWidget()
              
-        self.addWidget(main_widget)
-        main_widget.setStyleSheet(
+        self.addWidget(self.main_widget)
+        self.main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             margin-bottom: 1px;\
             margin-right: 2px;"
         )
-        main_layout = QHBoxLayout(main_widget)
+        main_layout = QHBoxLayout(self.main_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         # --- Left widget
@@ -121,7 +126,6 @@ class MessageLayout(QHBoxLayout):
                 content=self.content, status=AvatarStatus.DM
             )
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            widget_shadow(icon_label)
 
         self.str_message = coming_msg["message"]
         sender = coming_msg["id"]
@@ -334,7 +338,7 @@ class MessageLayout(QHBoxLayout):
             self.react_widget.show()
             
     def add_reply(self):
-        self.controller.reply_to_message(self.message_id)
+        self.controller.reply_to_message(self)
 
     def update_react(self, react_nb: int):
         self.nb_react = react_nb

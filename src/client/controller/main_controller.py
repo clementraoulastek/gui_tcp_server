@@ -34,8 +34,7 @@ class MainController:
 
             message_model = None
             
-            if message_id:=re.findall("#(\w+)/", message):
-                message = message.replace(f"#{message_id[0]}/", "")
+            if message_id:=re.findall("#(\w+)/", self.ui.footer_widget.reply_label.text()):
                 message_id = int(message_id[0])
                 message_model = self.gui_controller.messages_dict[message_id]
             
@@ -45,9 +44,7 @@ class MainController:
                 receiver=receiver,
                 response_id=message_id or None
             )
-            if message_model:
-                message = message.replace(f"#{message_id}/", "")
-                
+ 
             self.gui_controller.diplay_self_message_on_gui(
                 self.ui.client.user_name, 
                 message,

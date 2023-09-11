@@ -44,6 +44,9 @@ class Icon(Enum):
     CLOSE_USERS = f"{ICON_PATH}/close_users.svg"
     CLOSE_DM = f"{ICON_PATH}/close_dm.svg"
     LINK = f"{ICON_PATH}/link.svg"
+    MESSAGE_DM = f"{ICON_PATH}/icon.svg"
+    USER_CONNECTED = f"{ICON_PATH}/user_connected.svg"
+    USER_DISCONNECTED = f"{ICON_PATH}/user_disconnected.svg"
 
 
 @unique

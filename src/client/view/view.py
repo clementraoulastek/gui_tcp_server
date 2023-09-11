@@ -94,8 +94,8 @@ class MainWindow(QMainWindow):
 
         # Main layout
         self.main_layout = QVBoxLayout(self.main_widget)
-        self.main_layout.setContentsMargins(5, 5, 5, 5)
-        self.main_layout.setSpacing(5)
+        self.main_layout.setContentsMargins(0, 0, 0, 5)
+        self.main_layout.setSpacing(0)
         
         # Header 
         self.header = HeaderView(self.controller)
@@ -108,6 +108,7 @@ class MainWindow(QMainWindow):
         
         # Core layout
         self.core_layout = QHBoxLayout(self.core_widget)
+        self.core_layout.setSpacing(0)
         self.core_layout.setContentsMargins(0, 0, 0, 0)
         
         # Update core layout
@@ -147,8 +148,8 @@ class MainWindow(QMainWindow):
         self.upper_widget.hide()
 
         self.upper_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
-            border-radius: 8px;\
+            f"background-color: {Color.DARK_GREY.value};\
+            border-radius: 0px;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
         widget_shadow(self.upper_widget)

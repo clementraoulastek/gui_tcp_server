@@ -433,9 +433,9 @@ class GuiController:
             
             def hover(event: QEvent, user_widget):
                 if isinstance(event, QEnterEvent):
-                    color = Color.DARK_GREY.value
+                    color = Color.GREY.value
                 else:
-                    color = "transparent"
+                    color = Color.DARK_GREY.value
                 style_ = """
                 QWidget {{
                 background-color: {color};
@@ -499,26 +499,26 @@ class GuiController:
                 continue
             # Layout
             user_widget = CustomQPushButton()
-            user_widget.setFixedHeight(50)
+            user_widget.setFixedHeight(60)
             style_ = """
             QWidget {{
             border-radius: 8px;
-            border: 1px solid {color};
+            border: 0px solid {color};
             }} 
             """
             
             def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
                 if isinstance(event, QEnterEvent):
-                    color = Color.DARK_GREY.value
+                    color = Color.GREY.value
                     user_pic.graphicsEffect().setEnabled(False)
                 else:
-                    color = Color.GREY.value
+                    color = Color.DARK_GREY.value
                     user_pic.graphicsEffect().setEnabled(True)
                 style_ = """
                 QWidget {{
                 background-color: {color};
                 border-radius: 8px;
-                border: 1px solid {color};
+                border: 0px solid {color};
                 }} 
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
@@ -672,7 +672,7 @@ class GuiController:
             self.ui.login_form = None
             self.clear()
             self.api_controller.get_user_icon(update_personal_avatar=update_avatar)
-            self.ui.left_nav_widget.message_label.hide()
+            # self.ui.left_nav_widget.message_label.hide()
             self.ui.left_nav_widget.info_disconnected_label.show()
             self.fetch_all_users_username()
             self.fetch_all_rooms()
@@ -773,7 +773,7 @@ class GuiController:
         self.clear_avatar("rooms_layout", self.ui.right_nav_widget)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
 
-        self.ui.left_nav_widget.message_label.show()
+        #self.ui.left_nav_widget.message_label.show()
         self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
 
@@ -823,14 +823,14 @@ class GuiController:
             
             def hover(event: QEvent, user_widget):
                 if isinstance(event, QEnterEvent):
-                    color = Color.DARK_GREY.value
+                    color = Color.GREY.value
                 else:
-                    color = "transparent"
+                    color = Color.DARK_GREY.value
                 style_ = """
                 QWidget {{
                 background-color: {color};
                 border-radius: 8px;
-                border: 1px solid transparent;
+                border: 0px solid transparent;
                 }} 
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
@@ -849,7 +849,7 @@ class GuiController:
             text-align: left;
             font-weight: bold;
             border-radius: 8px;
-            border: 1px solid transparent;
+            border: 0px solid transparent;
             }} 
             """
             btn.setStyleSheet(style_.format(color=Color.GREY.value))
@@ -961,15 +961,38 @@ class GuiController:
         room_layout.addWidget(room_btn)
         self.ui.right_nav_widget.rooms_layout.addWidget(room_widget)
         
-    def reply_to_message(self, message_id: int) -> None:
+    def reply_to_message(self, message: MessageLayout) -> None:
         """
         Reply to a message
 
         Args:
             message_id (int): message id
         """
-        self.ui.footer_widget.entry.setText(f"#{message_id}/")
+    
+        message.main_widget.setStyleSheet(
+            f"color: {Color.LIGHT_GREY.value};\
+            margin-bottom: 1px;\
+            margin-right: 2px;\
+            background-color: {Color.DARK_GREY.value};\
+            border: 0px"
+        )
+        
+        def callback(message: MessageLayout):
+            message.main_widget.setStyleSheet(
+                f"color: {Color.LIGHT_GREY.value};\
+                margin-bottom: 1px;\
+                margin-right: 2px;\
+                background-color: transparent;\
+                border: 0px"
+            )
+            self.ui.footer_widget.reply_label.setText("")
+            self.ui.footer_widget.reply_widget.setVisible(False)
+            
         self.ui.footer_widget.entry.setFocus()
+        self.ui.footer_widget.close_reply_button.clicked.connect(partial(callback, message))
+        self.ui.footer_widget.reply_label.setText(f"#{message.message_id}/")
+        self.ui.footer_widget.reply_widget.setVisible(True)
+
     
     def send_emot_react(self, cmd: Commands, messageId: int, react_nb: int) -> None:
         """

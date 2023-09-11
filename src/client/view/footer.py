@@ -6,7 +6,8 @@ from src.client.core.qt_core import (
     QColor,
     QLabel,
     Qt,
-    QLineEdit
+    QLineEdit,
+    QSizePolicy
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
@@ -92,8 +93,36 @@ class FooterView:
         self.entry = CustomQLineEdit(place_holder_text="Please login")
         self.entry.setTextMargins(50, 0, 0, 0)
         self.entry.returnPressed.connect(self.controller.send_message_to_server)
+        
+        self.reply_widget = QWidget()
+        self.reply_widget.setFixedHeight(40)
+        widget_shadow(self.reply_widget)
+        self.reply_widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.reply_widget.setStyleSheet(
+            f"background-color: {Color.GREY.value};\
+            color: {Color.LIGHT_GREY.value};\
+            border-radius: 12px;\
+            border: 1px solid {Color.MIDDLE_GREY.value};"
+        )
+        self.reply_layout = QHBoxLayout(self.reply_widget)
+        self.reply_layout.setSpacing(5)
+        self.reply_layout.setContentsMargins(5, 1, 5, 1)
+        self.reply_label = QLabel("")
+        self.reply_label.setStyleSheet("border: none;")
+        self.reply_label.setContentsMargins(0, 0, 0, 0)
+        self.close_reply_button = CustomQPushButton("X", radius=8, border_size=1)
+        self.close_reply_button.setFixedHeight(20)
+        widget_shadow(self.close_reply_button)
+        self.close_reply_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        
+        self.reply_layout.addWidget(self.reply_label)
+        self.reply_layout.addWidget(self.close_reply_button)
+        self.reply_widget.setVisible(False)
+        
         self.send_layout.addWidget(self.user_info_widget)
+        self.send_layout.addWidget(self.reply_widget)
         self.send_layout.addWidget(self.entry)
+
         
         pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, Color.LIGHT_GREY.value))
         send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
