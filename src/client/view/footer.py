@@ -50,7 +50,8 @@ class FooterView:
             color: {Color.LIGHT_GREY.value};\
             border-radius: 12px;\
             border: 1px solid {Color.MIDDLE_GREY.value};\
-            margin-bottom: 2px;"
+            margin-bottom: 2px;\
+            margin-left: 2px"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
 
@@ -108,7 +109,7 @@ class FooterView:
         self.reply_layout.setSpacing(5)
         self.reply_layout.setContentsMargins(5, 1, 5, 1)
         self.reply_label = QLabel("")
-        self.reply_label.setStyleSheet("border: none;")
+        self.reply_label.setStyleSheet("border: none;font-weight: bold;")
         self.reply_label.setContentsMargins(0, 0, 0, 0)
         self.close_reply_button = CustomQPushButton("X", radius=8, border_size=1)
         self.close_reply_button.setFixedHeight(20)

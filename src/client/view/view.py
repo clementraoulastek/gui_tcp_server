@@ -90,6 +90,7 @@ class MainWindow(QMainWindow):
         """
         # Main widget
         self.main_widget = QWidget()
+        self.main_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
         self.setCentralWidget(self.main_widget)
 
         # Main layout
@@ -150,11 +151,11 @@ class MainWindow(QMainWindow):
         self.upper_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};\
             border-radius: 0px;\
-            border: 1px solid {Color.MIDDLE_GREY.value};"
+            border: 0px solid {Color.MIDDLE_GREY.value};\
+            margin-top: 1px;"
         )
-        widget_shadow(self.upper_widget)
         upper_layout = QHBoxLayout(self.upper_widget)
-        upper_layout.setAlignment(Qt.AlignLeft)
+        upper_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         upper_layout.setContentsMargins(5, 5, 5, 5)
 
         self.frame_title = QWidget()
@@ -163,7 +164,7 @@ class MainWindow(QMainWindow):
             f"color: {Color.LIGHT_GREY.value};\
             background-color: transparent;\
             font-weight: bold;\
-            border: none"
+            border: 0px"
         )
         self.frame_layout = QHBoxLayout(self.frame_title)
         self.frame_layout.setContentsMargins(10, 1, 10, 1)

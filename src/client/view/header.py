@@ -9,7 +9,6 @@ from src.client.core.qt_core import (
 )
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.constant import DEFAULT_CLIENT_NAME
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
@@ -29,7 +28,7 @@ class HeaderView:
             f"background-color: {Color.GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 0px;\
-            border: 1px solid;\
+            border: 0px solid;\
             border-color: {Color.MIDDLE_GREY.value};"
         )
         
@@ -68,7 +67,6 @@ class HeaderView:
         header_layout.addWidget(logo_widget)
         
 
-        
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
         self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value))
         self.close_dm = QIcon(QIcon_from_svg(Icon.CLOSE_DM.value))

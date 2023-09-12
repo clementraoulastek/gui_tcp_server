@@ -146,7 +146,7 @@ class MessageLayout(QHBoxLayout):
         self.sender_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         def hover(event: QEvent, user_widget):
-            color = Color.GREY.value if isinstance(event, QEnterEvent) else "transparent"
+            color = Color.DARK_GREY.value if isinstance(event, QEnterEvent) else "transparent"
             style_ = """
             QWidget {{
             font-weight: bold;

@@ -499,7 +499,7 @@ class GuiController:
                 continue
             # Layout
             user_widget = CustomQPushButton()
-            user_widget.setFixedHeight(60)
+            user_widget.setFixedHeight(50)
             style_ = """
             QWidget {{
             border-radius: 8px;
@@ -931,9 +931,9 @@ class GuiController:
         
         def hover(event: QEvent, user_widget):
             if isinstance(event, QEnterEvent):
-                color = Color.DARK_GREY.value
+                color = Color.GREY.value
             else:
-                color = "transparent"
+                color = Color.DARK_GREY.value
             style_ = """
             QWidget {{
             font-weight: bold;
@@ -985,12 +985,15 @@ class GuiController:
                 background-color: transparent;\
                 border: 0px"
             )
+            global_variables.reply_id = ""
             self.ui.footer_widget.reply_label.setText("")
             self.ui.footer_widget.reply_widget.setVisible(False)
             
         self.ui.footer_widget.entry.setFocus()
         self.ui.footer_widget.close_reply_button.clicked.connect(partial(callback, message))
-        self.ui.footer_widget.reply_label.setText(f"#{message.message_id}/")
+        global_variables.reply_id = f"#{message.message_id}/"
+        
+        self.ui.footer_widget.reply_label.setText(f"Reply to: {message.username_label}")
         self.ui.footer_widget.reply_widget.setVisible(True)
 
     

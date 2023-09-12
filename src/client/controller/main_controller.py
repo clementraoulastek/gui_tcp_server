@@ -4,6 +4,7 @@ from src.client.controller.tcp_controller import TcpServerController
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 import re
+import src.client.controller.global_variables as global_variables
 
 class MainController:
     def __init__(self, ui) -> None:
@@ -34,7 +35,7 @@ class MainController:
 
             message_model = None
             
-            if message_id:=re.findall("#(\w+)/", self.ui.footer_widget.reply_label.text()):
+            if message_id:=re.findall("#(\w+)/", global_variables.reply_id):
                 message_id = int(message_id[0])
                 message_model = self.gui_controller.messages_dict[message_id]
             

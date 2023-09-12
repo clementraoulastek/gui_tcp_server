@@ -48,9 +48,9 @@ class RightNavView:
             f"background-color: {Color.DARK_GREY.value};\
             color: {Color.LIGHT_GREY.value};\
             border-radius: 0px;\
-            border: 1px solid;\
+            border: 0px solid;\
             border-color: {Color.MIDDLE_GREY.value};\
-            margin-bottom: 2px"
+            margin-bottom: 0px"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
         self.direct_message_layout.setSpacing(5)
@@ -61,67 +61,42 @@ class RightNavView:
         self.rooms_layout = QVBoxLayout(self.rooms_widget)
         self.rooms_layout.setContentsMargins(0, 0, 0, 0)
         
-        rooms_widget = QWidget()
-        self._update_label_style(rooms_widget, is_top_label=True)
-        rooms_layout = QHBoxLayout(rooms_widget)
-        rooms_layout.setContentsMargins(10, 0, 0, 0)
         rooms_label = QLabel("Rooms")
-        rooms_label.setStyleSheet("border: none;")
+        self._update_label_style(rooms_label, is_top_label=False)
         rooms_label.setContentsMargins(0, 0, 0, 0)
-        rooms_label.setAlignment(Qt.AlignLeft)
-        
-        rooms_icon = QLabel()
-        rooms_icon.setStyleSheet("border: 0px")
-        rooms_icon.setAlignment(Qt.AlignLeft)
-        
-        QIcon = QIcon_from_svg(Icon.ROOM.value).pixmap(20, 20)
-        rooms_icon.setPixmap(QIcon)
-        
-        widget_shadow(rooms_widget)
+        rooms_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        
-        rooms_layout.addWidget(rooms_icon)
-        rooms_layout.addWidget(rooms_label)
-
-        dm_widget = QWidget()
-        dm_widget.setStyleSheet("margin-left: 0px")
-        widget_shadow(dm_widget)
-        self._update_label_style(dm_widget, is_top_label=False)
-        dm_layout = QHBoxLayout(dm_widget)
-        dm_layout.setContentsMargins(0, 0, 0, 0)
+    
         dm_label = QLabel("Messages")
-        dm_label.setStyleSheet("border: 0px;margin-left: 0px")
-        dm_label.setAlignment(Qt.AlignLeft)
+        self._update_label_style(dm_label, is_top_label=True)
+        dm_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         dm_icon = QLabel()
         dm_icon.setStyleSheet("border: 0px")
-        dm_icon.setAlignment(Qt.AlignLeft)
+        dm_icon.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         
         dm_QIcon = QIcon_from_svg(Icon.MESSAGE_DM.value).pixmap(20, 20)
         dm_icon.setPixmap(dm_QIcon)
-        
-        dm_layout.addWidget(dm_icon)
-        dm_layout.addWidget(dm_label)
 
         self.room_list: Dict[str, QWidget] = {}
         
         # Adding widgets to the main layout
-        self.direct_message_layout.addWidget(rooms_widget)
+        self.direct_message_layout.addWidget(rooms_label)
         self.direct_message_layout.addWidget(self.rooms_widget)
-        self.direct_message_layout.addWidget(dm_widget)
+        self.direct_message_layout.addWidget(dm_label)
 
         self.scroll_area_dm.setWidget(self.right_nav_widget)
 
     def _update_label_style(self, widget: QWidget, is_top_label: bool = False):
-        widget.setContentsMargins(15, 5, 15, 5)
         style_ = f"font-weight: bold;\
-            color: {Color.LIGHT_GREY.value};\
-            background-color: transparent;\
-            border: 0px;\
-            border-radius: 6px;\
-            margin-bottom: 10px;"
+        color: {Color.LIGHT_GREY.value};\
+        background-color: {Color.GREY.value};\
+        border: 0px solid;\
+        border-radius: 6px;\
+        margin-bottom: 0px;\
+        margin-top: 0px;"
         if not is_top_label:
-            style_ += "margin-top: 10px"
+            style_ += "margin-top: 0px"
             
         widget.setStyleSheet(
             style_

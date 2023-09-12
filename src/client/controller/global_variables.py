@@ -17,3 +17,5 @@ with cst_lock:
 
 with cst_lock:
     user_disconnect: dict[str, List[Union[str, bool]]] = {}
+
+reply_id: str = ""
