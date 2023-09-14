@@ -396,7 +396,8 @@ class GuiController:
         # Remove user's icon disconnected from the disconnected layout
         if id_ in user_disconnect:
             self.clear_avatar("user_offline", self.ui.left_nav_widget, f"{id_}_layout_disconnected")
-            user_disconnect.pop(id_)
+            with global_variables.user_disconnect_lock:
+                user_disconnect.pop(id_)
             
         # Add the user icon to the connected layout
         if id_ not in self.ui.users_connected.keys():
@@ -494,93 +495,94 @@ class GuiController:
         """
         Callback to update gui with input disconnected avatar
         """
-        for user, data in global_variables.user_disconnect.items():
-            if data[1] == True:
-                continue
-            # Layout
-            user_widget = CustomQPushButton()
-            user_widget.setFixedHeight(50)
-            style_ = """
-            QWidget {{
-            border-radius: 8px;
-            border: 0px solid {color};
-            }} 
-            """
-            
-            def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
-                if isinstance(event, QEnterEvent):
-                    color = Color.GREY.value
-                    user_pic.graphicsEffect().setEnabled(False)
-                else:
-                    color = Color.DARK_GREY.value
-                    user_pic.graphicsEffect().setEnabled(True)
+        with global_variables.user_disconnect_lock:
+            for user, data in global_variables.user_disconnect.items():
+                if data[1] == True:
+                    continue
+                # Layout
+                user_widget = CustomQPushButton()
+                user_widget.setFixedHeight(50)
                 style_ = """
                 QWidget {{
-                background-color: {color};
                 border-radius: 8px;
                 border: 0px solid {color};
                 }} 
                 """
-                user_widget.setStyleSheet(style_.format(color=color))
-                user_widget.update()
-            
-            user_widget.setStyleSheet(style_.format(color=Color.GREY.value))
-            user_widget.setContentsMargins(0, 0, 0, 0)
-            
-            user_layout = QHBoxLayout(user_widget)
-            user_layout.setSpacing(10)
-            user_layout.setContentsMargins(0, 0, 0, 0)
-            username = user
-            content = data[0]
-            user_layout.setObjectName(f"{username}_layout_disconnected")
-            
-            # Create avatar label
-            user_pic, dm_pic = AvatarLabel(
-                content=content, status=AvatarStatus.DEACTIVATED
-            ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
-            
-            user_widget.enterEvent = partial(hover, user_widget=user_widget, user_pic=user_pic)
-            user_widget.leaveEvent = partial(hover, user_widget=user_widget, user_pic=user_pic)
-            
-            # Update picture
-            user_pic.set_opacity(0.2)
-            user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            user_pic.setStyleSheet(
-                f"border: 0px solid;\
-                border-color: {Color.GREY.value};"
+                
+                def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
+                    if isinstance(event, QEnterEvent):
+                        color = Color.GREY.value
+                        user_pic.graphicsEffect().setEnabled(False)
+                    else:
+                        color = Color.DARK_GREY.value
+                        user_pic.graphicsEffect().setEnabled(True)
+                    style_ = """
+                    QWidget {{
+                    background-color: {color};
+                    border-radius: 8px;
+                    border: 0px solid {color};
+                    }} 
+                    """
+                    user_widget.setStyleSheet(style_.format(color=color))
+                    user_widget.update()
+                
+                user_widget.setStyleSheet(style_.format(color=Color.GREY.value))
+                user_widget.setContentsMargins(0, 0, 0, 0)
+                
+                user_layout = QHBoxLayout(user_widget)
+                user_layout.setSpacing(10)
+                user_layout.setContentsMargins(0, 0, 0, 0)
+                username = user
+                content = data[0]
+                user_layout.setObjectName(f"{username}_layout_disconnected")
+                
+                # Create avatar label
+                user_pic, dm_pic = AvatarLabel(
+                    content=content, status=AvatarStatus.DEACTIVATED
+                ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                
+                user_widget.enterEvent = partial(hover, user_widget=user_widget, user_pic=user_pic)
+                user_widget.leaveEvent = partial(hover, user_widget=user_widget, user_pic=user_pic)
+                
+                # Update picture
+                user_pic.set_opacity(0.2)
+                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                user_pic.setStyleSheet(
+                    f"border: 0px solid;\
+                    border-color: {Color.GREY.value};"
+                )
+                
+                # Avoid gui troubles with bigger username
+                username_label = check_str_len(username)
+                user_name = QLabel(username_label)
+                user_name.setContentsMargins(0, 0, 0, 0)
+                
+                # Add user menu
+                user_widget.clicked.connect(
+                    partial(self.add_gui_for_mp_layout, username, dm_pic, True)
+                )
+                style_ = """
+                QLabel {{
+                text-align: left;
+                font-weight: bold;
+                border-radius: 8px;
+                border: 1px solid;
+                border-color: {color};
+                }}
+                """
+                user_name.setStyleSheet(style_.format(color="transparent"))
+                
+                # Add widgets to the layout
+                user_layout.addWidget(user_pic)
+                user_layout.addWidget(user_name)
+                self.ui.left_nav_widget.user_offline.addWidget(user_widget)
+                
+                global_variables.user_disconnect[user] = [data[0], True]
+                
+            self.ui.left_nav_widget.info_disconnected_label.setText(
+                f"Users offline   |   {len(global_variables.user_disconnect)}"
             )
-            
-            # Avoid gui troubles with bigger username
-            username_label = check_str_len(username)
-            user_name = QLabel(username_label)
-            user_name.setContentsMargins(0, 0, 0, 0)
-            
-            # Add user menu
-            user_widget.clicked.connect(
-                partial(self.add_gui_for_mp_layout, username, dm_pic, True)
-            )
-            style_ = """
-            QLabel {{
-            text-align: left;
-            font-weight: bold;
-            border-radius: 8px;
-            border: 1px solid;
-            border-color: {color};
-            }}
-            """
-            user_name.setStyleSheet(style_.format(color="transparent"))
-            
-            # Add widgets to the layout
-            user_layout.addWidget(user_pic)
-            user_layout.addWidget(user_name)
-            self.ui.left_nav_widget.user_offline.addWidget(user_widget)
-            
-            global_variables.user_disconnect[user] = [data[0], True]
-            
-        self.ui.left_nav_widget.info_disconnected_label.setText(
-            f"Users offline   |   {len(global_variables.user_disconnect)}"
-        )
 
     def clear(self) -> None:
         """
@@ -614,7 +616,9 @@ class GuiController:
                     and layout_name == layout.objectName()
                     or not layout_name
                 ):
+                    layout.removeWidget(widget)
                     widget.setParent(None)
+                    widget.deleteLater()
 
         getattr(parent or self.ui, parent_layout).update()
 
@@ -784,7 +788,7 @@ class GuiController:
         Update input widgets
         """
         if self.ui.client.is_connected:
-            self._set_buttons_status(False, "Enter your message")
+            self._set_buttons_status(False, "Enter your message to home")
             username_label = check_str_len(self.ui.client.user_name)
             self.ui.footer_widget.user_name.setText(username_label)
         else:
@@ -888,6 +892,7 @@ class GuiController:
         self.ui.body_layout.insertWidget(index, widget)
         
         self.ui.frame_name.setText(f"{room_name}")
+        self.ui.footer_widget.entry.setPlaceholderText(f"Enter your message to {room_name}")
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
         self.ui.scroll_area.scrollToBottom()
@@ -974,7 +979,7 @@ class GuiController:
             margin-bottom: 1px;\
             margin-right: 2px;\
             background-color: {Color.DARK_GREY.value};\
-            border: 0px"
+            border: 0px;"
         )
         
         def callback(message: MessageLayout):
@@ -986,15 +991,13 @@ class GuiController:
                 border: 0px"
             )
             global_variables.reply_id = ""
-            self.ui.footer_widget.reply_label.setText("")
-            self.ui.footer_widget.reply_widget.setVisible(False)
+            self.ui.footer_widget.reply_entry_action.setVisible(False)
             
         self.ui.footer_widget.entry.setFocus()
-        self.ui.footer_widget.close_reply_button.clicked.connect(partial(callback, message))
+        self.ui.footer_widget.reply_entry_action.triggered.connect(partial(callback, message))
         global_variables.reply_id = f"#{message.message_id}/"
         
-        self.ui.footer_widget.reply_label.setText(f"Reply to: {message.username_label}")
-        self.ui.footer_widget.reply_widget.setVisible(True)
+        self.ui.footer_widget.reply_entry_action.setVisible(True)
 
     
     def send_emot_react(self, cmd: Commands, messageId: int, react_nb: int) -> None:

@@ -43,12 +43,30 @@ class BodyScrollArea(QScrollArea):
         )
         self.setObjectName(name)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.is_auto_scroll_ = True
+        self.verticalScrollBar().actionTriggered.connect(self.is_auto_scroll)
+        self.verticalScrollBar().rangeChanged.connect(self.update_scrollbar)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
 
         self.scroll_widget.setLayout(self.main_layout)
         self.setWidget(self.scroll_widget)
 
+    def is_auto_scroll(self):
+        """
+        Check if the scrollbar is at the bottom
+        """
+        self.is_auto_scroll_ = (
+            self.verticalScrollBar().value() == self.verticalScrollBar().maximum()
+        )
+            
+    def update_scrollbar(self):
+        """
+        If the scrollbar is at the bottom, update it to the bottom
+        """
+        if self.is_auto_scroll_:
+            self.scrollToBottom()
+        
     def scrollToBottom(self):
         """
         Update the scrollbar vertical position to the bottom
