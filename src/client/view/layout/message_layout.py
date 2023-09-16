@@ -41,12 +41,12 @@ class Contener(QFrame):
 
     def enterEvent(self, event) -> None:
         if button_list := self.findChildren(CustomQPushButton):
-            for button in button_list:
+            for button in button_list[1:]:
                 button.show()
 
     def leaveEvent(self, event) -> None:
         if button_list := self.findChildren(CustomQPushButton):
-            for button in button_list:
+            for button in button_list[1:]:
                 button.hide()
 
 
@@ -103,14 +103,13 @@ class MessageLayout(QHBoxLayout):
         # --- Right widget
         right_widget = Contener()
         right_widget.setContentsMargins(0, 0, 0, 0)
-        shadow = self.widget_shadow(right_widget)
         right_widget.setStyleSheet(
             f"background-color: transparent;\
             border-radius: 0px;"
         )
         right_layout = QVBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(10)
+        right_layout.setSpacing(5)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
@@ -132,18 +131,10 @@ class MessageLayout(QHBoxLayout):
 
         self.username_label = check_str_len(sender)
         
-        if "admin" in self.username_label: # TODO: must be a column for user tab
-            crown_icon = QIcon(QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)).pixmap(QSize(15, 15))
-            sender_icon = QLabel()
-            sender_icon.setPixmap(crown_icon)
-            self.left_layout.addWidget(sender_icon, alignment=Qt.AlignCenter)
-        else:
-            icon_label.setStyleSheet("padding-top: 15px;")
-
         self.left_layout.addWidget(icon_label)
 
         self.sender_btn = CustomQPushButton(self.username_label)
-        self.sender_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.sender_btn.setFixedHeight(30)
 
         def hover(event: QEvent, user_widget):
             color = Color.DARK_GREY.value if isinstance(event, QEnterEvent) else "transparent"
@@ -161,7 +152,7 @@ class MessageLayout(QHBoxLayout):
             self.sender_btn.clicked.connect(
                 functools.partial(self.add_dm_layout, copy_icon)
             )
-        self.left_layout.addWidget(self.sender_btn)
+
 
         if message_id and sender != self.controller.ui.client.user_name:
             self.sender_btn.enterEvent = functools.partial(hover, user_widget=self.sender_btn)
@@ -185,6 +176,7 @@ class MessageLayout(QHBoxLayout):
             self.event_button = QWidget()
             self.event_button.setContentsMargins(0, 0, 0, 0)
             self.event_layout = QHBoxLayout(self.event_button)
+            self.event_layout.setSpacing(0)
             self.event_layout.setContentsMargins(0, 0, 0, 0)
             self.react_buttton = CustomQPushButton(
                 "", bg_color=Color.GREY.value, radius=4
@@ -193,7 +185,6 @@ class MessageLayout(QHBoxLayout):
             retain.setRetainSizeWhenHidden(True)
             self.react_buttton.setSizePolicy(retain)
             
-            widget_shadow(self.react_buttton)
             self.react_buttton.clicked.connect(self.add_react)
             self.react_buttton.setFixedHeight(20)
             self.react_buttton.setFixedWidth(20)
@@ -209,7 +200,6 @@ class MessageLayout(QHBoxLayout):
             )
             
             self.reply_button.clicked.connect(self.add_reply)
-            widget_shadow(self.reply_button)
             self.reply_button.setFixedSize(100, 20)
             response_icon = QIcon(QIcon_from_svg(Icon.REPLY.value, color=Color.WHITE.value))
             self.reply_button.setIcon(response_icon)
@@ -219,12 +209,11 @@ class MessageLayout(QHBoxLayout):
 
         # -------------------------------- React widget ------------------------------- #
         react_layout = QHBoxLayout()
-        react_layout.setSpacing(5)
+        react_layout.setSpacing(0)
         react_layout.setContentsMargins(3, 2, 3, 2)
         self.react_widget = QWidget()
         self.react_widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
-        shadow = self.widget_shadow(self.react_widget)
         self.react_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             background-color: {Color.DARK_GREY.value};\
@@ -232,7 +221,6 @@ class MessageLayout(QHBoxLayout):
             font-weight: bold;\
             border: 1px solid {Color.MIDDLE_GREY.value};"
         )
-        self.react_widget.setGraphicsEffect(shadow)
         self.react_widget.setLayout(react_layout)
         self.react_emot = AvatarLabel(
             content=Icon.SMILEY.value,
@@ -251,7 +239,14 @@ class MessageLayout(QHBoxLayout):
         react_layout.addWidget(self.react_nb)
         # ---------------------------------------------------------------------------- #
         top_layout = QHBoxLayout()
+        top_layout.setContentsMargins(0, 0, 0, 0)
         top_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        
+        if "admin" in self.username_label: # TODO: must be a column for user tab
+            crown_icon = QIcon(QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)).pixmap(QSize(15, 15))
+            sender_icon = QLabel()
+            sender_icon.setPixmap(crown_icon)
+            top_layout.addWidget(sender_icon)
         
         if not date:
             date_time = datetime.datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
@@ -264,9 +259,11 @@ class MessageLayout(QHBoxLayout):
         date_label = QLabel(date_time)
         date_label.setContentsMargins(0, 0, 0, 0)
         date_label.setStyleSheet(
-            "border: 0px;\
-            font-size: 10px;"
+            f"border: 0px;\
+            font-size: 8px;\
+            color: {Color.LIGHT_GREY.value}"
         )
+        top_layout.addWidget(self.sender_btn)
         top_layout.addWidget(date_label)
             
         message_label = QLabel(self.str_message)
@@ -280,6 +277,7 @@ class MessageLayout(QHBoxLayout):
         
         # Add response model
         if response_model:
+            icon_label.setStyleSheet("padding-top: 30px;")
             response_layout = QHBoxLayout()
             response_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             response_layout.setSpacing(5)
@@ -307,6 +305,10 @@ class MessageLayout(QHBoxLayout):
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_message)
             right_layout.addLayout(response_layout)
+        else:
+            icon_label.setStyleSheet("padding-top: 10px;")
+
+
         
         right_layout.addLayout(top_layout)
         right_layout.addWidget(message_label)

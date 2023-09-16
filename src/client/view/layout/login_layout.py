@@ -146,7 +146,6 @@ class LoginLayout(QHBoxLayout):
 
     def create_button_widgets(self):
         self.send_button = CustomQPushButton(" Login")
-        self.send_button.widget_shadow()
         self.send_button.setFixedWidth(120)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)

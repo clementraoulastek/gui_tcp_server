@@ -66,9 +66,7 @@ class AvatarLabel(QLabel):
         if status == AvatarStatus.ACTIVATED:
             brush_color = self._update_circle_color(74, 160, 50)
         elif status == AvatarStatus.DEACTIVATED:
-            painter.end()
-            self.setPixmap(icon_pixmap)
-            return
+            brush_color = self._update_circle_color(154, 152, 147)
         elif status == AvatarStatus.DM:
             brush_color = self._update_circle_color(255, 0, 0)
         self.__create_ellipse(painter, brush_color, icon_pixmap)

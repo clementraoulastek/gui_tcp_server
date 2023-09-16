@@ -47,6 +47,7 @@ class Icon(Enum):
     MESSAGE_DM = f"{ICON_PATH}/icon.svg"
     USER_CONNECTED = f"{ICON_PATH}/user_connected.svg"
     USER_DISCONNECTED = f"{ICON_PATH}/user_disconnected.svg"
+    CLOSE = f"{ICON_PATH}/close.svg"
 
 
 @unique
@@ -55,6 +56,7 @@ class Color(Enum):
     MIDDLE_GREY = "#2A2C2F"
     LIGHT_GREY = "#B6BAC0"
     DARK_GREY = "#313338"
+    LIGHT_BLACK = "#232328"
     WHITE = "#FFFFFF"
     BLUE = "#4986F7"
     RED = "#811919"
@@ -126,8 +128,8 @@ def QIcon_from_svg(svg_name, color=Color.WHITE.value):
 
 def check_str_len(intput_str: str) -> str:
     intput_str.capitalize()
-    LEN = 10
-    return f"{intput_str[:6]}.." if len(intput_str) >= LEN else intput_str
+    LEN = 15
+    return f"{intput_str[:13]}.." if len(intput_str) >= LEN else intput_str
 
 def resize_picture(path: str, size: Optional[Tuple] = (520, 520)) -> bytes:
     """

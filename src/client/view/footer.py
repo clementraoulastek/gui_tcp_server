@@ -2,19 +2,16 @@ from src.client.core.qt_core import (
     QIcon,
     QWidget,
     QHBoxLayout,
-    QGraphicsDropShadowEffect,
-    QColor,
+    QVBoxLayout,
     QLabel,
     Qt,
     QLineEdit,
-    QSizePolicy
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.tools.constant import SOFT_VERSION
-from src.tools.utils import Color, Icon, QIcon_from_svg
-from src.client.view.tools.graphical_effects import widget_shadow
+from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
 
 class FooterView:
@@ -27,9 +24,9 @@ class FooterView:
         """
         Update the footer GUI
         """
-        self.logout_button = CustomQPushButton(" Logout")
-        widget_shadow(self.logout_button)
-
+        self.logout_button = CustomQPushButton()
+        self.logout_button.setFixedHeight(30)
+        self.logout_button.setFixedWidth(30)
         self.logout_button.clicked.connect(self.controller.logout)
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
         self.logout_button.setIcon(self.logout_icon)
@@ -43,56 +40,61 @@ class FooterView:
 
         # --- Client information
         self.user_info_widget = QWidget()
+        self.user_info_widget.setFixedWidth(250)
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
+            f"background-color: {Color.LIGHT_BLACK.value};\
             color: {Color.LIGHT_GREY.value};\
-            border-radius: 12px;\
-            border: 1px solid {Color.MIDDLE_GREY.value};\
-            margin-bottom: 2px;\
-            margin-left: 2px"
+            border-radius: 0px;\
+            border: 0px;"
         )
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
 
         self.user_widget = QWidget()
-        shadow = QGraphicsDropShadowEffect(self.user_widget)
-        shadow.setColor(QColor(0, 0, 0, 150))
-        shadow.setOffset(0, 2)
-        shadow.setBlurRadius(1)
-        self.user_widget.setGraphicsEffect(shadow)
-        shadow.update()
-
-        self.user_widget.setStyleSheet(
-            f"border: 1px solid {Color.MIDDLE_GREY.value};"
-        )
         self.custom_user_button = CustomQPushButton("")
-        widget_shadow(self.custom_user_button)
+        self.custom_user_button.setFixedHeight(30)
+        self.custom_user_button.setFixedWidth(30)
 
         self.user_picture = AvatarLabel(content="")
         self.user_picture.setStyleSheet("border: 0px")
+        
+        user_widget_status = QWidget()
+        user_widget_status.setContentsMargins(0, 0, 0, 0)
+        user_widget_status_layout = QVBoxLayout(user_widget_status)
+        user_widget_status_layout.setSpacing(0)
+        user_widget_status_layout.setContentsMargins(10, 0, 0, 0)
+        
         self.user_name = QLabel("User disconnected")
         self.user_name.setStyleSheet(
             "font-weight: bold;\
             border: none;"
         )
+        user_status = QLabel("Connected")
+        user_status.setStyleSheet(
+            "font-size: 10px;\
+            border: none;"
+        )
+        user_widget_status_layout.addWidget(self.user_name)
+        user_widget_status_layout.addWidget(user_status)
 
         self.custom_user_button.setIcon(self.user_icon)
-        self.custom_user_button.setFixedWidth(50)
         self.custom_user_button.clicked.connect(self.controller.update_user_icon)
         self.custom_user_button.setEnabled(False)
 
         avatar_layout = QHBoxLayout(self.user_widget)
+        avatar_layout.setSpacing(5)
 
         avatar_layout.addWidget(self.user_picture)
-        avatar_layout.addWidget(self.user_name)
+        avatar_layout.addWidget(user_widget_status, stretch=1, alignment=Qt.AlignmentFlag.AlignLeft)
         avatar_layout.addWidget(self.custom_user_button)
         avatar_layout.addWidget(self.logout_button)
 
         self.client_information_dashboard_layout.addWidget(self.user_widget)
 
         self.entry = CustomQLineEdit(place_holder_text="Please login")
-        self.entry.setTextMargins(50, 0, 0, 0)
+        self.entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.entry.setTextMargins(0, 0, 0, 0)
         self.entry.returnPressed.connect(self.controller.send_message_to_server)
         
         self.send_layout.addWidget(self.user_info_widget)
@@ -100,8 +102,8 @@ class FooterView:
 
         
         pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, Color.LIGHT_GREY.value))
-        send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
-        reply_icon = QIcon(QIcon_from_svg(Icon.REPLY_ROTATED.value))
+        send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, Color.LIGHT_GREY.value))
+        reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, Color.LIGHT_GREY.value))
         
         entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)
         self.entry.addAction(pipe_icon, QLineEdit.TrailingPosition)
@@ -109,14 +111,24 @@ class FooterView:
         
         self.reply_entry_action = self.entry.addAction(reply_icon, QLineEdit.ActionPosition.LeadingPosition)
         self.reply_entry_action.setVisible(False)
-
-        version_widget = QLabel(f"Alpha, Version: {SOFT_VERSION}")
-        version_widget.setStyleSheet(
-            f"font-style: italic; color: {Color.LIGHT_GREY.value}"
-        )
-        version_widget.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        
+        version_widget = QWidget()
+        version_layout = QHBoxLayout(version_widget)
+        version_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        version_layout.setSpacing(10)
         version_widget.setMinimumWidth(self.version_widget_width)
+        version_widget.setStyleSheet(
+            f"font-style: italic;\
+            background-color: {Color.LIGHT_BLACK.value};\
+            color: {Color.LIGHT_GREY.value}"
+        )
 
-        #self.send_layout.addWidget(self.send_button)
+        
+        icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
+        value = QLabel(f"Alpha, Version: {SOFT_VERSION}")
+
+        version_layout.addWidget(icon_soft)
+        version_layout.addWidget(value)
+        
         self.send_layout.addWidget(version_widget)
         

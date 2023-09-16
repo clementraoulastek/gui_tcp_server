@@ -7,7 +7,6 @@ from src.client.core.qt_core import (
     QHBoxLayout,
     QSizePolicy,
 )
-from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 
@@ -29,7 +28,7 @@ class LeftNavView():
         self.scroll_area_avatar.setFixedWidth(self.width)
 
         self.scroll_widget_avatar = QWidget()
-        widget_shadow(self.scroll_widget_avatar)
+
         self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding
@@ -61,13 +60,13 @@ class LeftNavView():
         self.scroll_area_avatar.setWidget(self.scroll_widget_avatar)
         
         self.info_label = QLabel("")
-        self.info_label.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
+        self.info_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.info_label.setContentsMargins(0, 0, 0, 0)
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.GREY.value};\
+            background-color: transparent;\
             border-radius: 6px;\
             margin-bottom: 0px;\
             margin-left: 0px;\
@@ -78,18 +77,17 @@ class LeftNavView():
         self.user_inline_layout.addLayout(self.user_inline)
 
         self.info_disconnected_label = QLabel("")
-        self.info_disconnected_label .setAlignment(Qt.AlignCenter)
+        self.info_disconnected_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.info_disconnected_label.setContentsMargins(0, 0, 0, 0)
         disconnected_label = QLabel()
         disconnected_icon = QIcon_from_svg(Icon.USER_DISCONNECTED.value).pixmap(20, 20)
         disconnected_label.setPixmap(disconnected_icon)
         
         self.info_disconnected_label.hide()
-        self.info_disconnected_label.setAlignment(Qt.AlignCenter)
         self.info_disconnected_label.setStyleSheet(
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.GREY.value};\
+            background-color: transparent;\
             border-radius: 6px;\
             margin-bottom: 0px;\
             margin-top: 0px;\

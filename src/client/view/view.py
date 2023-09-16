@@ -23,13 +23,11 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QWidget,
     QSizePolicy,
-    QGraphicsDropShadowEffect,
     QColor,
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
-from src.client.view.tools.graphical_effects import widget_shadow
 
 class QtGui:
     def __init__(self, title):
@@ -113,12 +111,12 @@ class MainWindow(QMainWindow):
         self.core_layout.setContentsMargins(0, 0, 0, 0)
         
         # Update core layout
-        self.left_nav_widget = LeftNavView(width=180)
+        self.left_nav_widget = LeftNavView(width=250)
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
         
         self.set_body_gui()
         
-        self.right_nav_widget = RightNavView(self.controller, width=180)
+        self.right_nav_widget = RightNavView(self.controller, width=250)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
         
         self.main_layout.addWidget(self.core_widget)

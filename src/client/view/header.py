@@ -80,7 +80,6 @@ class HeaderView:
 
         # --- Close left nav button
         self.close_left_nav_button = CustomQPushButton("", radius=8)
-        self.close_left_nav_button.widget_shadow()
         self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
         self.close_left_nav_button.setIcon(self.close_users)
         self.close_left_nav_button.setFixedWidth(30)
@@ -88,7 +87,6 @@ class HeaderView:
 
         # --- Close right nav button
         self.close_right_nav_button = CustomQPushButton("", radius=8)
-        self.close_right_nav_button.widget_shadow()
         self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
         self.close_right_nav_button.setIcon(self.close_dm)
         self.close_right_nav_button.setFixedWidth(30)

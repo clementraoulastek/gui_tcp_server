@@ -17,7 +17,6 @@ from src.client.core.qt_core import (
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
-from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
@@ -426,6 +425,7 @@ class GuiController:
             user_widget.setFixedHeight(50)
             user_widget.setStyleSheet("border: none")
             user_layout = QHBoxLayout(user_widget)
+            user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             user_layout.setSpacing(10)
             user_layout.setContentsMargins(0, 0, 0, 0)
             username = user
@@ -491,6 +491,7 @@ class GuiController:
             user_layout.addWidget(user_name)
             self.ui.left_nav_widget.user_inline.addWidget(user_widget)
 
+    # TODO: Avoid code duplication
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
         Callback to update gui with input disconnected avatar
@@ -530,6 +531,7 @@ class GuiController:
                 user_widget.setContentsMargins(0, 0, 0, 0)
                 
                 user_layout = QHBoxLayout(user_widget)
+                user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
                 user_layout.setSpacing(10)
                 user_layout.setContentsMargins(0, 0, 0, 0)
                 username = user
@@ -821,6 +823,7 @@ class GuiController:
             direct_message_widget.setFixedHeight(50)
             direct_message_widget.setStyleSheet("border: 1px solid transparent;")
             direct_message_layout = QHBoxLayout(direct_message_widget)
+            direct_message_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             direct_message_layout.setSpacing(10)
             direct_message_layout.setContentsMargins(0, 0, 0, 0)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -877,6 +880,9 @@ class GuiController:
         Args:
             room_name (str): room frame
         """
+        # Update reply entry
+        self.ui.footer_widget.reply_entry_action.triggered.emit()
+        
         if room_name != "home":
             # Update avatar status with iddle
             self.update_pixmap_avatar(room_name, AvatarStatus.IDLE)
@@ -922,6 +928,7 @@ class GuiController:
         room_widget = CustomQPushButton()
         room_widget.setFixedHeight(50)
         room_layout = QHBoxLayout(room_widget)
+        room_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         room_layout.setContentsMargins(0, 0, 0, 0)
         room_btn = QLabel("home")
         room_btn.setStyleSheet("font-weight: bold;")
@@ -973,7 +980,9 @@ class GuiController:
         Args:
             message_id (int): message id
         """
-    
+        # Update reply entry
+        self.ui.footer_widget.reply_entry_action.triggered.emit()
+        
         message.main_widget.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             margin-bottom: 1px;\
@@ -982,7 +991,7 @@ class GuiController:
             border: 0px;"
         )
         
-        def callback(message: MessageLayout):
+        def callback(message: MessageLayout, older_room_name: str):
             message.main_widget.setStyleSheet(
                 f"color: {Color.LIGHT_GREY.value};\
                 margin-bottom: 1px;\
@@ -991,10 +1000,14 @@ class GuiController:
                 border: 0px"
             )
             global_variables.reply_id = ""
+            self.ui.footer_widget.entry.setPlaceholderText(older_room_name)
+            self.ui.footer_widget.entry.update()
             self.ui.footer_widget.reply_entry_action.setVisible(False)
-            
+        
+        older_room_name = f"Enter your message to {self.ui.frame_name.text()}"
+        self.ui.footer_widget.entry.setPlaceholderText(f"Reply to {message.username_label}")
         self.ui.footer_widget.entry.setFocus()
-        self.ui.footer_widget.reply_entry_action.triggered.connect(partial(callback, message))
+        self.ui.footer_widget.reply_entry_action.triggered.connect(partial(callback, message, older_room_name))
         global_variables.reply_id = f"#{message.message_id}/"
         
         self.ui.footer_widget.reply_entry_action.setVisible(True)

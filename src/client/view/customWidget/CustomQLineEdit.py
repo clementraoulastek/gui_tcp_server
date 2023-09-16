@@ -32,11 +32,11 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         text="",
         place_holder_text="",
         radius=12,
-        border_size=1,
+        border_size=0,
         color=Color.LIGHT_GREY.value,
         selection_color="#FFF",
-        bg_color=Color.GREY.value,
-        bg_color_active=Color.GREY.value,
+        bg_color=Color.DARK_GREY.value,
+        bg_color_active=Color.DARK_GREY.value,
         context_color=Color.MIDDLE_GREY.value,
     ):
         super().__init__()
@@ -59,7 +59,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         )
 
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.widget_shadow()
 
     def set_stylesheet(
         self,

@@ -13,7 +13,6 @@ from src.client.core.qt_core import (
     QHBoxLayout
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.utils import Color, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 
@@ -42,7 +41,6 @@ class RightNavView:
 
         # Background
         self.right_nav_widget = QWidget()
-        widget_shadow(self.right_nav_widget)
         self.right_nav_widget.setFixedWidth(self.width)
         self.right_nav_widget.setStyleSheet(
             f"background-color: {Color.DARK_GREY.value};\
@@ -64,13 +62,13 @@ class RightNavView:
         rooms_label = QLabel("Rooms")
         self._update_label_style(rooms_label, is_top_label=False)
         rooms_label.setContentsMargins(0, 0, 0, 0)
-        rooms_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        rooms_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
     
         dm_label = QLabel("Messages")
         self._update_label_style(dm_label, is_top_label=True)
-        dm_label.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        dm_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         dm_icon = QLabel()
         dm_icon.setStyleSheet("border: 0px")
         dm_icon.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
@@ -90,7 +88,7 @@ class RightNavView:
     def _update_label_style(self, widget: QWidget, is_top_label: bool = False):
         style_ = f"font-weight: bold;\
         color: {Color.LIGHT_GREY.value};\
-        background-color: {Color.GREY.value};\
+        background-color: transparent;\
         border: 0px solid;\
         border-radius: 6px;\
         margin-bottom: 0px;\
