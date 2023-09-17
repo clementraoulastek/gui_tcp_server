@@ -150,6 +150,8 @@ class LoginLayout(QHBoxLayout):
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
         self.send_button.setIcon(self.send_icon)
         self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
-        self.entry_action = self.password_entry.addAction(self.register_icon, QLineEdit.TrailingPosition)
+        self.entry_action = self.password_entry.addAction(
+            self.register_icon, QLineEdit.TrailingPosition
+        )
 
         self.button_layout.addWidget(self.send_button)

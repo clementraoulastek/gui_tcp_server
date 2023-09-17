@@ -30,7 +30,7 @@ class Server:
         Launch the server
         """
         TIME_SLEEP = 0.1
-        
+
         try:
             while "Server connected":
                 conn, addr = self.sock.accept()
@@ -216,13 +216,13 @@ class Server:
         logging.debug("Connection aborted by the client")
         conn.close()
         self.conn_dict.pop(addr)
-        
+
         # Remove user from user_dict
         for key, value in self.user_dict.items():
             if value == addr:
                 self.user_dict.pop(key)
                 break
-            
+
         already_connected = len(self.conn_dict) >= 1
         if already_connected:
             for address in self.conn_dict:
@@ -241,7 +241,7 @@ class Server:
 
         Args:
             address (str): address
-            payload (str): payload 
+            payload (str): payload
         """
         username, receiver = payload.split(":")[0], payload.split(":")[1]
         receiver = receiver.replace(" ", "")

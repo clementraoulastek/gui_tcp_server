@@ -59,14 +59,14 @@ class BodyScrollArea(QScrollArea):
         self.is_auto_scroll_ = (
             self.verticalScrollBar().value() == self.verticalScrollBar().maximum()
         )
-            
+
     def update_scrollbar(self):
         """
         If the scrollbar is at the bottom, update it to the bottom
         """
         if self.is_auto_scroll_:
             self.scrollToBottom()
-        
+
     def scrollToBottom(self):
         """
         Update the scrollbar vertical position to the bottom

@@ -20,13 +20,15 @@ class Backend:
             is_connected: bool = response.json()["is_connected"]
 
         return response.status_code, is_connected
-    
+
     def send_login_status(self, username: str, status: bool) -> bool:
-        endpoint = f"http://{self.ip}:{self.port}/user/{username}/?is_connected={status}"
+        endpoint = (
+            f"http://{self.ip}:{self.port}/user/{username}/?is_connected={status}"
+        )
         response = requests.patch(url=endpoint)
-        
+
         return response.status_code == 200
-            
+
     def send_register_form(self, username: str, password: str) -> bool:
         endpoint = f"http://{self.ip}:{self.port}/register"
         data = {"username": username, "password": password}
@@ -42,7 +44,6 @@ class Backend:
             return
         endpoint = f"http://{self.ip}:{self.port}/user/{username}"
 
-        
         files = {"file": open(path[0], "rb")}
         response = requests.put(url=endpoint, files=files)
         return response.status_code == 200
@@ -77,9 +78,20 @@ class Backend:
         else:
             return False
 
-    def send_message(self, username: str, receiver: str, message: str, response_id: Optional[int] = None):
+    def send_message(
+        self,
+        username: str,
+        receiver: str,
+        message: str,
+        response_id: Optional[int] = None,
+    ):
         endpoint = f"http://{self.ip}:{self.port}/messages/"
-        data = {"sender": username, "receiver": receiver, "message": message, "response_id": response_id}
+        data = {
+            "sender": username,
+            "receiver": receiver,
+            "message": message,
+            "response_id": response_id,
+        }
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
         return response.status_code
@@ -88,10 +100,10 @@ class Backend:
         endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}/reaction/?new_reaction_nb={reaction_nb}"
         response = requests.patch(url=endpoint)
         return response.status_code
-    
-    def update_is_readed_status(self, sender: str, receiver: str, is_readed: Optional[bool] = True):
+
+    def update_is_readed_status(
+        self, sender: str, receiver: str, is_readed: Optional[bool] = True
+    ):
         endpoint = f"http://{self.ip}:{self.port}/messages/readed/?sender={sender}&receiver={receiver}&is_readed={is_readed}"
         response = requests.patch(url=endpoint)
         return response.status_code
-    
-

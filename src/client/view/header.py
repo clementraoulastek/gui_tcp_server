@@ -1,22 +1,15 @@
-
-from src.client.core.qt_core import (
-    QWidget,
-    QHBoxLayout,
-    Qt,
-    QLabel,
-    QLayout,
-    QIcon
-)
+from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.constant import DEFAULT_CLIENT_NAME
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
+
 class HeaderView:
     def __init__(self, controller) -> None:
         self.controller = controller
         self.set_header_gui()
-    
+
     def set_header_gui(self) -> None:
         """
         Set the header GUI
@@ -31,13 +24,13 @@ class HeaderView:
             border: 0px solid;\
             border-color: {Color.MIDDLE_GREY.value};"
         )
-        
+
         # Header layout
         header_layout = QHBoxLayout(self.main_widget)
         header_layout.setContentsMargins(10, 5, 10, 5)
         # Logo widget
         logo_widget = QWidget()
-        
+
         # Logo layout
         logo_layout = QHBoxLayout(logo_widget)
         logo_layout.setSpacing(10)
@@ -48,7 +41,7 @@ class HeaderView:
             "font-weight: bold;\
             border: none"
         )
-        
+
         # Status server label
         status_server_label = QLabel(DEFAULT_CLIENT_NAME.upper())
         status_server_label.setStyleSheet(
@@ -65,7 +58,6 @@ class HeaderView:
 
         # Adding widgets to the main layout
         header_layout.addWidget(logo_widget)
-        
 
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
         self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value))
@@ -94,7 +86,7 @@ class HeaderView:
 
         header_layout.addWidget(self.close_left_nav_button)
         header_layout.addWidget(self.close_right_nav_button)
-        
+
         info_widget = QWidget()
         info_widget.setStyleSheet(
             f"background-color: {Color.GREY.value};\

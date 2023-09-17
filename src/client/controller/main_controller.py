@@ -6,6 +6,7 @@ from src.tools.commands import Commands
 import re
 import src.client.controller.global_variables as global_variables
 
+
 class MainController:
     def __init__(self, ui) -> None:
         self.ui = ui
@@ -26,36 +27,34 @@ class MainController:
     def send_message_to_server(self, *args) -> None:
         """
         Send message to the server and update GUI
-        
+
         Args:
             signal (event): event coming from signal
         """
         receiver: str = self.ui.scroll_area.objectName()
         if message := self.ui.footer_widget.entry.text():
-
             message_model = None
-            
-            if message_id:=re.findall("#(\w+)/", global_variables.reply_id):
+
+            if message_id := re.findall("#(\w+)/", global_variables.reply_id):
                 message_id = int(message_id[0])
                 message_model = self.gui_controller.messages_dict[message_id]
-            
+
             self.ui.client.send_data(
-                Commands.MESSAGE, 
-                message, 
+                Commands.MESSAGE,
+                message,
                 receiver=receiver,
-                response_id=message_id or None
+                response_id=message_id or None,
             )
- 
+
             self.gui_controller.diplay_self_message_on_gui(
-                self.ui.client.user_name, 
+                self.ui.client.user_name,
                 message,
                 list(self.ui.body_gui_dict.keys())[
                     list(self.ui.body_gui_dict.values()).index(self.ui.scroll_area)
                 ],
-                response_model=message_model
+                response_model=message_model,
             )
             self.ui.footer_widget.entry.clearFocus()
-            
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()

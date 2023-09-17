@@ -63,12 +63,14 @@ class Color(Enum):
     GREEN = "#305C0A"
     BLACK = "#171717"
     YELLOW = "#F6DF91"
-    
+
 
 @unique
 class ImageAvatar(Enum):
     SERVER = "./resources/images/server_picture.png"
     ROOM = "./resources/images/room_picture.png"
+    EN = "./resources/images/en.png"
+
 
 def image_from_svg(filename="", size=0):
     if LM_USE_SVG != 1:
@@ -131,6 +133,7 @@ def check_str_len(intput_str: str) -> str:
     LEN = 15
     return f"{intput_str[:13]}.." if len(intput_str) >= LEN else intput_str
 
+
 def resize_picture(path: str, size: Optional[Tuple] = (520, 520)) -> bytes:
     """
     Resize picture to a specific size
@@ -141,14 +144,14 @@ def resize_picture(path: str, size: Optional[Tuple] = (520, 520)) -> bytes:
     """
     with open(path[0], "rb") as f:
         picture_bytes = f.readlines()
-    
+
     picture = Image.open(io.BytesIO(picture_bytes))
     new_width, new_height = size
-    
+
     resized_picture = picture.resize((new_width, new_height))
-    
+
     output_bytes = io.BytesIO()
     resized_picture.save(output_bytes, format="PNG")
     output_bytes.seek(0)
-    
+
     return output_bytes.read()

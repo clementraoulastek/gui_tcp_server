@@ -2,6 +2,7 @@ from typing import Optional
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
+from src.client.core.qt_core import QColor
 
 
 class ApiController:
@@ -18,26 +19,26 @@ class ApiController:
         """
         # Getting username and password from the login form
         username, password = self.remove_empty_char_from_entry()
-        
+
         # Avoid empty username or password
         if not username or not password:
             return False
 
         # Send login form to the server
         status_code, is_connected = self.ui.backend.send_login_form(username, password)
-        
+
         # Check if the login is successful and if the user is not already connected
         if status_code != 200 or is_connected:
             return False
         self.ui.client.user_name = username
-        
+
         # Update login status to connected
         if self.send_login_status(username=username, status=True):
             self.is_connected = True
             return True
         else:
             return False
-        
+
     def send_login_status(self, username: str, status: bool) -> bool:
         """
         Send login status to the server
@@ -59,7 +60,7 @@ class ApiController:
             bool: return True if the register is successful
         """
         username, password = self.remove_empty_char_from_entry()
-        
+
         # Avoid empty username or password
         if not username or not password:
             return False
@@ -81,19 +82,21 @@ class ApiController:
             username (Optional[bool], optional): usernameto fetch. Defaults to None.
             update_personal_avatar (Optional[bool], optional): update the personnal avatar if True. Defaults to False.
         """
-        
+
         # If username is None, get the user icon of the current user
         if not username:
             username = self.ui.client.user_name
-        
-        # Get user icon from the server  
+
+        # Get user icon from the server
         if content := self.ui.backend.get_user_icon(username):
             self.ui.users_pict[username] = content
-            
+
             # Update the personnal avatar if True
             if update_personal_avatar:
                 self.ui.footer_widget.user_picture.update_picture(
-                    status=AvatarStatus.ACTIVATED, content=content
+                    status=AvatarStatus.ACTIVATED,
+                    content=content,
+                    background_color=QColor(35, 35, 40),
                 )
             self.update_user_connected(username, content)
         else:
@@ -134,8 +137,10 @@ class ApiController:
         """
         if sender_id not in list(self.ui.users_pict.keys()):
             self.get_user_icon(sender_id)
-            
-    def update_is_readed_status(self, sender: str, receiver: str, is_readed=True) -> None:
+
+    def update_is_readed_status(
+        self, sender: str, receiver: str, is_readed=True
+    ) -> None:
         """
         Update is readed status of the message
 
@@ -145,7 +150,7 @@ class ApiController:
             is_readed (bool, optional): Bool status. Defaults to True.
         """
         self.ui.backend.update_is_readed_status(sender, receiver, is_readed)
-        
+
     def remove_empty_char_from_entry(self) -> tuple:
         """
         Remove empty char from the entry
@@ -155,5 +160,5 @@ class ApiController:
         """
         username = self.ui.login_form.username_entry.text().replace(" ", "")
         password = self.ui.login_form.password_entry.text().replace(" ", "")
-        
+
         return username, password

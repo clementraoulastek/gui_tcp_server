@@ -29,6 +29,7 @@ from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
+
 class QtGui:
     def __init__(self, title):
         self.app = QApplication([])
@@ -36,22 +37,20 @@ class QtGui:
         self.app.setWindowIcon(QIcon(ImageAvatar.SERVER.value))
         self.app.setApplicationName(title)
         self.main_window.show()
-        
+
         self.app.aboutToQuit.connect(self.quit)
-        
+
     def quit(self):
         # ? I don't know why but in a list comprehension it doesn't work
         if hasattr(self.main_window.controller.gui_controller, "read_worker"):
-            
             if self.main_window.controller.api_controller.is_connected:
                 self.main_window.controller.api_controller.send_login_status(
-                    username=self.main_window.client.user_name, 
-                    status=False
+                    username=self.main_window.client.user_name, status=False
                 )
-                
+
             if self.main_window.client.is_connected:
                 self.main_window.client.close_connection()
-                
+
         logging.info("GUI killed successfully")
         sys.exit()
 
@@ -62,7 +61,7 @@ class QtGui:
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
-        
+
         # self.showMaximized()
         self.setWindowTitle(title)
 
@@ -72,16 +71,16 @@ class MainWindow(QMainWindow):
 
         # Init controller
         self.controller = MainController(self)
-        
+
         # Init client socket to the server
         self.client = Client(IP_SERVER, PORT_SERVER, "Default")
-        
+
         # Init connection to the API
         self.backend = Backend(IP_API, PORT_API, self)
 
         # GUI settings
         self.setup_gui()
-        
+
     def setup_gui(self) -> None:
         """
         Add elements to the main window
@@ -95,43 +94,41 @@ class MainWindow(QMainWindow):
         self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setContentsMargins(0, 0, 0, 5)
         self.main_layout.setSpacing(0)
-        
-        # Header 
+
+        # Header
         self.header = HeaderView(self.controller)
         self.main_layout.addWidget(self.header.main_widget)
         self.main_layout.addLayout(self.header.button_layout)
-        
+
         # Core widget
         self.core_widget = QWidget()
         self.core_widget.setContentsMargins(0, 0, 0, 0)
-        
+
         # Core layout
         self.core_layout = QHBoxLayout(self.core_widget)
         self.core_layout.setSpacing(0)
         self.core_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         # Update core layout
         self.left_nav_widget = LeftNavView(width=250)
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
-        
+
         self.set_body_gui()
-        
+
         self.right_nav_widget = RightNavView(self.controller, width=250)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
-        
+
         self.main_layout.addWidget(self.core_widget)
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        
+
         # Footer
         self.footer_widget = FooterView(
-            self.controller,
-            self.left_nav_widget.scroll_widget_avatar.width()
+            self.controller, self.left_nav_widget.scroll_widget_avatar.width()
         )
         self.main_layout.addWidget(self.footer_widget.send_widget)
-        
+
         # Show the login layout
         self.controller.login()
-
 
     def set_body_gui(self) -> None:
         """
@@ -169,14 +166,14 @@ class MainWindow(QMainWindow):
         self.frame_layout.setSpacing(10)
 
         self.frame_icon = AvatarLabel(
-            content=Icon.RIGHT_ARROW.value, 
+            content=Icon.RIGHT_ARROW.value,
             status=AvatarStatus.DEACTIVATED,
             height=20,
             width=20,
-            color=Color.LIGHT_GREY.value
+            color=Color.LIGHT_GREY.value,
         )
         self.frame_icon.setStyleSheet("border: none")
-        self.frame_name = QLabel("home")
+        self.frame_name = QLabel("home | Rooms")
 
         self.frame_name.setStyleSheet("border: 0px")
         self.frame_layout.addWidget(self.frame_icon)
@@ -191,6 +188,3 @@ class MainWindow(QMainWindow):
         self.body_layout.addWidget(self.scroll_area)
 
         self.core_layout.addWidget(self.body_widget)
-
-
-

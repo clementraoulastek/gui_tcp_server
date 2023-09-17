@@ -6,3 +6,4 @@ IP_API = "localhost"
 
 DEFAULT_CLIENT_NAME = "Messenger"
 SOFT_VERSION = "0.0.1"
+LANGUAGE = "EN"

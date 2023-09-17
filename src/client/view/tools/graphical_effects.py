@@ -1,8 +1,5 @@
-from src.client.core.qt_core import (
-    QGraphicsDropShadowEffect,
-    QColor,
-    QWidget
-)
+from src.client.core.qt_core import QGraphicsDropShadowEffect, QColor, QWidget
+
 
 def widget_shadow(obj: QWidget) -> None:
     shadow = QGraphicsDropShadowEffect(obj)

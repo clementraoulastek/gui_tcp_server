@@ -10,7 +10,7 @@ from src.client.core.qt_core import (
     QIcon,
     QEvent,
     QEnterEvent,
-    QHBoxLayout
+    QHBoxLayout,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.utils import Color, Icon, QIcon_from_svg
@@ -22,14 +22,14 @@ class RightNavView:
         self.width = width
         self.controller = controller
         self.set_right_nav()
-        
+
     def set_right_nav(self) -> None:
         """
         Create a right navigation widget
         """
         # Scroll area
         self.scroll_area_dm = QScrollArea()
-        self.scroll_area_dm.setFixedWidth(self.width) 
+        self.scroll_area_dm.setFixedWidth(self.width)
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
@@ -53,31 +53,31 @@ class RightNavView:
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
         self.direct_message_layout.setSpacing(5)
         self.direct_message_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        
+
         self.rooms_widget = QWidget()
         self.rooms_widget.setStyleSheet("border: none;")
         self.rooms_layout = QVBoxLayout(self.rooms_widget)
         self.rooms_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         rooms_label = QLabel("Rooms")
         self._update_label_style(rooms_label, is_top_label=False)
         rooms_label.setContentsMargins(0, 0, 0, 0)
         rooms_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        
+
         rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-    
+
         dm_label = QLabel("Messages")
         self._update_label_style(dm_label, is_top_label=True)
         dm_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         dm_icon = QLabel()
         dm_icon.setStyleSheet("border: 0px")
         dm_icon.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        
+
         dm_QIcon = QIcon_from_svg(Icon.MESSAGE_DM.value).pixmap(20, 20)
         dm_icon.setPixmap(dm_QIcon)
 
         self.room_list: Dict[str, QWidget] = {}
-        
+
         # Adding widgets to the main layout
         self.direct_message_layout.addWidget(rooms_label)
         self.direct_message_layout.addWidget(self.rooms_widget)
@@ -95,8 +95,5 @@ class RightNavView:
         margin-top: 0px;"
         if not is_top_label:
             style_ += "margin-top: 0px"
-            
-        widget.setStyleSheet(
-            style_
-        )
-    
+
+        widget.setStyleSheet(style_)

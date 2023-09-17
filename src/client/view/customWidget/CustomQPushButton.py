@@ -41,7 +41,7 @@ class CustomQPushButton(QPushButton):
         bg_color="transparent",
         bg_color_active=Color.MIDDLE_GREY.value,
         context_color=Color.GREY.value,
-        parent=None
+        parent=None,
     ):
         super().__init__(parent)
 
