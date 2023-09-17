@@ -109,7 +109,7 @@ class MessageLayout(QHBoxLayout):
         )
         right_layout = QVBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(5)
+        right_layout.setSpacing(0)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)
@@ -134,7 +134,7 @@ class MessageLayout(QHBoxLayout):
         self.left_layout.addWidget(icon_label)
 
         self.sender_btn = CustomQPushButton(self.username_label)
-        self.sender_btn.setFixedHeight(30)
+        self.sender_btn.setFixedHeight(20)
 
         def hover(event: QEvent, user_widget):
             color = (
@@ -258,6 +258,7 @@ class MessageLayout(QHBoxLayout):
                 QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)
             ).pixmap(QSize(15, 15))
             sender_icon = QLabel()
+            sender_icon.setContentsMargins(0, 0, 0, 4)
             sender_icon.setPixmap(crown_icon)
             top_layout.addWidget(sender_icon)
 
