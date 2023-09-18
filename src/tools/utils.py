@@ -48,6 +48,8 @@ class Icon(Enum):
     USER_CONNECTED = f"{ICON_PATH}/user_connected.svg"
     USER_DISCONNECTED = f"{ICON_PATH}/user_disconnected.svg"
     CLOSE = f"{ICON_PATH}/close.svg"
+    FILE = f"{ICON_PATH}/file.svg"
+    SEARCH = f"{ICON_PATH}/search.svg"
 
 
 @unique

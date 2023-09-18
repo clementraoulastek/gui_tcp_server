@@ -37,7 +37,6 @@ class LoginLayout(QHBoxLayout):
         self.main_layout.addLayout(self.error_layout)
         self.main_layout.addLayout(self.username_layout)
         self.main_layout.addLayout(self.password_layout)
-        self.main_layout.addLayout(self.button_layout)
 
     def create_main_widget(self):
         self.main_widget = QWidget()
@@ -78,11 +77,6 @@ class LoginLayout(QHBoxLayout):
         self.password_layout.setSpacing(15)
         self.password_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # --- Buttons Layout --- #
-        self.button_layout = QHBoxLayout()
-        self.button_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.button_layout.setContentsMargins(0, 15, 0, 0)
-
     def create_title_widgets(self):
         self.icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
         self.icon_soft.setStyleSheet(
@@ -105,8 +99,7 @@ class LoginLayout(QHBoxLayout):
         self.error_label = QLabel("Please login or register if you havn't account yet")
         self.error_label.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
-            border: none;\
-            font-weight: bold"
+            border: none;"
         )
         self.error_layout.addWidget(self.error_label)
 
@@ -121,6 +114,7 @@ class LoginLayout(QHBoxLayout):
             place_holder_text="Enter your username",
             text=os.environ["USERNAME"],
         )
+        self.username_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
 
@@ -137,21 +131,20 @@ class LoginLayout(QHBoxLayout):
             place_holder_text="Enter your password",
             text=os.environ["PASSWORD"],
         )
+        self.password_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.password_entry.setFixedWidth(300)
-        self.password_entry.setTextMargins(30, 0, 0, 0)
+        self.password_entry.setTextMargins(0, 0, 0, 0)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
 
         self.password_layout.addWidget(self.password_entry)
 
     def create_button_widgets(self):
-        self.send_button = CustomQPushButton(" Login")
-        self.send_button.setFixedWidth(120)
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
-        self.send_button.setIcon(self.send_icon)
         self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
         self.entry_action = self.password_entry.addAction(
             self.register_icon, QLineEdit.TrailingPosition
         )
-
-        self.button_layout.addWidget(self.send_button)
+        self.send_action = self.password_entry.addAction(
+            self.send_icon, QLineEdit.TrailingPosition
+        )

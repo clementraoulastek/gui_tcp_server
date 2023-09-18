@@ -252,13 +252,15 @@ class MessageLayout(QHBoxLayout):
         top_layout = QHBoxLayout()
         top_layout.setContentsMargins(0, 0, 0, 0)
         top_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        
+        top_layout.addWidget(self.sender_btn)
 
         if "admin" in self.username_label:  # TODO: must be a column for user tab
             crown_icon = QIcon(
                 QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)
             ).pixmap(QSize(15, 15))
             sender_icon = QLabel()
-            sender_icon.setContentsMargins(0, 0, 0, 4)
+            sender_icon.setContentsMargins(0, 0, 0, 3)
             sender_icon.setPixmap(crown_icon)
             top_layout.addWidget(sender_icon)
 
@@ -279,7 +281,6 @@ class MessageLayout(QHBoxLayout):
             font-size: 8px;\
             color: {Color.LIGHT_GREY.value}"
         )
-        top_layout.addWidget(self.sender_btn)
         top_layout.addWidget(date_label)
 
         message_label = QLabel(self.str_message)
@@ -295,7 +296,7 @@ class MessageLayout(QHBoxLayout):
 
         # Add response model
         if response_model:
-            icon_label.setStyleSheet("padding-top: 30px;")
+            icon_label.setStyleSheet("padding-top: 20px;")
             response_layout = QHBoxLayout()
             response_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             response_layout.setSpacing(5)

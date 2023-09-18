@@ -23,7 +23,7 @@ from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg, check_str_len
-from src.client.controller.api_controller import ApiController
+from src.client.controller.api_controller import ApiController, ApiStatus
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
 from functools import partial
@@ -668,7 +668,7 @@ class GuiController:
             self.ui.login_form.password_entry.returnPressed.connect(
                 lambda: self.login_form(self.api_controller.send_login_form)
             )
-            self.ui.login_form.send_button.clicked.connect(
+            self.ui.login_form.send_action.triggered.connect(
                 lambda: self.login_form(self.api_controller.send_login_form)
             )
             self.ui.login_form.entry_action.triggered.connect(
@@ -679,18 +679,31 @@ class GuiController:
         """
         Update the layout if login succeed
         """
-        if status := callback():
-            self._clean_gui_and_connect(update_avatar=True)
-            self.show_left_layout()
-            self.show_right_layout()
-            self.show_footer_layout()
-            self.ui.upper_widget.show()
-        elif status == False:
+        status = callback()
+        if status == ApiStatus.SUCCESS:
+            self._handle_sucess_gui_conn()
+        elif status == ApiStatus.FORBIDDEN:
             self.ui.login_form.error_label.setText("Error: Empty username or password")
-        else:
+        elif status == ApiStatus.ERROR:
             self.ui.login_form.error_label.setText(
                 "Error: Username or password incorect"
             )
+        else:
+            self.ui.login_form.error_label.setText(
+                "Enable to join the server, please try again later"
+            )
+
+    def _handle_sucess_gui_conn(self):
+        """
+        Show GUI panels if login succeed
+        """
+        self._clean_gui_and_connect(update_avatar=True)
+        self.show_left_layout()
+        self.show_right_layout()
+        self.show_footer_layout()
+        self.ui.upper_widget.show()
+        self.ui.header.frame_research.show()
+        self.ui.header.frame_research.clearFocus()
 
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
         """
@@ -810,6 +823,7 @@ class GuiController:
         self.clear_avatar("rooms_layout", self.ui.right_nav_widget)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
         self.ui.footer_widget.reply_entry_action.triggered.disconnect()
+        self.ui.header.frame_research.hide()
 
         # self.ui.left_nav_widget.message_label.show()
         self.ui.left_nav_widget.info_disconnected_label.hide()

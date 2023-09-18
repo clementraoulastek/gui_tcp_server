@@ -1,4 +1,5 @@
-from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon
+from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon, QLineEdit
+from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.constant import DEFAULT_CLIENT_NAME
@@ -28,6 +29,7 @@ class HeaderView:
         # Header layout
         header_layout = QHBoxLayout(self.main_widget)
         header_layout.setContentsMargins(10, 5, 10, 5)
+        
         # Logo widget
         logo_widget = QWidget()
 
@@ -52,12 +54,28 @@ class HeaderView:
 
         # Set the header buttons
         self.set_buttons_nav_gui(header_layout)
+        
+        self.frame_research = CustomQLineEdit(
+            place_holder_text="Search",
+        )
+        self.frame_research.setFixedWidth(200)
 
+        self.frame_research.setTextMargins(0, 0, 0, 0)
+        self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=Color.LIGHT_GREY.value))
+        self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
+        
+        retein = self.frame_research.sizePolicy()
+        retein.setRetainSizeWhenHidden(True)
+        self.frame_research.setSizePolicy(retein)
+        
         logo_layout.addWidget(icon_soft)
         logo_layout.addWidget(status_server_label)
+        logo_layout.addWidget(self.frame_research, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
 
         # Adding widgets to the main layout
         header_layout.addWidget(logo_widget)
+        self.frame_research.hide()
 
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
         self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value))

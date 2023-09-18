@@ -105,11 +105,14 @@ class FooterView:
         pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, Color.LIGHT_GREY.value))
         send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, Color.LIGHT_GREY.value))
         reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, Color.LIGHT_GREY.value))
-
+        file_icon = QIcon(QIcon_from_svg(Icon.FILE.value, Color.LIGHT_GREY.value))
+        
         entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)
         self.entry.addAction(pipe_icon, QLineEdit.TrailingPosition)
         entry_action.triggered.connect(self.controller.send_message_to_server)
-
+        
+        self.file_action = self.entry.addAction(file_icon, QLineEdit.ActionPosition.LeadingPosition)
+        
         self.reply_entry_action = self.entry.addAction(
             reply_icon, QLineEdit.ActionPosition.LeadingPosition
         )

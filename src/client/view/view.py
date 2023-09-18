@@ -24,6 +24,7 @@ from src.client.core.qt_core import (
     QWidget,
     QSizePolicy,
     QColor,
+    QLineEdit
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
@@ -154,15 +155,13 @@ class MainWindow(QMainWindow):
         upper_layout.setContentsMargins(5, 5, 5, 5)
 
         self.frame_title = QWidget()
-        self.frame_title.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.frame_title.setStyleSheet(
             f"color: {Color.LIGHT_GREY.value};\
             background-color: transparent;\
-            font-weight: bold;\
             border: 0px"
         )
         self.frame_layout = QHBoxLayout(self.frame_title)
-        self.frame_layout.setContentsMargins(10, 1, 10, 1)
+        self.frame_layout.setContentsMargins(0, 1, 0, 1)
         self.frame_layout.setSpacing(10)
 
         self.frame_icon = AvatarLabel(
@@ -174,10 +173,26 @@ class MainWindow(QMainWindow):
         )
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("home | Rooms")
+        self.frame_name.setStyleSheet(
+            "font-weight: bold;\
+            border: 0px"
+        )
+        self.frame_research = CustomQLineEdit(
+            place_holder_text="Search",
+            bg_color=Color.GREY.value,
+            bg_color_active=Color.GREY.value,
+        )
+        self.frame_research.setFixedWidth(200)
 
-        self.frame_name.setStyleSheet("border: 0px")
+        self.frame_research.setTextMargins(0, 0, 0, 0)
+        self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=Color.LIGHT_GREY.value))
+
+        self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
+
         self.frame_layout.addWidget(self.frame_icon)
         self.frame_layout.addWidget(self.frame_name)
+        self.frame_layout.addWidget(self.frame_research, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
         upper_layout.addWidget(self.frame_title)
 
         self.body_layout.addWidget(self.upper_widget)

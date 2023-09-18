@@ -1,10 +1,19 @@
+from enum import Enum, unique
 from typing import Optional
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
 from src.client.core.qt_core import QColor
-
-
+@unique
+class ApiStatus(Enum):
+    """
+    Enum for api status
+    """
+    SUCCESS = 200
+    ERROR = 400
+    NOT_FOUND = 404
+    FORBIDDEN = 403
+    
 class ApiController:
     def __init__(self, ui) -> None:
         self.ui = ui
@@ -22,22 +31,23 @@ class ApiController:
 
         # Avoid empty username or password
         if not username or not password:
-            return False
+            return ApiStatus.FORBIDDEN
 
         # Send login form to the server
         status_code, is_connected = self.ui.backend.send_login_form(username, password)
 
         # Check if the login is successful and if the user is not already connected
         if status_code != 200 or is_connected:
-            return False
+            return ApiStatus.ERROR
+        
         self.ui.client.user_name = username
 
         # Update login status to connected
         if self.send_login_status(username=username, status=True):
             self.is_connected = True
-            return True
+            return ApiStatus.SUCCESS
         else:
-            return False
+            return ApiStatus.ERROR
 
     def send_login_status(self, username: str, status: bool) -> bool:
         """
