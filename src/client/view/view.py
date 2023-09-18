@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
         )
         upper_layout = QHBoxLayout(self.upper_widget)
         upper_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        upper_layout.setContentsMargins(5, 5, 5, 5)
+        upper_layout.setContentsMargins(10, 5, 15, 5)
 
         self.frame_title = QWidget()
         self.frame_title.setStyleSheet(
@@ -172,15 +172,16 @@ class MainWindow(QMainWindow):
             color=Color.LIGHT_GREY.value,
         )
         self.frame_icon.setStyleSheet("border: none")
-        self.frame_name = QLabel("home | Rooms")
+        self.frame_name = QLabel("Rooms \n| home")
         self.frame_name.setStyleSheet(
             "font-weight: bold;\
             border: 0px"
         )
         self.frame_research = CustomQLineEdit(
-            place_holder_text="Search",
+            place_holder_text="Search in Rooms | home",
             bg_color=Color.GREY.value,
             bg_color_active=Color.GREY.value,
+            color=Color.LIGHT_GREY.value,
         )
         self.frame_research.setFixedWidth(200)
 

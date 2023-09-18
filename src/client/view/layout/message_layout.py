@@ -66,12 +66,13 @@ class MessageLayout(QHBoxLayout):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
+        
+        # Attributes
         self.controller = controller
         self.message_id = message_id
         self.is_reacted = False
         self.nb_react = nb_react
         self.content = content
-
         self.timer = QTimer()
         self.timer.setSingleShot(True)
 
@@ -109,7 +110,7 @@ class MessageLayout(QHBoxLayout):
         )
         right_layout = QVBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(0)
+        right_layout.setSpacing(5)
         right_widget.setLayout(right_layout)
 
         main_layout.addWidget(right_widget)

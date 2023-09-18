@@ -56,7 +56,7 @@ class HeaderView:
         self.set_buttons_nav_gui(header_layout)
         
         self.frame_research = CustomQLineEdit(
-            place_holder_text="Search",
+            place_holder_text="Search users",
         )
         self.frame_research.setFixedWidth(200)
 

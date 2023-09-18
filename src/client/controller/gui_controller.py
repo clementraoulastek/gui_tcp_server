@@ -836,7 +836,7 @@ class GuiController:
         Update input widgets
         """
         if self.ui.client.is_connected:
-            self._set_buttons_status(False, "Enter your message to home | Rooms")
+            self._set_buttons_status(False, "Enter your message to Rooms | home")
             username_label = check_str_len(self.ui.client.user_name)
             self.ui.footer_widget.user_name.setText(username_label)
         else:
@@ -973,9 +973,10 @@ class GuiController:
         self.ui.body_layout.insertWidget(index, widget)
 
         type_room = "Rooms" if room_name == "home" else "Messages"
-        self.ui.frame_name.setText(f"{room_name} | {type_room}")
+        self.ui.frame_name.setText(f"{type_room} \n| {room_name}")
+        self.ui.frame_research.setPlaceholderText(f"Search in {type_room} | {room_name}")
         self.ui.footer_widget.entry.setPlaceholderText(
-            f"Enter your message to {room_name} | {type_room}"
+            f"Enter your message to {type_room} | {room_name}"
         )
         self.ui.scroll_area = widget
         self.ui.scroll_area.show()
