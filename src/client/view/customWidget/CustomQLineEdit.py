@@ -25,6 +25,27 @@ QLineEdit:focus {{
 }}
 """
 
+style_rounded = """
+QLineEdit {{
+	background-color: {_bg_color};
+	border-radius: {_radius}px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+	border: {_border_size}px solid {_context_color};
+    border-bottom: 0px solid;
+	padding-left: 10px;
+    padding-right: 5px;
+	selection-color: {_selection_color};
+	selection-background-color: {_context_color};
+    color: {_color};
+}}
+QLineEdit:focus {{
+	border: {_border_size}px solid {_context_color};
+    border-bottom: 0px solid;
+    background-color: {_bg_color_active};
+}}
+"""
+
 
 class CustomQLineEdit(QLineEdit, QToolButton):
     def __init__(
@@ -71,7 +92,7 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         context_color,
     ):
         # APPLY STYLESHEET
-        style_format = style.format(
+        self.style_format = style.format(
             _radius=radius,
             _border_size=border_size,
             _color=color,
@@ -80,7 +101,7 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             _bg_color_active=bg_color_active,
             _context_color=context_color,
         )
-        self.setStyleSheet(style_format)
+        self.setStyleSheet(self.style_format)
 
     def widget_shadow(self):
         shadow = QGraphicsDropShadowEffect(self)
@@ -88,3 +109,19 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         shadow.setOffset(0, 2)
         shadow.setBlurRadius(1)
         self.setGraphicsEffect(shadow)
+        
+    def update_layout(self):
+        # APPLY STYLESHEET
+        style_format = style_rounded.format(
+            _radius=12,
+            _border_size=1,
+            _color=Color.LIGHT_GREY.value,
+            _selection_color="#FFF",
+            _bg_color=Color.DARK_GREY.value,
+            _bg_color_active=Color.DARK_GREY.value,
+            _context_color=Color.MIDDLE_GREY.value,
+        )
+        self.setStyleSheet(style_format)
+        
+    def reset_layout(self):
+        self.setStyleSheet(self.style_format)

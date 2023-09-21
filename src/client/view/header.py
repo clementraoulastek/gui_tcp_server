@@ -1,4 +1,5 @@
-from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon, QLineEdit
+from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon, QLineEdit, QPoint, QStackedWidget, QVBoxLayout
+from src.client.view.customWidget.CustomQListWidget import CustomQListWidget
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
@@ -7,8 +8,9 @@ from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
 
 class HeaderView:
-    def __init__(self, controller) -> None:
+    def __init__(self, controller, parent) -> None:
         self.controller = controller
+        self.parent = parent
         self.set_header_gui()
 
     def set_header_gui(self) -> None:
@@ -28,7 +30,7 @@ class HeaderView:
 
         # Header layout
         header_layout = QHBoxLayout(self.main_widget)
-        header_layout.setContentsMargins(10, 5, 10, 5)
+        header_layout.setContentsMargins(10, 0, 10, 0)
         
         # Logo widget
         logo_widget = QWidget()
@@ -58,7 +60,16 @@ class HeaderView:
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search users",
         )
+
+        self.frame_research_list = CustomQListWidget()
+        self.parent.layout().addChildWidget(self.frame_research_list)
+        self.frame_research_list.hide()
+        # self.frame_research_list.setFixedHeight(100)
+        self.frame_research_list.setContentsMargins(0, 0, 0, 0)
+        self.frame_research_list.setSpacing(20)
+
         self.frame_research.setFixedWidth(200)
+        self.frame_research_list.setFixedWidth(200)
 
         self.frame_research.setTextMargins(0, 0, 0, 0)
         self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -69,10 +80,10 @@ class HeaderView:
         retein.setRetainSizeWhenHidden(True)
         self.frame_research.setSizePolicy(retein)
         
-        logo_layout.addWidget(icon_soft)
-        logo_layout.addWidget(status_server_label)
+        logo_layout.addWidget(icon_soft, alignment=Qt.AlignmentFlag.AlignLeft)
+        logo_layout.addWidget(status_server_label, alignment=Qt.AlignmentFlag.AlignLeft)
         logo_layout.addWidget(self.frame_research, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
-
+        
         # Adding widgets to the main layout
         header_layout.addWidget(logo_widget)
         self.frame_research.hide()

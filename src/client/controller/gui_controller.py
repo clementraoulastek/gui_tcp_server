@@ -14,6 +14,8 @@ from src.client.core.qt_core import (
     QIcon,
     QTimer,
     QColor,
+    QListWidgetItem,
+    QListWidget
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -44,6 +46,7 @@ class GuiController:
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
         self.dm_avatar_dict: dict[str, AvatarLabel] = {}
+        
 
     def __init_working_signals(self) -> None:
         """
@@ -704,6 +707,11 @@ class GuiController:
         self.ui.upper_widget.show()
         self.ui.header.frame_research.show()
         self.ui.header.frame_research.clearFocus()
+        
+        # Signal
+        self.ui.header.frame_research.textChanged.connect(self.display_users_from_research)
+        hide_research = self.ui.header.frame_research.focusOutEvent
+        self.ui.header.frame_research.focusOutEvent = lambda e: self.hide_research(e, hide_research)
 
     def _clean_gui_and_connect(self, update_avatar: bool) -> None:
         """
@@ -1110,3 +1118,102 @@ class GuiController:
             ";".join([str(messageId), str(react_nb)]),
             receiver=receiver,
         )
+        
+    def display_users_from_research(self):
+        """
+        Display users list from research
+        """
+        # Move the list under the research bar
+        x = self.ui.header.frame_research.x() + self.ui.header.frame_research.width() // 2 - 2
+        y = self.ui.header.frame_research.y() + self.ui.header.frame_research.height()
+        self.ui.header.frame_research_list.move(x, y)
+        self.ui.header.frame_research_list.clear()
+        
+        # Get the text from the research bar
+        text_from_research = self.ui.header.frame_research.text()
+        if not text_from_research:
+            self.ui.header.frame_research_list.hide()
+            self.ui.header.frame_research.reset_layout()
+            return
+        
+        # Get all users
+        users = self.ui.users_pict.keys()
+        
+        def hover(event: QEvent, user_widget) -> None:
+            if isinstance(event, QEnterEvent):
+                color = Color.GREY.value
+            else:
+                color = Color.DARK_GREY.value
+
+            style_ = """
+            QWidget {{
+            background-color: {color};
+            border-radius: 8px;
+            border: 0px solid {color};
+            }} 
+            """
+            user_widget.setStyleSheet(style_.format(color=color))
+            user_widget.update()
+        
+        nb_users = 0
+        for user in users:
+            # If the user is in the research text bar
+            if text_from_research in user and user != "server" and user != self.ui.client.user_name:
+                nb_users+=1
+                self.ui.header.frame_research_list.show()
+                self.ui.header.frame_research.update_layout()
+                user_widget = CustomQPushButton()
+                content = global_variables.user_connected[user][0] if user in global_variables.user_connected else global_variables.user_disconnect[user][0]
+                dm_pic = AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                
+                def callback(user, dm_pic):
+                    self.add_gui_for_mp_layout(user, dm_pic, True)
+                    self.ui.header.frame_research.clear()
+                    self.ui.header.frame_research_list.hide()
+                    self.ui.header.frame_research.reset_layout()
+                    self.ui.header.frame_research.clearFocus()
+                    
+                user_widget.clicked.connect(
+                    partial(callback, user, dm_pic)
+                )
+                user_widget.enterEvent = partial(
+                    hover, user_widget=user_widget
+                )
+                user_widget.leaveEvent = partial(
+                    hover, user_widget=user_widget
+                )
+                user_widget.setContentsMargins(0, 0, 0, 0)
+                user_widget.setFixedHeight(50)
+                user_layout = QHBoxLayout(user_widget)
+                
+                user_pic = AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                
+                user_layout.setContentsMargins(0, 0, 0, 0)
+                user = check_str_len(user)
+                label = QLabel(user)
+                label.setStyleSheet(
+                    f"font-weight: bold;\
+                    background-color: transparent;\
+                    color: {Color.LIGHT_GREY.value};"
+                )
+                user_layout.addWidget(user_pic)
+                user_layout.addWidget(label)
+                user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+                item = QListWidgetItem()
+                self.ui.header.frame_research_list.addItem(item)
+                self.ui.header.frame_research_list.setItemWidget(item, user_widget)
+        if not nb_users:
+            self.ui.header.frame_research_list.hide()
+            self.ui.header.frame_research.reset_layout()
+
+        self.ui.header.frame_research_list.setFixedHeight(50 * 3 if nb_users > 0 else 0)
+        
+    def hide_research(self, event, hide_research):
+        hide_research(event)
+        if self.ui.header.frame_research_list.hasFocus():
+            return
+        self.ui.header.frame_research.clear()
+        self.ui.header.frame_research_list.hide()
+        self.ui.header.frame_research.reset_layout()
+
+        

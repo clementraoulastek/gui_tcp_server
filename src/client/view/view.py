@@ -23,7 +23,7 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QWidget,
     QSizePolicy,
-    QColor,
+    QPoint,
     QLineEdit
 )
 from src.tools.backend import Backend
@@ -81,6 +81,8 @@ class MainWindow(QMainWindow):
 
         # GUI settings
         self.setup_gui()
+        
+        self.resizeEvent = self.resize_event
 
     def setup_gui(self) -> None:
         """
@@ -97,9 +99,10 @@ class MainWindow(QMainWindow):
         self.main_layout.setSpacing(0)
 
         # Header
-        self.header = HeaderView(self.controller)
+        self.header = HeaderView(self.controller, parent=self)
         self.main_layout.addWidget(self.header.main_widget)
         self.main_layout.addLayout(self.header.button_layout)
+    
 
         # Core widget
         self.core_widget = QWidget()
@@ -204,3 +207,9 @@ class MainWindow(QMainWindow):
         self.body_layout.addWidget(self.scroll_area)
 
         self.core_layout.addWidget(self.body_widget)
+
+    def resize_event(self, event):
+        self.header.frame_research_list.hide()
+        self.header.frame_research.clear()
+        self.header.frame_research.clearFocus()
+        self.header.frame_research.reset_layout()
