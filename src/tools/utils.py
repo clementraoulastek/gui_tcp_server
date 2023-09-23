@@ -3,6 +3,7 @@ import os
 import re
 from enum import Enum, unique
 import io
+import sys
 from typing import Optional, Tuple
 from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
@@ -52,6 +53,7 @@ class Icon(Enum):
     CLOSE = f"{ICON_PATH}/close.svg"
     FILE = f"{ICON_PATH}/file.svg"
     SEARCH = f"{ICON_PATH}/search.svg"
+    SWITCH_COLOR = f"{ICON_PATH}/switch_color.svg"
 
 
 @unique
@@ -80,10 +82,10 @@ class Themes:
         WHITE = 1 
         
     def __init__(self):
-        config = configparser.ConfigParser()
-        config.read('./config.ini')
+        self.config = configparser.ConfigParser()
+        self.config.read('./config.ini')
         
-        self.theme_name = config['THEME']['theme']
+        self.theme_name = self.config['THEME']['theme']
         
         self.emoji_color = "#F6DF91"
         
@@ -115,6 +117,19 @@ class Themes:
             self.emoji_color = WhiteColor.BLACK.value
         else:
             raise Exception("Theme not found")
+        
+    def switch_theme(self, controller) -> None:
+        """
+        Switch theme
+        """
+        self.config['THEME']['theme'] = Themes.ThemeColor.BLACK.name if self.theme_name == Themes.ThemeColor.WHITE.name else Themes.ThemeColor.WHITE.name
+        with open('./config.ini', 'w') as configfile:
+            self.config.write(configfile)
+            
+        # Restart the app
+        controller.gui_controller.logout()
+        os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
+
         
             
 

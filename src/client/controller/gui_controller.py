@@ -790,6 +790,7 @@ class GuiController:
         """
         Show left layout
         """
+        self.ui.rooms_widget.main_widget.show()
         self.ui.left_nav_widget.scroll_area_avatar.show()
         self.ui.header.close_left_nav_button.show()
 
@@ -852,6 +853,7 @@ class GuiController:
         self.ui.header.welcome_label.hide()
         self.ui.header.separator.hide()
         self.ui.header.avatar.hide()
+        self.ui.rooms_widget.main_widget.hide()
 
         self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()

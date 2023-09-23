@@ -18,6 +18,8 @@ QLineEdit {{
 	selection-color: {_selection_color};
 	selection-background-color: {_context_color};
     color: {_color};
+    margin-left: 0px;
+    margin-right: 0px;
 }}
 QLineEdit:focus {{
 	border: {_border_size}px solid {_context_color};

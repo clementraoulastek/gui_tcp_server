@@ -10,7 +10,7 @@ from src.client.core.qt_core import (
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
-from src.tools.constant import SOFT_VERSION, LANGUAGE
+from src.tools.constant import SOFT_VERSION
 from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
 
 
@@ -143,26 +143,32 @@ class FooterView:
 
         lang_widget = QWidget()
         lang_widget.setContentsMargins(10, 0, 0, 0)
-        lang_layout = QHBoxLayout(lang_widget)
-        lang_layout.setContentsMargins(0, 0, 0, 0)
-        lang_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        lang_layout.setSpacing(10)
+        theme_layout = QHBoxLayout(lang_widget)
+        theme_layout.setContentsMargins(0, 0, 0, 0)
+        theme_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        theme_layout.setSpacing(10)
 
         icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
         theme_label = QLabel()
         theme_color = QIcon(QIcon_from_svg(Icon.STATUS.value, color=self.theme.color))
         theme_label.setPixmap(theme_color.pixmap(20, 20))
+        self.switch_theme_button = CustomQPushButton("")
+        self.switch_theme_button.setToolTip("Switch theme")
+        self.switch_theme_button.setFixedSize(20, 20)
+        self.switch_theme_button.setIcon(QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.text_color)))
+        self.switch_theme_button.clicked.connect(lambda: self.theme.switch_theme(self.controller))
         
         value = QLabel(f"Alpha, Version: {SOFT_VERSION}")
-        language = QLabel(f"Theme: {self.theme.theme_name}")
+        theme_name = QLabel(f"Theme: {self.theme.theme_name}")
 
-        language.setContentsMargins(0, 0, 0, 0)
+        theme_name.setContentsMargins(0, 0, 0, 0)
 
         version_layout.addWidget(icon_soft)
         version_layout.addWidget(value)
 
-        lang_layout.addWidget(theme_label)
-        lang_layout.addWidget(language)
+        theme_layout.addWidget(theme_label)
+        theme_layout.addWidget(theme_name)
+        theme_layout.addWidget(self.switch_theme_button)
 
         bottom_right_layout.addWidget(version_widget)
         bottom_right_layout.addWidget(lang_widget)

@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
         self.theme = Themes()
-        # self.showMaximized()
+        self.showMaximized()
         self.setWindowTitle(title)
 
         # TODO: this attr should be in the controller
@@ -115,6 +115,7 @@ class MainWindow(QMainWindow):
         self.rooms_widget = RoomsBarWidget(theme=self.theme)
         self.left_nav_widget = LeftNavView(width=250, theme=self.theme)
         self.core_layout.addWidget(self.rooms_widget.main_widget)
+
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
 
         self.set_body_gui()
@@ -139,7 +140,7 @@ class MainWindow(QMainWindow):
         self.body_widget = QWidget()
         self.body_layout = QVBoxLayout(self.body_widget)
         self.body_layout.setContentsMargins(0, 0, 0, 0)
-        self.body_layout.setSpacing(20)
+        self.body_layout.setSpacing(5)
 
         self.upper_widget = QWidget()
         self.upper_widget.setContentsMargins(0, 0, 0, 0)
@@ -147,9 +148,10 @@ class MainWindow(QMainWindow):
 
         self.upper_widget.setStyleSheet(
             f"background-color: {self.theme.inner_color};\
-            border-radius: 0px;\
+            border-radius: 4px;\
             border: 0px solid {self.theme.nav_color};\
-            margin-top: 0px;"
+            margin-left: 5px;\
+            margin-right: 5px;"
         )
         upper_layout = QHBoxLayout(self.upper_widget)
         upper_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -186,7 +188,6 @@ class MainWindow(QMainWindow):
         )
         self.frame_research.setFixedHeight(30)
         self.frame_research.setFixedWidth(200)
-
         self.frame_research.setTextMargins(0, 0, 0, 0)
         self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
         search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=self.theme.title_color))

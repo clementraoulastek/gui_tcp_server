@@ -11,6 +11,7 @@ class RoomsBarWidget:
         self.width_ = 60
         self.theme = theme
         self.main_widget = QWidget()
+        self.main_widget.hide()
         self.main_layout = QVBoxLayout(self.main_widget)
 
         self.main_layout.setContentsMargins(0, 10, 0, 0)

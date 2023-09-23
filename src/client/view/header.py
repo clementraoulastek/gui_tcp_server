@@ -73,9 +73,6 @@ class HeaderView:
         self.frame_research.setFixedWidth(200)
         self.frame_research.setTextMargins(0, 0, 0, 0)
         self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        retein = self.frame_research.sizePolicy()
-        retein.setRetainSizeWhenHidden(True)
-        self.frame_research.setSizePolicy(retein)
 
         # Frame research list
         self.frame_research_list = CustomQListWidget()
@@ -92,6 +89,9 @@ class HeaderView:
         logo_layout.addWidget(icon_soft, alignment=Qt.AlignmentFlag.AlignLeft)
         logo_layout.addWidget(status_server_label, alignment=Qt.AlignmentFlag.AlignLeft)
         
+        lang_layout = AvatarLabel(content=ImageAvatar.EN.value, height=20, width=20)
+        lang_label = QLabel("Language: EN")
+        
         # Adding widgets to the main layout
         self.header_layout.addWidget(logo_widget)
 
@@ -99,6 +99,8 @@ class HeaderView:
         self.avatar = AvatarLabel()
         self.header_layout.addWidget(self.avatar)
         self.header_layout.addWidget(self.welcome_label)
+        self.header_layout.addWidget(lang_layout, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
+        self.header_layout.addWidget(lang_label)
         
         # Set the header buttons
         self.set_buttons_nav_gui(self.header_layout)
@@ -139,8 +141,8 @@ class HeaderView:
         self.close_right_nav_button.setFixedWidth(30)
         self.close_right_nav_button.setFixedHeight(30)
 
-        header_layout.addWidget(self.close_left_nav_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
-        header_layout.addWidget(self.close_right_nav_button, alignment=Qt.AlignmentFlag.AlignRight)
+        header_layout.addWidget(self.close_left_nav_button)
+        header_layout.addWidget(self.close_right_nav_button)
 
         info_widget = QWidget()
         info_widget.setStyleSheet(
