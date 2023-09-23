@@ -717,7 +717,7 @@ class GuiController:
         self.ui.header.frame_research.clearFocus()
         self.ui.header.avatar.height_, self.ui.header.avatar.width_ = 20, 20
         self.ui.header.avatar.update_picture(
-            status=AvatarStatus.IDLE,
+            status=AvatarStatus.ACTIVATED,
             content=self.ui.users_pict[self.ui.client.user_name]
         )
         self.ui.header.avatar.show()

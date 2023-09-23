@@ -140,10 +140,9 @@ class AvatarLabel(QLabel):
         outer_brush_color: QColor,
         inner_brush_color: QColor,
         icon_pixmap: QPixmap,
-        circle_radius: Optional[int] = 8,
     ) -> None:
         painter.setPen(QPen(Qt.NoPen))
-        circle_radius = circle_radius
+        circle_radius = 8 if self.height_ >= 40 else 4
         circle_center = QPoint(
             self.width_ - 1 * circle_radius, self.height_ - circle_radius * 1
         )
