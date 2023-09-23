@@ -31,7 +31,7 @@ class HeaderView:
 
         # Header layout
         self.header_layout = QHBoxLayout(self.main_widget)
-        self.header_layout.setContentsMargins(10, 0, 5, 0)
+        self.header_layout.setContentsMargins(10, 0, 10, 0)
         
         # Logo widget
         logo_widget = QWidget()

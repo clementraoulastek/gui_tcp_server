@@ -53,7 +53,7 @@ class LeftNavView:
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
-            scroll_bar_vertical_stylesheet
+            scroll_bar_vertical_stylesheet.format(_background_color=self.theme.inner_color)
         )
         self.scroll_area_avatar.setStyleSheet("background-color: transparent; border: 0px")
         self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)

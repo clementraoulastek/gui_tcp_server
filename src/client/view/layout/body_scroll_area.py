@@ -8,8 +8,9 @@ from src.client.core.qt_core import (
     QSizePolicy,
 )
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
-from src.tools.utils import check_str_len
+from src.tools.utils import Themes, check_str_len
 
+theme = Themes()
 
 class BodyScrollArea(QScrollArea):
     def __init__(self, name: str):
@@ -36,7 +37,7 @@ class BodyScrollArea(QScrollArea):
 
         self.scroll_widget = QWidget()
         self.scroll_widget.setContentsMargins(0, 0, 0, 0)
-        self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet)
+        self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet.format(_background_color=theme.background_color))
         self.setStyleSheet(
             "background-color: transparent;\
             color: white;\

@@ -25,7 +25,7 @@ class RightNavView:
         self.scroll_area_dm = QScrollArea()
         self.scroll_area_dm.setFixedWidth(self.width)
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
-            scroll_bar_vertical_stylesheet
+            scroll_bar_vertical_stylesheet.format(_background_color=self.theme.inner_color)
         )
 
         self.scroll_area_dm.setStyleSheet("background-color: transparent; border: 0px")

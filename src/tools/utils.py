@@ -131,8 +131,6 @@ class Themes:
         os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
 
         
-            
-
 @unique
 class ImageAvatar(Enum):
     SERVER = "./resources/images/server_picture.png"
