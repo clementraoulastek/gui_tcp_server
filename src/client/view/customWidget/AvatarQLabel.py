@@ -44,7 +44,7 @@ class AvatarLabel(QLabel):
         self.update_picture(status, background_color)
         self.setStyleSheet("border: none")
 
-    def update_picture(self, status, background_color=QColor(49, 51, 56), content=None):
+    def update_picture(self, status: AvatarStatus, background_color: Optional[QColor] = QColor(49, 51, 56), content: Optional[bytes] = None) -> None:
         if content:
             self.content = content
         if isinstance(self.content, str):

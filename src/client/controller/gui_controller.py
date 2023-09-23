@@ -494,6 +494,7 @@ class GuiController:
             """
             # Add user menu
             if username != self.ui.client.user_name:
+                user_widget.setToolTip("Open direct message")
                 user_widget.enterEvent = partial(hover, user_widget=user_widget)
                 user_widget.leaveEvent = partial(hover, user_widget=user_widget)
 
@@ -524,6 +525,7 @@ class GuiController:
                     continue
                 # Layout
                 user_widget = CustomQPushButton()
+                user_widget.setToolTip("Open direct message")
                 user_widget.setFixedHeight(50)
                 style_ = """
                 QWidget {{
@@ -632,20 +634,26 @@ class GuiController:
         parent_layout: QLayout,
         parent=None,
         layout_name: Optional[Union[QHBoxLayout, None]] = None,
+        delete_all: Optional[bool] = False,
     ) -> None:
         """
-        Clear avatars from the layout
+        Clear avatars or all widgets from the layout
 
         Args:
             parent_layout (QLayout): parent layout
             layout_name (Optional[Union[QHBoxLayout, None]], optional): layout name. Defaults to None.
+            delete_all (Optional[bool], optional): delete all widgets. Defaults to False.
         """
         for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
             if widget := getattr(parent or self.ui, parent_layout).itemAt(i).widget():
                 widget: QWidget
-                if type(widget) != CustomQPushButton:
+                if type(widget) != CustomQPushButton and not delete_all:
                     continue
                 layout = widget.layout()
+                if not layout:
+                    widget.setParent(None)
+                    widget.deleteLater()
+                    continue
                 if (
                     layout_name
                     and layout_name == layout.objectName()
@@ -707,7 +715,13 @@ class GuiController:
         self.ui.upper_widget.show()
         self.ui.header.frame_research.show()
         self.ui.header.frame_research.clearFocus()
-        self.ui.header.welcome_label.setText(f"Welcome {self.ui.client.user_name}")
+        self.ui.header.avatar.height_, self.ui.header.avatar.width_ = 20, 20
+        self.ui.header.avatar.update_picture(
+            status=AvatarStatus.IDLE,
+            content=self.ui.users_pict[self.ui.client.user_name]
+        )
+        self.ui.header.avatar.show()
+        self.ui.header.welcome_label.setText(f"{self.ui.client.user_name}")
         self.ui.header.welcome_label.show()
         self.ui.header.separator.show()
         
@@ -831,12 +845,13 @@ class GuiController:
         self.update_buttons()
         self.clear_avatar("user_inline", self.ui.left_nav_widget)
         self.clear_avatar("user_offline", self.ui.left_nav_widget)
-        self.clear_avatar("main_layout", self.ui.rooms_widget)
+        self.clear_avatar("main_layout", self.ui.rooms_widget, delete_all=True)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
         self.ui.footer_widget.reply_entry_action.triggered.disconnect()
         self.ui.header.frame_research.hide()
         self.ui.header.welcome_label.hide()
         self.ui.header.separator.hide()
+        self.ui.header.avatar.hide()
 
         self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
@@ -880,6 +895,7 @@ class GuiController:
         if room_name not in self.ui.right_nav_widget.room_list:
             # Layout
             direct_message_widget = CustomQPushButton()
+            direct_message_widget.setToolTip("Open direct message")
             direct_message_widget.setFixedHeight(50)
             direct_message_widget.setStyleSheet("border: 1px solid transparent;")
             direct_message_layout = QHBoxLayout(direct_message_widget)
@@ -889,6 +905,7 @@ class GuiController:
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
             close_button = CustomQPushButton()
+            close_button.setToolTip("Close")
             close_button.clicked.connect(direct_message_widget.deleteLater)
             close_button.setFixedHeight(30)
             close_button.setFixedWidth(30)
@@ -1031,6 +1048,7 @@ class GuiController:
             content=ImageAvatar.ROOM.value,
             status=AvatarStatus.DEACTIVATED,
         )
+        room_icon.setToolTip("Display home room")
 
         room_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         room_widget.clicked.connect(lambda: self.update_gui_for_mp_layout("home"))

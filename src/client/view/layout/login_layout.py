@@ -145,6 +145,8 @@ class LoginLayout(QHBoxLayout):
         self.entry_action = self.password_entry.addAction(
             self.register_icon, QLineEdit.TrailingPosition
         )
+        self.entry_action.setToolTip("Register")
         self.send_action = self.password_entry.addAction(
             self.send_icon, QLineEdit.TrailingPosition
         )
+        self.send_action.setToolTip("Login")

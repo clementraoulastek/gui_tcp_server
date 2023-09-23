@@ -191,6 +191,7 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton = CustomQPushButton(
                 "", bg_color=Color.GREY.value, radius=4
             )
+            self.react_buttton.setToolTip("React to this message")
             retain = self.react_buttton.sizePolicy()
             retain.setRetainSizeWhenHidden(True)
             self.react_buttton.setSizePolicy(retain)
@@ -210,6 +211,7 @@ class MessageLayout(QHBoxLayout):
             self.reply_button = CustomQPushButton(
                 "Reply", bg_color=Color.GREY.value, radius=4
             )
+            self.reply_button.setToolTip("Reply to this message")
 
             self.reply_button.clicked.connect(self.add_reply)
             self.reply_button.setFixedSize(100, 20)

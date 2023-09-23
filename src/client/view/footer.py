@@ -25,6 +25,7 @@ class FooterView:
         Update the footer GUI
         """
         self.logout_button = CustomQPushButton()
+        self.logout_button.setToolTip("Logout")
         self.logout_button.setFixedHeight(30)
         self.logout_button.setFixedWidth(30)
         self.logout_button.clicked.connect(self.controller.logout)
@@ -53,6 +54,7 @@ class FooterView:
 
         self.user_widget = QWidget()
         self.custom_user_button = CustomQPushButton("")
+        self.custom_user_button.setToolTip("Update your avatar")
         self.custom_user_button.setFixedHeight(30)
         self.custom_user_button.setFixedWidth(30)
 
@@ -108,10 +110,12 @@ class FooterView:
         file_icon = QIcon(QIcon_from_svg(Icon.FILE.value, Color.LIGHT_GREY.value))
         
         entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)
+        entry_action.setToolTip("Send message")
         self.entry.addAction(pipe_icon, QLineEdit.TrailingPosition)
         entry_action.triggered.connect(self.controller.send_message_to_server)
         
         self.file_action = self.entry.addAction(file_icon, QLineEdit.ActionPosition.LeadingPosition)
+        self.file_action.setToolTip("Send file")
         
         self.reply_entry_action = self.entry.addAction(
             reply_icon, QLineEdit.ActionPosition.LeadingPosition

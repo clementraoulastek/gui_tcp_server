@@ -29,8 +29,8 @@ class HeaderView:
         )
 
         # Header layout
-        header_layout = QHBoxLayout(self.main_widget)
-        header_layout.setContentsMargins(10, 0, 5, 0)
+        self.header_layout = QHBoxLayout(self.main_widget)
+        self.header_layout.setContentsMargins(10, 0, 5, 0)
         
         # Logo widget
         logo_widget = QWidget()
@@ -77,9 +77,7 @@ class HeaderView:
         self.frame_research.setSizePolicy(retein)
 
         # Frame research list
-        self.frame_research_list = CustomQListWidget(
-            
-        )
+        self.frame_research_list = CustomQListWidget()
         self.parent.layout().addChildWidget(self.frame_research_list)
         self.frame_research_list.hide()
 
@@ -94,14 +92,16 @@ class HeaderView:
         logo_layout.addWidget(status_server_label, alignment=Qt.AlignmentFlag.AlignLeft)
         
         # Adding widgets to the main layout
-        header_layout.addWidget(logo_widget)
+        self.header_layout.addWidget(logo_widget)
 
-        header_layout.addWidget(self.separator)
-        header_layout.addWidget(self.welcome_label)
+        self.header_layout.addWidget(self.separator)
+        self.avatar = AvatarLabel()
+        self.header_layout.addWidget(self.avatar)
+        self.header_layout.addWidget(self.welcome_label)
         
         # Set the header buttons
-        self.set_buttons_nav_gui(header_layout)
-        header_layout.addWidget(self.frame_research)
+        self.set_buttons_nav_gui(self.header_layout)
+        self.header_layout.addWidget(self.frame_research)
         
         self.frame_research.hide()
 
@@ -124,6 +124,7 @@ class HeaderView:
 
         # --- Close left nav button
         self.close_left_nav_button = CustomQPushButton("", radius=8)
+        self.close_left_nav_button.setToolTip("Close users panel")
         self.close_left_nav_button.clicked.connect(self.controller.hide_left_layout)
         self.close_left_nav_button.setIcon(self.close_users)
         self.close_left_nav_button.setFixedWidth(30)
@@ -131,6 +132,7 @@ class HeaderView:
 
         # --- Close right nav button
         self.close_right_nav_button = CustomQPushButton("", radius=8)
+        self.close_right_nav_button.setToolTip("Close messages panel")
         self.close_right_nav_button.clicked.connect(self.controller.hide_right_layout)
         self.close_right_nav_button.setIcon(self.close_dm)
         self.close_right_nav_button.setFixedWidth(30)
