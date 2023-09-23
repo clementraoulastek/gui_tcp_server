@@ -40,7 +40,7 @@ class CustomQPushButton(QPushButton):
         color=theme.title_color,
         selection_color="#000",
         bg_color="transparent",
-        bg_color_active=theme.nav_color,
+        bg_color_active=theme.inner_color,
         context_color=theme.background_color,
         parent=None,
     ):

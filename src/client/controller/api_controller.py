@@ -4,6 +4,7 @@ from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
 from src.client.core.qt_core import QColor
+from src.tools.utils import Themes
 @unique
 class ApiStatus(Enum):
     """
@@ -13,7 +14,8 @@ class ApiStatus(Enum):
     ERROR = 400
     NOT_FOUND = 404
     FORBIDDEN = 403
-    
+
+theme = Themes()
 class ApiController:
     def __init__(self, ui) -> None:
         self.ui = ui
@@ -106,7 +108,7 @@ class ApiController:
                 self.ui.footer_widget.user_picture.update_picture(
                     status=AvatarStatus.ACTIVATED,
                     content=content,
-                    background_color=QColor(35, 35, 40),
+                    background_color=theme.rgb_background_color_actif_footer,
                 )
             self.update_user_connected(username, content)
         else:

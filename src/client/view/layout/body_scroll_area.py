@@ -39,7 +39,8 @@ class BodyScrollArea(QScrollArea):
         self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet)
         self.setStyleSheet(
             "background-color: transparent;\
-            color: white"
+            color: white;\
+            border: 0px"
         )
         self.setObjectName(name)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -91,7 +92,7 @@ class BodyScrollArea(QScrollArea):
         frame_name.setStyleSheet(
             f"color: {self.theme.title_color};\
             font-weight: bold;\
-            border: none;"
+            border: 0px solid;"
         )
         upper_layout.addWidget(frame_name)
         self.main_layout.addWidget(self.upper_widget)

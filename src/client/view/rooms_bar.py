@@ -16,7 +16,7 @@ class RoomsBarWidget:
         self.main_layout.setContentsMargins(0, 10, 0, 0)
         self.main_layout.setSpacing(0)
         
-        self.main_widget.setStyleSheet(f"background-color: {self.theme.rooms_color}; border: 0px solid; margin-top: 1px; padding: 0px")
+        self.main_widget.setStyleSheet(f"background-color: {self.theme.rooms_color}; border: 0px solid; margin-top: 0px; padding: 0px")
         self.main_widget.setFixedWidth(self.width_)
 
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)

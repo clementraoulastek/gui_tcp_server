@@ -30,6 +30,7 @@ class LeftNavView:
         self.scroll_area_avatar.setFixedWidth(self.width)
 
         self.scroll_widget_avatar = QWidget()
+        
 
         self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
@@ -54,7 +55,7 @@ class LeftNavView:
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet
         )
-        self.scroll_area_avatar.setStyleSheet("background-color: transparent;")
+        self.scroll_area_avatar.setStyleSheet("background-color: transparent; border: 0px")
         self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)

@@ -287,7 +287,7 @@ class MessageLayout(QHBoxLayout):
         top_layout.addWidget(date_label)
 
         message_label = QLabel(self.str_message)
-        message_label.setStyleSheet("border: 0px; color: white;")
+        message_label.setStyleSheet(f"border: 0px; color: {theme.text_color};")
         message_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         message_label.setWordWrap(True)
         message_label.setAlignment(Qt.AlignmentFlag.AlignJustify)

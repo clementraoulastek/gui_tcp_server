@@ -87,13 +87,14 @@ class MainWindow(QMainWindow):
         """
         # Main widget
         self.main_widget = QWidget()
+        self.main_widget.setContentsMargins(0, 0, 0, 0)
         self.main_widget.setStyleSheet(f"background-color: {self.theme.background_color}")
         self.setCentralWidget(self.main_widget)
 
         # Main layout
         self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        self.main_layout.setContentsMargins(0, 0, 0, 5)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
         # Header
@@ -148,7 +149,7 @@ class MainWindow(QMainWindow):
             f"background-color: {self.theme.inner_color};\
             border-radius: 0px;\
             border: 0px solid {self.theme.nav_color};\
-            margin-top: 1px;"
+            margin-top: 0px;"
         )
         upper_layout = QHBoxLayout(self.upper_widget)
         upper_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -158,10 +159,10 @@ class MainWindow(QMainWindow):
         self.frame_title.setStyleSheet(
             f"color: {self.theme.title_color};\
             background-color: transparent;\
-            border: 0px"
+            border: 0px solid"
         )
         self.frame_layout = QHBoxLayout(self.frame_title)
-        self.frame_layout.setContentsMargins(0, 1, 0, 1)
+        self.frame_layout.setContentsMargins(0, 0, 0, 0)
         self.frame_layout.setSpacing(10)
 
         self.frame_icon = AvatarLabel(
@@ -175,7 +176,7 @@ class MainWindow(QMainWindow):
         self.frame_name = QLabel("Rooms \n| home")
         self.frame_name.setStyleSheet(
             "font-weight: bold;\
-            border: 0px"
+            border: 0px solid"
         )
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search in Rooms | home",

@@ -62,12 +62,17 @@ class BlackColor(Enum):
     DARK_GREY = "#313338"
     LIGHT_BLACK = "#232328"
     WHITE = "#FFFFFF"
-    BLUE = "#4986F7"
-    RED = "#811919"
-    GREEN = "#305C0A"
     BLACK = "#1C1D1F"
     YELLOW = "#F6DF91"
-    
+
+@unique
+class WhiteColor(Enum):
+    WHITE = "#FFFFFF"
+    BLACK = "#000000"
+    LIGHT_GREY = "#e4e4e4"
+    DARK_GREY = "#A6A6A7"
+    GREY = "#CFCFD0"
+    BLUE = "#1D87E5"
     
 class Themes:
     class ThemeColor(Enum):
@@ -78,11 +83,15 @@ class Themes:
         config = configparser.ConfigParser()
         config.read('./config.ini')
         
-        theme = config['THEME']['theme']
+        self.theme_name = config['THEME']['theme']
         
         self.emoji_color = "#F6DF91"
         
-        if theme == Themes.ThemeColor.BLACK.name:
+        if self.theme_name == Themes.ThemeColor.BLACK.name:
+            self.color = BlackColor.BLACK.value
+            self.rgb_background_color_actif = QColor(56, 58, 63)
+            self.rgb_background_color_actif_footer = QColor(35, 35, 40)
+            self.rgb_background_color_innactif = QColor(49, 51, 56)
             self.text_color = BlackColor.WHITE.value
             self.title_color = BlackColor.LIGHT_GREY.value
             self.inner_color = BlackColor.DARK_GREY.value
@@ -90,6 +99,20 @@ class Themes:
             self.nav_color = BlackColor.MIDDLE_GREY.value
             self.search_color = BlackColor.LIGHT_BLACK.value
             self.rooms_color = BlackColor.BLACK.value
+            self.emoji_color = BlackColor.YELLOW.value
+        elif self.theme_name == Themes.ThemeColor.WHITE.name:
+            self.color = WhiteColor.WHITE.value
+            self.rgb_background_color_actif = QColor(255, 255, 255)
+            self.rgb_background_color_actif_footer = QColor(207, 207, 208)
+            self.rgb_background_color_innactif = QColor(228, 228, 228)
+            self.text_color = WhiteColor.BLACK.value
+            self.title_color = WhiteColor.BLACK.value
+            self.inner_color = WhiteColor.LIGHT_GREY.value
+            self.background_color = WhiteColor.WHITE.value
+            self.nav_color = WhiteColor.WHITE.value
+            self.search_color = WhiteColor.GREY.value
+            self.rooms_color = WhiteColor.DARK_GREY.value
+            self.emoji_color = WhiteColor.BLACK.value
         else:
             raise Exception("Theme not found")
         

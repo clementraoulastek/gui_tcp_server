@@ -15,8 +15,9 @@ from src.client.core.qt_core import (
     QGraphicsDropShadowEffect,
     QStaticText,
 )
+from src.tools.utils import Themes
 
-
+theme = Themes()
 @unique
 class AvatarStatus(Enum):
     DEACTIVATED = 0
@@ -34,7 +35,8 @@ class AvatarLabel(QLabel):
         width=40,
         color=None,
         status=AvatarStatus.IDLE,
-        background_color=QColor(49, 51, 56),
+        background_color=theme.rgb_background_color_actif,
+
     ):
         super(AvatarLabel, self).__init__(*args)
         self.color = color
@@ -44,7 +46,7 @@ class AvatarLabel(QLabel):
         self.update_picture(status, background_color)
         self.setStyleSheet("border: none")
 
-    def update_picture(self, status: AvatarStatus, background_color: Optional[QColor] = QColor(49, 51, 56), content: Optional[bytes] = None) -> None:
+    def update_picture(self, status: AvatarStatus, background_color: Optional[QColor] = theme.rgb_background_color_actif, content: Optional[bytes] = None) -> None:
         if content:
             self.content = content
         if isinstance(self.content, str):
@@ -100,7 +102,7 @@ class AvatarLabel(QLabel):
         self.setGraphicsEffect(opacity_effect)
 
     def update_pixmap(
-        self, status: AvatarStatus, background_color=QColor(49, 51, 56)
+        self, status: AvatarStatus, background_color=theme.rgb_background_color_actif
     ) -> None:
         """
         Update pixmap of the icon
@@ -142,14 +144,14 @@ class AvatarLabel(QLabel):
         icon_pixmap: QPixmap,
     ) -> None:
         painter.setPen(QPen(Qt.NoPen))
-        circle_radius = 8 if self.height_ >= 40 else 4
+        circle_radius = 7 if self.height_ >= 40 else 3
         circle_center = QPoint(
-            self.width_ - 1 * circle_radius, self.height_ - circle_radius * 1
+            self.width_ - 1.5 * circle_radius, self.height_ - circle_radius * 1
         )
 
         self.__draw_ellipse(outer_brush_color, painter, circle_center, circle_radius)
 
-        inner_radius = circle_radius / 2
+        inner_radius = circle_radius / 1.5
         inner_center = circle_center
 
         self.__draw_ellipse(inner_brush_color, painter, inner_center, inner_radius)

@@ -13,7 +13,6 @@ from src.client.core.qt_core import (
     QEnterEvent,
     QIcon,
     QTimer,
-    QColor,
     QListWidgetItem,
     QListWidget
 )
@@ -23,8 +22,7 @@ from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
-from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
-from src.tools.constant import DEFAULT_CLIENT_NAME
+from src.client.core.qt_core import QHBoxLayout, QLabel, Qt
 from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg, check_str_len
 from src.client.controller.api_controller import ApiController, ApiStatus
 from src.client.controller.tcp_controller import TcpServerController
@@ -447,7 +445,7 @@ class GuiController:
             user_layout = QHBoxLayout(user_widget)
             user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             user_layout.setSpacing(10)
-            user_layout.setContentsMargins(0, 0, 0, 0)
+            user_layout.setContentsMargins(5, 0, 0, 0)
             username = user
             user_layout.setObjectName(f"{username}_layout")
             content = data[0]
@@ -456,11 +454,11 @@ class GuiController:
                 if isinstance(event, QEnterEvent):
                     color = self.theme.background_color
                     user_pic.update_pixmap(
-                        AvatarStatus.ACTIVATED, background_color=QColor(56, 58, 63)
+                        AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif
                     )
                 else:
                     color = self.theme.inner_color
-                    user_pic.update_pixmap(AvatarStatus.ACTIVATED)
+                    user_pic.update_pixmap(AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif)
                 style_ = """
                 QWidget {{
                 background-color: {color};
@@ -472,8 +470,8 @@ class GuiController:
 
             # Create avatar label
             user_pic, dm_pic = AvatarLabel(
-                content=content, status=AvatarStatus.ACTIVATED
-            ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                content=content, status=AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_innactif
+            ), AvatarLabel(content=content, status=AvatarStatus.IDLE, background_color=self.theme.rgb_background_color_innactif)
 
             # Update picture alignment
             user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -541,12 +539,12 @@ class GuiController:
                         user_pic.graphicsEffect().setEnabled(False)
                         user_pic.update_pixmap(
                             AvatarStatus.DEACTIVATED,
-                            background_color=QColor(56, 58, 63),
+                            background_color=self.theme.rgb_background_color_actif,
                         )
                     else:
                         color = self.theme.inner_color
                         user_pic.graphicsEffect().setEnabled(True)
-                        user_pic.update_pixmap(AvatarStatus.DEACTIVATED)
+                        user_pic.update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_innactif)
                     style_ = """
                     QWidget {{
                     background-color: {color};
@@ -563,7 +561,7 @@ class GuiController:
                 user_layout = QHBoxLayout(user_widget)
                 user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
                 user_layout.setSpacing(10)
-                user_layout.setContentsMargins(0, 0, 0, 0)
+                user_layout.setContentsMargins(5, 0, 0, 0)
                 username = user
                 content = data[0]
                 user_layout.setObjectName(f"{username}_layout_disconnected")
@@ -875,7 +873,7 @@ class GuiController:
             self.ui.footer_widget.user_picture.update_picture(
                 status=AvatarStatus.DEACTIVATED,
                 content="",
-                background_color=QColor(35, 35, 40),
+                background_color=self.theme.rgb_background_color_innactif,
             )
 
     def _set_buttons_status(self, activate: bool, lock_message: str) -> None:
@@ -903,7 +901,7 @@ class GuiController:
             direct_message_layout = QHBoxLayout(direct_message_widget)
             direct_message_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
             direct_message_layout.setSpacing(12)
-            direct_message_layout.setContentsMargins(0, 0, 5, 0)
+            direct_message_layout.setContentsMargins(5, 0, 5, 0)
             icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
             close_button = CustomQPushButton()

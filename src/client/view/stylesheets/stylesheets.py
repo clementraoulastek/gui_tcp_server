@@ -34,9 +34,9 @@ scroll_bar_vertical_stylesheet = """
         margin-left: 0px;
     }
     QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-        background: #2A2C2F;
+        background: transparent;
     }
     QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-        background: #2A2C2F;
+        background: transparent;
     }
 """

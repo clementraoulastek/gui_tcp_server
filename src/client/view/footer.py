@@ -149,16 +149,19 @@ class FooterView:
         lang_layout.setSpacing(10)
 
         icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
-        lang_soft = AvatarLabel(content=ImageAvatar.EN.value, height=20, width=20)
+        theme_label = QLabel()
+        theme_color = QIcon(QIcon_from_svg(Icon.STATUS.value, color=self.theme.color))
+        theme_label.setPixmap(theme_color.pixmap(20, 20))
+        
         value = QLabel(f"Alpha, Version: {SOFT_VERSION}")
-        language = QLabel(f"Language: {LANGUAGE}")
+        language = QLabel(f"Theme: {self.theme.theme_name}")
 
         language.setContentsMargins(0, 0, 0, 0)
 
         version_layout.addWidget(icon_soft)
         version_layout.addWidget(value)
 
-        lang_layout.addWidget(lang_soft)
+        lang_layout.addWidget(theme_label)
         lang_layout.addWidget(language)
 
         bottom_right_layout.addWidget(version_widget)
