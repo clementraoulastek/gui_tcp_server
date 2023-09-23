@@ -25,7 +25,7 @@ from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
 from src.tools.constant import DEFAULT_CLIENT_NAME
-from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg, check_str_len
+from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg, check_str_len
 from src.client.controller.api_controller import ApiController, ApiStatus
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
@@ -40,8 +40,10 @@ class GuiController:
         last_message_id: int,
         api_controller: ApiController,
         tcp_controller: TcpServerController,
+        theme: Themes
     ) -> None:
         self.ui = ui
+        self.theme = theme
         self.messages_dict = messages_dict
         self.last_message_id = last_message_id
         self.api_controller = api_controller
@@ -452,12 +454,12 @@ class GuiController:
 
             def hover(event: QEvent, user_widget):
                 if isinstance(event, QEnterEvent):
-                    color = Color.GREY.value
+                    color = self.theme.background_color
                     user_pic.update_pixmap(
                         AvatarStatus.ACTIVATED, background_color=QColor(56, 58, 63)
                     )
                 else:
-                    color = Color.DARK_GREY.value
+                    color = self.theme.inner_color
                     user_pic.update_pixmap(AvatarStatus.ACTIVATED)
                 style_ = """
                 QWidget {{
@@ -507,7 +509,7 @@ class GuiController:
                 }}
                 """
                 style_ = f"{style_}{hover_}"
-            user_name.setStyleSheet(style_.format(color=Color.GREY.value))
+            user_name.setStyleSheet(style_.format(color=self.theme.background_color))
 
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
@@ -535,14 +537,14 @@ class GuiController:
                 """
                 def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
                     if isinstance(event, QEnterEvent):
-                        color = Color.GREY.value
+                        color = self.theme.background_color
                         user_pic.graphicsEffect().setEnabled(False)
                         user_pic.update_pixmap(
                             AvatarStatus.DEACTIVATED,
                             background_color=QColor(56, 58, 63),
                         )
                     else:
-                        color = Color.DARK_GREY.value
+                        color = self.theme.inner_color
                         user_pic.graphicsEffect().setEnabled(True)
                         user_pic.update_pixmap(AvatarStatus.DEACTIVATED)
                     style_ = """
@@ -555,7 +557,7 @@ class GuiController:
                     user_widget.setStyleSheet(style_.format(color=color))
                     user_widget.update()
 
-                user_widget.setStyleSheet(style_.format(color=Color.GREY.value))
+                user_widget.setStyleSheet(style_.format(color=self.theme.background_color))
                 user_widget.setContentsMargins(0, 0, 0, 0)
 
                 user_layout = QHBoxLayout(user_widget)
@@ -584,7 +586,7 @@ class GuiController:
                 dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 user_pic.setStyleSheet(
                     f"border: 0px solid;\
-                    border-color: {Color.GREY.value};"
+                    border-color: {self.theme.background_color};"
                 )
 
                 # Avoid gui troubles with bigger username
@@ -671,7 +673,7 @@ class GuiController:
         """
         self.clear()
         if not hasattr(self.ui, "login_form") or not self.ui.login_form:
-            self.ui.login_form = LoginLayout()
+            self.ui.login_form = LoginLayout(theme = self.theme)
             self.ui.scroll_area.main_layout.addLayout(self.ui.login_form)
             self.ui.scroll_area.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
@@ -909,7 +911,7 @@ class GuiController:
             close_button.clicked.connect(direct_message_widget.deleteLater)
             close_button.setFixedHeight(30)
             close_button.setFixedWidth(30)
-            close_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value))
+            close_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, color=self.theme.text_color))
             close_button.setIcon(close_icon)
             retain = close_button.sizePolicy()
             retain.setRetainSizeWhenHidden(True)
@@ -918,9 +920,9 @@ class GuiController:
 
             def hover(event: QEvent, user_widget, close_button: CustomQPushButton):
                 if isinstance(event, QEnterEvent):
-                    color = Color.GREY.value
+                    color = self.theme.background_color
                 else:
-                    color = Color.DARK_GREY.value
+                    color = self.theme.inner_color
                 style_ = """
                 QWidget {{
                 background-color: {color};
@@ -956,7 +958,7 @@ class GuiController:
             border: 0px solid transparent;
             }} 
             """
-            btn.setStyleSheet(style_.format(color=Color.GREY.value))
+            btn.setStyleSheet(style_.format(color=self.theme.background_color))
             btn.update()
             btn.setContentsMargins(0, 0, 0, 0)
 
@@ -1039,7 +1041,7 @@ class GuiController:
         room_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         room_layout.setContentsMargins(0, 0, 0, 0)
 
-        divider = QIcon(QIcon_from_svg(Icon.SEPARATOR_HORIZ.value, color=Color.GREY.value))
+        divider = QIcon(QIcon_from_svg(Icon.SEPARATOR_HORIZ.value, color=self.theme.background_color))
         divider_label = QLabel()
         divider_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         divider_label.setPixmap(divider.pixmap(20, 20))
@@ -1055,9 +1057,9 @@ class GuiController:
 
         def hover(event: QEvent, user_widget):
             if isinstance(event, QEnterEvent):
-                color = Color.GREY.value
+                color = self.theme.background_color
             else:
-                color = Color.BLACK.value
+                color = self.theme.rooms_color
             style_ = """
             QWidget {{
             font-weight: bold;
@@ -1096,16 +1098,16 @@ class GuiController:
         self.ui.footer_widget.reply_entry_action.triggered.emit()
 
         message.main_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
+            f"color: {self.theme.title_color};\
             margin-bottom: 1px;\
             margin-right: 2px;\
-            background-color: {Color.DARK_GREY.value};\
+            background-color: {self.theme.inner_color};\
             border: 0px;"
         )
 
         def callback(message: MessageLayout, older_room_name: str):
             message.main_widget.setStyleSheet(
-                f"color: {Color.LIGHT_GREY.value};\
+                f"color: {self.theme.title_color};\
                 margin-bottom: 1px;\
                 margin-right: 2px;\
                 background-color: transparent;\
@@ -1167,9 +1169,9 @@ class GuiController:
         
         def hover(event: QEvent, user_widget) -> None:
             if isinstance(event, QEnterEvent):
-                color = Color.GREY.value
+                color = self.theme.background_color
             else:
-                color = Color.LIGHT_BLACK.value
+                color = self.theme.search_color
 
             style_ = """
             QWidget {{
@@ -1228,7 +1230,7 @@ class GuiController:
                 label.setStyleSheet(
                     f"font-weight: bold;\
                     background-color: transparent;\
-                    color: {Color.LIGHT_GREY.value};"
+                    color: {self.theme.title_color};"
                 )
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(label)

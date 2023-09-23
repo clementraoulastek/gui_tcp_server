@@ -7,13 +7,14 @@ from src.client.core.qt_core import (
     QHBoxLayout,
     QSizePolicy,
 )
-from src.tools.utils import Color, Icon, QIcon_from_svg
+from src.tools.utils import Themes, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 
 
 class LeftNavView:
-    def __init__(self, width: int) -> None:
+    def __init__(self, width: int, theme: Themes) -> None:
         self.width = width
+        self.theme = theme
         self.set_left_nav()
 
     def set_left_nav(self) -> None:
@@ -37,11 +38,11 @@ class LeftNavView:
         self.scroll_widget_avatar.setFixedWidth(self.width)
         self.scroll_widget_avatar.setStyleSheet(
             f"font-weight: bold;\
-            color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
+            color: {self.theme.title_color};\
+            background-color: {self.theme.inner_color};\
             border-radius: 0px;\
             border: 0px solid;\
-            border-color: {Color.MIDDLE_GREY.value};\
+            border-color: {self.theme.nav_color};\
             margin-bottom: 0px;\
             margin-left: 0px"
         )
@@ -66,7 +67,7 @@ class LeftNavView:
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
-            f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
+            f"font-weight: bold; color: {self.theme.title_color};\
             background-color: transparent;\
             border-radius: 0px;\
             margin-bottom: 0px;\
@@ -81,13 +82,13 @@ class LeftNavView:
         self.info_disconnected_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
         disconnected_label = QLabel()
-        disconnected_icon = QIcon_from_svg(Icon.USER_DISCONNECTED.value).pixmap(20, 20)
+        disconnected_icon = QIcon_from_svg(Icon.USER_DISCONNECTED.value, color=self.theme.text_color).pixmap(20, 20)
         disconnected_label.setPixmap(disconnected_icon)
 
         self.info_disconnected_label.hide()
         self.info_disconnected_label.setStyleSheet(
             f"font-weight: bold;\
-            color: {Color.LIGHT_GREY.value};\
+            color: {self.theme.title_color};\
             background-color: transparent;\
             border-radius: 0px;\
             margin-bottom: 0px;\

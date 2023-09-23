@@ -6,7 +6,7 @@ from src.client.core.qt_core import (
     QGraphicsDropShadowEffect,
     QColor,
 )
-from src.tools.utils import Color
+from src.tools.utils import Themes
 
 style = """
 QLineEdit {{
@@ -46,6 +46,7 @@ QLineEdit:focus {{
 }}
 """
 
+theme = Themes()
 
 class CustomQLineEdit(QLineEdit, QToolButton):
     def __init__(
@@ -54,11 +55,11 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         place_holder_text="",
         radius=12,
         border_size=0,
-        color=Color.LIGHT_GREY.value,
+        color=theme.title_color,
         selection_color="#FFF",
-        bg_color=Color.DARK_GREY.value,
-        bg_color_active=Color.DARK_GREY.value,
-        context_color=Color.MIDDLE_GREY.value,
+        bg_color=theme.inner_color,
+        bg_color_active=theme.inner_color,
+        context_color=theme.nav_color,
     ):
         super().__init__()
 
@@ -115,11 +116,11 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         style_format = style_rounded.format(
             _radius=12,
             _border_size=1,
-            _color=Color.LIGHT_GREY.value,
+            _color=theme.title_color,
             _selection_color="#FFF",
-            _bg_color=Color.LIGHT_BLACK.value,
-            _bg_color_active=Color.LIGHT_BLACK.value,
-            _context_color=Color.MIDDLE_GREY.value,
+            _bg_color=theme.search_color,
+            _bg_color_active=theme.search_color,
+            _context_color=theme.nav_color,
         )
         self.setStyleSheet(style_format)
         

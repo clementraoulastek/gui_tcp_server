@@ -4,13 +4,14 @@ from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.tools.constant import DEFAULT_CLIENT_NAME
-from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
 
 
 class HeaderView:
-    def __init__(self, controller, parent) -> None:
+    def __init__(self, controller, parent: QWidget, theme: Themes) -> None:
         self.controller = controller
         self.parent = parent
+        self.theme = theme
         self.set_header_gui()
 
     def set_header_gui(self) -> None:
@@ -21,11 +22,11 @@ class HeaderView:
         self.main_widget = QWidget()
 
         self.main_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
-            color: {Color.LIGHT_GREY.value};\
+            f"background-color: {self.theme.background_color};\
+            color: {self.theme.title_color};\
             border-radius: 0px;\
             border: 0px solid;\
-            border-color: {Color.MIDDLE_GREY.value};"
+            border-color: {self.theme.nav_color};"
         )
 
         # Header layout
@@ -53,7 +54,7 @@ class HeaderView:
             border: none;\
             font-style: italic"
         )
-        separator_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, color=Color.LIGHT_GREY.value))
+        separator_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, color=self.theme.title_color))
         self.separator = QLabel()
         self.separator.hide()
         self.separator.setPixmap(separator_icon.pixmap(20, 20))
@@ -65,8 +66,8 @@ class HeaderView:
         # Frame research
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search users",
-            bg_color=Color.LIGHT_BLACK.value,
-            bg_color_active=Color.LIGHT_BLACK.value,
+            bg_color=self.theme.search_color,
+            bg_color_active=self.theme.search_color,
         )
         self.frame_research.setFixedHeight(30)
         self.frame_research.setFixedWidth(200)
@@ -85,7 +86,7 @@ class HeaderView:
         self.frame_research_list.setSpacing(10)
         self.frame_research_list.setFixedWidth(200)
 
-        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=Color.LIGHT_GREY.value))
+        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=self.theme.title_color))
         self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
         
         logo_layout.addWidget(icon_soft, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -112,8 +113,8 @@ class HeaderView:
         Args:
             header_layout (QLayout): Layout to display the buttons
         """
-        self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value))
-        self.close_dm = QIcon(QIcon_from_svg(Icon.CLOSE_DM.value))
+        self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value, color=self.theme.text_color))
+        self.close_dm = QIcon(QIcon_from_svg(Icon.CLOSE_DM.value, color=self.theme.text_color))
 
         # --- Button horizontal layout
         self.button_layout = QHBoxLayout()
@@ -143,7 +144,7 @@ class HeaderView:
 
         info_widget = QWidget()
         info_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
+            f"background-color: {self.theme.background_color};\
             border-radius: 12px"
         )
 

@@ -8,7 +8,7 @@ from src.client.core.qt_core import (
     QSizePolicy,
 )
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
-from src.tools.utils import Color, check_str_len
+from src.tools.utils import check_str_len
 
 
 class BodyScrollArea(QScrollArea):
@@ -79,9 +79,9 @@ class BodyScrollArea(QScrollArea):
         self.upper_widget = QWidget()
         self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.upper_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
+            f"background-color: {self.theme.background_color};\
             border-radius: 0px;\
-            border: 0px solid {Color.MIDDLE_GREY.value}; "
+            border: 0px solid {self.theme.nav_color}; "
         )
         upper_layout = QHBoxLayout()
         self.upper_widget.setLayout(upper_layout)
@@ -89,7 +89,7 @@ class BodyScrollArea(QScrollArea):
         frame_name = QLabel(f"#{self.name.capitalize()}")
         frame_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         frame_name.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
+            f"color: {self.theme.title_color};\
             font-weight: bold;\
             border: none;"
         )

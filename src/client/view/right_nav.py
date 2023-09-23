@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Dict
 from src.client.core.qt_core import (
     QLabel,
@@ -6,21 +5,16 @@ from src.client.core.qt_core import (
     QScrollArea,
     Qt,
     QVBoxLayout,
-    QSizePolicy,
-    QIcon,
-    QEvent,
-    QEnterEvent,
-    QHBoxLayout,
 )
-from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from src.tools.utils import Color, Icon, QIcon_from_svg
+from src.tools.utils import Themes, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 
 
 class RightNavView:
-    def __init__(self, controller, width: int) -> None:
+    def __init__(self, controller, width: int, theme: Themes) -> None:
         self.width = width
         self.controller = controller
+        self.theme = theme
         self.set_right_nav()
 
     def set_right_nav(self) -> None:
@@ -43,11 +37,11 @@ class RightNavView:
         self.right_nav_widget = QWidget()
         self.right_nav_widget.setFixedWidth(self.width)
         self.right_nav_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};\
-            color: {Color.LIGHT_GREY.value};\
+            f"background-color: {self.theme.inner_color};\
+            color: {self.theme.title_color};\
             border-radius: 0px;\
             border: 0px solid;\
-            border-color: {Color.MIDDLE_GREY.value};\
+            border-color: {self.theme.nav_color};\
             margin-bottom: 0px;"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
@@ -62,7 +56,7 @@ class RightNavView:
         dm_icon.setStyleSheet("border: 0px")
         dm_icon.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
-        dm_QIcon = QIcon_from_svg(Icon.MESSAGE_DM.value).pixmap(20, 20)
+        dm_QIcon = QIcon_from_svg(Icon.MESSAGE_DM.value, color=self.theme.text_color).pixmap(20, 20)
         dm_icon.setPixmap(dm_QIcon)
 
         self.room_list: Dict[str, QWidget] = {}
@@ -74,7 +68,7 @@ class RightNavView:
 
     def _update_label_style(self, widget: QWidget):
         style_ = f"font-weight: bold;\
-        color: {Color.LIGHT_GREY.value};\
+        color: {self.theme.title_color};\
         background-color: transparent;\
         border: 0px solid;\
         border-radius: 0px;\

@@ -11,13 +11,14 @@ from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.tools.constant import SOFT_VERSION, LANGUAGE
-from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
 
 
 class FooterView:
-    def __init__(self, controller, version_widget_width) -> None:
+    def __init__(self, controller, version_widget_width, theme: Themes) -> None:
         self.controller = controller
         self.version_widget_width = version_widget_width
+        self.theme = theme
         self.set_footer_gui()
 
     def set_footer_gui(self) -> None:
@@ -29,7 +30,7 @@ class FooterView:
         self.logout_button.setFixedHeight(30)
         self.logout_button.setFixedWidth(30)
         self.logout_button.clicked.connect(self.controller.logout)
-        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value))
+        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value, color=self.theme.text_color))
         self.logout_button.setIcon(self.logout_icon)
         self.logout_button.setDisabled(True)
 
@@ -45,12 +46,12 @@ class FooterView:
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
-            f"background-color: {Color.LIGHT_BLACK.value};\
-            color: {Color.LIGHT_GREY.value};\
+            f"background-color: {self.theme.search_color};\
+            color: {self.theme.title_color};\
             border-radius: 0px;\
             border: 0px;"
         )
-        self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value))
+        self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value, color=self.theme.text_color))
 
         self.user_widget = QWidget()
         self.custom_user_button = CustomQPushButton("")
@@ -104,10 +105,10 @@ class FooterView:
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry)
 
-        pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, Color.LIGHT_GREY.value))
-        send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, Color.LIGHT_GREY.value))
-        reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, Color.LIGHT_GREY.value))
-        file_icon = QIcon(QIcon_from_svg(Icon.FILE.value, Color.LIGHT_GREY.value))
+        pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, self.theme.title_color))
+        send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, self.theme.title_color))
+        reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, self.theme.title_color))
+        file_icon = QIcon(QIcon_from_svg(Icon.FILE.value, self.theme.title_color))
         
         entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)
         entry_action.setToolTip("Send message")
@@ -127,8 +128,8 @@ class FooterView:
         bottom_right_widget.setMinimumWidth(self.version_widget_width)
         bottom_right_widget.setStyleSheet(
             f"font-style: italic;\
-            background-color: {Color.LIGHT_BLACK.value};\
-            color: {Color.LIGHT_GREY.value};"
+            background-color: {self.theme.search_color};\
+            color: {self.theme.title_color};"
         )
         bottom_right_layout = QVBoxLayout(bottom_right_widget)
         bottom_right_layout.setContentsMargins(0, 0, 0, 0)

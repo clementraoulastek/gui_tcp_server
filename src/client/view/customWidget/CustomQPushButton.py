@@ -4,7 +4,7 @@ from src.client.core.qt_core import (
     QGraphicsDropShadowEffect,
     QColor,
 )
-from src.tools.utils import Color
+from src.tools.utils import Themes
 
 style = """
 QPushButton {{
@@ -27,6 +27,7 @@ QPushButton:disabled {{
 }}
 """
 
+theme = Themes()
 
 class CustomQPushButton(QPushButton):
     signal = Signal()
@@ -36,18 +37,18 @@ class CustomQPushButton(QPushButton):
         text="",
         radius=6,
         border_size=0,
-        color=Color.LIGHT_GREY.value,
+        color=theme.title_color,
         selection_color="#000",
         bg_color="transparent",
-        bg_color_active=Color.MIDDLE_GREY.value,
-        context_color=Color.GREY.value,
+        bg_color_active=theme.nav_color,
+        context_color=theme.background_color,
         parent=None,
     ):
         super().__init__(parent)
 
         self.setText(text)
         self.setFixedHeight(40)
-        disabled_color = Color.BLACK.value
+        disabled_color = theme.rooms_color
         self.set_stylesheet(
             radius,
             border_size,

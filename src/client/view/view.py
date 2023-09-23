@@ -25,7 +25,7 @@ from src.client.core.qt_core import (
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER
-from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import Icon, ImageAvatar, QIcon_from_svg, Themes
 
 
 class QtGui:
@@ -59,7 +59,7 @@ class QtGui:
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
-
+        self.theme = Themes()
         # self.showMaximized()
         self.setWindowTitle(title)
 
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.users_connected = {}
 
         # Init controller
-        self.controller = MainController(self)
+        self.controller = MainController(self, self.theme)
 
         # Init client socket to the server
         self.client = Client(IP_SERVER, PORT_SERVER, "Default")
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         """
         # Main widget
         self.main_widget = QWidget()
-        self.main_widget.setStyleSheet(f"background-color: {Color.GREY.value}")
+        self.main_widget.setStyleSheet(f"background-color: {self.theme.background_color}")
         self.setCentralWidget(self.main_widget)
 
         # Main layout
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         self.main_layout.setSpacing(0)
 
         # Header
-        self.header = HeaderView(self.controller, parent=self)
+        self.header = HeaderView(self.controller, parent=self, theme=self.theme)
         self.main_layout.addWidget(self.header.main_widget)
         self.main_layout.addLayout(self.header.button_layout)
     
@@ -111,20 +111,20 @@ class MainWindow(QMainWindow):
         self.core_layout.setContentsMargins(0, 0, 0, 0)
 
         # Update core layout
-        self.rooms_widget = RoomsBarWidget()
-        self.left_nav_widget = LeftNavView(width=250)
+        self.rooms_widget = RoomsBarWidget(theme=self.theme)
+        self.left_nav_widget = LeftNavView(width=250, theme=self.theme)
         self.core_layout.addWidget(self.rooms_widget.main_widget)
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
 
         self.set_body_gui()
 
-        self.right_nav_widget = RightNavView(self.controller, width=250)
+        self.right_nav_widget = RightNavView(self.controller, width=250, theme=self.theme)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
         self.main_layout.addWidget(self.core_widget)
 
         # Footer
         self.footer_widget = FooterView(
-            self.controller, self.left_nav_widget.scroll_widget_avatar.width()
+            self.controller, self.left_nav_widget.scroll_widget_avatar.width(), theme=self.theme
         )
         self.main_layout.addWidget(self.footer_widget.send_widget)
 
@@ -145,9 +145,9 @@ class MainWindow(QMainWindow):
         self.upper_widget.hide()
 
         self.upper_widget.setStyleSheet(
-            f"background-color: {Color.DARK_GREY.value};\
+            f"background-color: {self.theme.inner_color};\
             border-radius: 0px;\
-            border: 0px solid {Color.MIDDLE_GREY.value};\
+            border: 0px solid {self.theme.nav_color};\
             margin-top: 1px;"
         )
         upper_layout = QHBoxLayout(self.upper_widget)
@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
 
         self.frame_title = QWidget()
         self.frame_title.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
+            f"color: {self.theme.title_color};\
             background-color: transparent;\
             border: 0px"
         )
@@ -169,7 +169,7 @@ class MainWindow(QMainWindow):
             status=AvatarStatus.DEACTIVATED,
             height=20,
             width=20,
-            color=Color.LIGHT_GREY.value,
+            color=self.theme.title_color,
         )
         self.frame_icon.setStyleSheet("border: none")
         self.frame_name = QLabel("Rooms \n| home")
@@ -179,16 +179,16 @@ class MainWindow(QMainWindow):
         )
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search in Rooms | home",
-            bg_color=Color.LIGHT_BLACK.value,
-            bg_color_active=Color.LIGHT_BLACK.value,
-            color=Color.LIGHT_GREY.value,
+            bg_color=self.theme.search_color,
+            bg_color_active=self.theme.search_color,
+            color=self.theme.title_color,
         )
         self.frame_research.setFixedHeight(30)
         self.frame_research.setFixedWidth(200)
 
         self.frame_research.setTextMargins(0, 0, 0, 0)
         self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=Color.LIGHT_GREY.value))
+        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=self.theme.title_color))
 
         self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
 

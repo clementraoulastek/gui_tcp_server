@@ -1,7 +1,7 @@
 from src.client.core.qt_core import (
     QListWidget
 )
-from src.tools.utils import Color
+from src.tools.utils import Themes
 
 style = """
 QListWidget {{
@@ -61,16 +61,17 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
 }}
 """
 
+theme = Themes()
 class CustomQListWidget(QListWidget):
     def __init__(
         self,
         radius=12,
         border_size=1,
-        color=Color.LIGHT_GREY.value,
+        color=theme.title_color,
         selection_color="#FFF",
-        bg_color=Color.LIGHT_BLACK.value,
-        bg_color_active=Color.DARK_GREY.value,
-        context_color=Color.MIDDLE_GREY.value,
+        bg_color=theme.search_color,
+        bg_color_active=theme.inner_color,
+        context_color=theme.nav_color,
     ) -> None:
         super().__init__()
         

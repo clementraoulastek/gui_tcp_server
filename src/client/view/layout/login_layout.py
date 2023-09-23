@@ -14,14 +14,16 @@ from src.client.core.qt_core import (
     QLineEdit,
 )
 from src.client.view.tools.graphical_effects import widget_shadow
-from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
 
 load_dotenv()
 
 
 class LoginLayout(QHBoxLayout):
-    def __init__(self):
+    def __init__(self, theme: Themes):
         super(LoginLayout, self).__init__()
+        
+        self.theme = theme
         self.setContentsMargins(0, 0, 0, 0)
 
         self.create_main_widget()
@@ -42,10 +44,10 @@ class LoginLayout(QHBoxLayout):
         self.main_widget = QWidget()
         self.main_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_widget.setStyleSheet(
-            f"background-color: {Color.GREY.value};\
-            color: {Color.LIGHT_GREY.value};\
+            f"background-color: {self.theme.background_color};\
+            color: {self.theme.title_color};\
             border-radius: 0px;\
-            border: 1px solid {Color.MIDDLE_GREY.value};"
+            border: 1px solid {self.theme.nav_color};"
         )
         self.addWidget(self.main_widget)
 
@@ -87,7 +89,7 @@ class LoginLayout(QHBoxLayout):
 
         self.title_label = QLabel("Hello")
         self.title_label.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
+            f"color: {self.theme.title_color};\
             border: none; font-size: 36px;\
             font-weight: bold;\
             font-style: italic"
@@ -98,7 +100,7 @@ class LoginLayout(QHBoxLayout):
     def create_error_widgets(self):
         self.error_label = QLabel("Please login or register if you havn't account yet")
         self.error_label.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
+            f"color: {self.theme.title_color};\
             border: none;"
         )
         self.error_layout.addWidget(self.error_label)
@@ -140,8 +142,8 @@ class LoginLayout(QHBoxLayout):
         self.password_layout.addWidget(self.password_entry)
 
     def create_button_widgets(self):
-        self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value))
-        self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value))
+        self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, color=self.theme.text_color))
+        self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value, color=self.theme.text_color))
         self.entry_action = self.password_entry.addAction(
             self.register_icon, QLineEdit.TrailingPosition
         )

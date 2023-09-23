@@ -6,6 +6,7 @@ import io
 from typing import Optional, Tuple
 from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
+import configparser
 
 from resources.icon.icon_path import ICON_PATH
 from src.client.core.qt_core import (
@@ -54,7 +55,7 @@ class Icon(Enum):
 
 
 @unique
-class Color(Enum):
+class BlackColor(Enum):
     GREY = "#383A3F"
     MIDDLE_GREY = "#2A2C2F"
     LIGHT_GREY = "#B6BAC0"
@@ -66,7 +67,33 @@ class Color(Enum):
     GREEN = "#305C0A"
     BLACK = "#1C1D1F"
     YELLOW = "#F6DF91"
-
+    
+    
+class Themes:
+    class ThemeColor(Enum):
+        BLACK = 0
+        WHITE = 1 
+        
+    def __init__(self):
+        config = configparser.ConfigParser()
+        config.read('./config.ini')
+        
+        theme = config['THEME']['theme']
+        
+        self.emoji_color = "#F6DF91"
+        
+        if theme == Themes.ThemeColor.BLACK.name:
+            self.text_color = BlackColor.WHITE.value
+            self.title_color = BlackColor.LIGHT_GREY.value
+            self.inner_color = BlackColor.DARK_GREY.value
+            self.background_color = BlackColor.GREY.value
+            self.nav_color = BlackColor.MIDDLE_GREY.value
+            self.search_color = BlackColor.LIGHT_BLACK.value
+            self.rooms_color = BlackColor.BLACK.value
+        else:
+            raise Exception("Theme not found")
+        
+            
 
 @unique
 class ImageAvatar(Enum):
@@ -120,7 +147,7 @@ def get_scaled_icon(iconfilename, size=20):
     return photo
 
 
-def QIcon_from_svg(svg_name, color=Color.WHITE.value):
+def QIcon_from_svg(svg_name, color: str):
     path = ICON_PATH
     pixmap = QPixmap(os.path.join(path, svg_name))
     painter = QPainter(pixmap)

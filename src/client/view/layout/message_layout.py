@@ -1,7 +1,6 @@
 from enum import Enum, unique
 import datetime
 import functools
-import logging
 from typing import Optional
 from src.client.core.qt_core import (
     QHBoxLayout,
@@ -15,20 +14,19 @@ from src.client.core.qt_core import (
     QSizePolicy,
     QGraphicsDropShadowEffect,
     QColor,
-    QPoint,
     QEvent,
     QEnterEvent,
     QTimer,
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.commands import Commands
-from src.tools.utils import Color, Icon, QIcon_from_svg, check_str_len
+from src.tools.utils import Icon, QIcon_from_svg, check_str_len, Themes
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 import pytz
 from tzlocal import get_localzone
 
+theme = Themes()
 
 @unique
 class EnumReact(Enum):
@@ -81,7 +79,7 @@ class MessageLayout(QHBoxLayout):
 
         self.addWidget(self.main_widget)
         self.main_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
+            f"color: {theme.title_color};\
             margin-bottom: 1px;\
             margin-right: 2px;"
         )
@@ -139,7 +137,7 @@ class MessageLayout(QHBoxLayout):
 
         def hover(event: QEvent, user_widget):
             color = (
-                Color.DARK_GREY.value
+                theme.inner_color
                 if isinstance(event, QEnterEvent)
                 else "transparent"
             )
@@ -189,7 +187,7 @@ class MessageLayout(QHBoxLayout):
             self.event_layout.setSpacing(0)
             self.event_layout.setContentsMargins(0, 0, 0, 0)
             self.react_buttton = CustomQPushButton(
-                "", bg_color=Color.GREY.value, radius=4
+                "", bg_color=theme.background_color, radius=4
             )
             self.react_buttton.setToolTip("React to this message")
             retain = self.react_buttton.sizePolicy()
@@ -201,7 +199,7 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.setFixedWidth(20)
 
             react_icon = QIcon(
-                QIcon_from_svg(Icon.SMILEY.value, color=Color.YELLOW.value)
+                QIcon_from_svg(Icon.SMILEY.value, color=theme.emoji_color)
             )
 
             self.react_buttton.setIcon(react_icon)
@@ -209,14 +207,14 @@ class MessageLayout(QHBoxLayout):
             self.event_layout.addWidget(self.react_buttton)
 
             self.reply_button = CustomQPushButton(
-                "Reply", bg_color=Color.GREY.value, radius=4
+                "Reply", bg_color=theme.background_color, radius=4
             )
             self.reply_button.setToolTip("Reply to this message")
 
             self.reply_button.clicked.connect(self.add_reply)
             self.reply_button.setFixedSize(100, 20)
             response_icon = QIcon(
-                QIcon_from_svg(Icon.REPLY.value, color=Color.WHITE.value)
+                QIcon_from_svg(Icon.REPLY.value, color=theme.text_color)
             )
             self.reply_button.setIcon(response_icon)
             self.reply_button.hide()
@@ -231,18 +229,18 @@ class MessageLayout(QHBoxLayout):
         self.react_widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.react_widget.setStyleSheet(
-            f"color: {Color.LIGHT_GREY.value};\
-            background-color: {Color.DARK_GREY.value};\
+            f"color: {theme.title_color};\
+            background-color: {theme.inner_color};\
             border-radius: 6px;\
             font-weight: bold;\
-            border: 1px solid {Color.MIDDLE_GREY.value};"
+            border: 1px solid {theme.nav_color};"
         )
         self.react_widget.setLayout(react_layout)
         self.react_emot = AvatarLabel(
             content=Icon.SMILEY.value,
             height=15,
             width=15,
-            color=Color.YELLOW.value,
+            color=theme.emoji_color,
         )
         self.react_emot.setContentsMargins(0, 0, 0, 0)
         self.react_emot.setStyleSheet("border: 0px;")
@@ -262,7 +260,7 @@ class MessageLayout(QHBoxLayout):
 
         if "admin" in self.username_label:  # TODO: must be a column for user tab
             crown_icon = QIcon(
-                QIcon_from_svg(Icon.CROWN.value, color=Color.YELLOW.value)
+                QIcon_from_svg(Icon.CROWN.value, color=theme.emoji_color)
             ).pixmap(QSize(15, 15))
             sender_icon = QLabel()
             sender_icon.setContentsMargins(0, 0, 0, 3)
@@ -284,7 +282,7 @@ class MessageLayout(QHBoxLayout):
         date_label.setStyleSheet(
             f"border: 0px;\
             font-size: 8px;\
-            color: {Color.LIGHT_GREY.value}"
+            color: {theme.title_color}"
         )
         top_layout.addWidget(date_label)
 
@@ -311,7 +309,7 @@ class MessageLayout(QHBoxLayout):
             )
             icon_label = QLabel()
             icon_reply = QIcon(
-                QIcon_from_svg(Icon.LINK.value, color=Color.WHITE.value)
+                QIcon_from_svg(Icon.LINK.value, color=theme.text_color)
             ).pixmap(QSize(15, 15))
             icon_label.setPixmap(icon_reply)
 

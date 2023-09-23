@@ -3,12 +3,13 @@ from src.client.controller.gui_controller import GuiController
 from src.client.controller.tcp_controller import TcpServerController
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
+from src.tools.utils import Themes
 import re
 import src.client.controller.global_variables as global_variables
 
 
 class MainController:
-    def __init__(self, ui) -> None:
+    def __init__(self, ui, theme: Themes) -> None:
         self.ui = ui
         self.messages_dict: dict[str, MessageLayout] = {}
         self.last_message_id = 0
@@ -22,6 +23,7 @@ class MainController:
             self.last_message_id,
             self.api_controller,
             self.tcp_controller,
+            theme
         )
 
     def send_message_to_server(self, *args) -> None:
