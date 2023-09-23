@@ -40,7 +40,7 @@ class FooterView:
 
         # --- Client information
         self.user_info_widget = QWidget()
-        self.user_info_widget.setFixedWidth(250)
+        self.user_info_widget.setFixedWidth(310)
         self.client_information_dashboard_layout = QHBoxLayout(self.user_info_widget)
         self.client_information_dashboard_layout.setContentsMargins(0, 0, 0, 0)
         self.user_info_widget.setStyleSheet(
@@ -124,7 +124,7 @@ class FooterView:
         bottom_right_widget.setStyleSheet(
             f"font-style: italic;\
             background-color: {Color.LIGHT_BLACK.value};\
-            color: {Color.LIGHT_GREY.value}"
+            color: {Color.LIGHT_GREY.value};"
         )
         bottom_right_layout = QVBoxLayout(bottom_right_widget)
         bottom_right_layout.setContentsMargins(0, 0, 0, 0)

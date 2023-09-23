@@ -1,4 +1,4 @@
-from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon, QLineEdit, QPoint, QStackedWidget, QVBoxLayout
+from src.client.core.qt_core import QWidget, QHBoxLayout, Qt, QLabel, QLayout, QIcon, QLineEdit
 from src.client.view.customWidget.CustomQListWidget import CustomQListWidget
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
@@ -30,7 +30,7 @@ class HeaderView:
 
         # Header layout
         header_layout = QHBoxLayout(self.main_widget)
-        header_layout.setContentsMargins(10, 0, 10, 0)
+        header_layout.setContentsMargins(10, 0, 5, 0)
         
         # Logo widget
         logo_widget = QWidget()
@@ -46,49 +46,72 @@ class HeaderView:
             border: none"
         )
 
-        # Status server label
+        # Server Name
         status_server_label = QLabel(DEFAULT_CLIENT_NAME.upper())
         status_server_label.setStyleSheet(
             "font-weight: bold;\
             border: none;\
             font-style: italic"
         )
-
-        # Set the header buttons
-        self.set_buttons_nav_gui(header_layout)
+        separator_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, color=Color.LIGHT_GREY.value))
+        self.separator = QLabel()
+        self.separator.hide()
+        self.separator.setPixmap(separator_icon.pixmap(20, 20))
         
+        self.welcome_label = QLabel("")
+        self.welcome_label.setStyleSheet("font-weight: bold")
+        self.welcome_label.hide()
+        
+        # Frame research
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search users",
+            bg_color=Color.LIGHT_BLACK.value,
+            bg_color_active=Color.LIGHT_BLACK.value,
         )
-
-        self.frame_research_list = CustomQListWidget()
-        self.parent.layout().addChildWidget(self.frame_research_list)
-        self.frame_research_list.hide()
-        # self.frame_research_list.setFixedHeight(100)
-        self.frame_research_list.setContentsMargins(0, 0, 0, 0)
-        self.frame_research_list.setSpacing(20)
-
+        self.frame_research.setFixedHeight(30)
         self.frame_research.setFixedWidth(200)
-        self.frame_research_list.setFixedWidth(200)
-
         self.frame_research.setTextMargins(0, 0, 0, 0)
         self.frame_research.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=Color.LIGHT_GREY.value))
-        self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
-        
         retein = self.frame_research.sizePolicy()
         retein.setRetainSizeWhenHidden(True)
         self.frame_research.setSizePolicy(retein)
+
+        # Frame research list
+        self.frame_research_list = CustomQListWidget(
+            
+        )
+        self.parent.layout().addChildWidget(self.frame_research_list)
+        self.frame_research_list.hide()
+
+        self.frame_research_list.setContentsMargins(0, 0, 0, 0)
+        self.frame_research_list.setSpacing(10)
+        self.frame_research_list.setFixedWidth(200)
+
+        search_icon = QIcon(QIcon_from_svg(Icon.SEARCH.value, color=Color.LIGHT_GREY.value))
+        self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
         
         logo_layout.addWidget(icon_soft, alignment=Qt.AlignmentFlag.AlignLeft)
         logo_layout.addWidget(status_server_label, alignment=Qt.AlignmentFlag.AlignLeft)
-        logo_layout.addWidget(self.frame_research, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
         
         # Adding widgets to the main layout
         header_layout.addWidget(logo_widget)
+
+        header_layout.addWidget(self.separator)
+        header_layout.addWidget(self.welcome_label)
+        
+        # Set the header buttons
+        self.set_buttons_nav_gui(header_layout)
+        header_layout.addWidget(self.frame_research)
+        
         self.frame_research.hide()
 
     def set_buttons_nav_gui(self, header_layout: QLayout) -> None:
+        """
+        Set the header buttons GUI
+
+        Args:
+            header_layout (QLayout): Layout to display the buttons
+        """
         self.close_users = QIcon(QIcon_from_svg(Icon.CLOSE_USERS.value))
         self.close_dm = QIcon(QIcon_from_svg(Icon.CLOSE_DM.value))
 
@@ -113,8 +136,8 @@ class HeaderView:
         self.close_right_nav_button.setFixedWidth(30)
         self.close_right_nav_button.setFixedHeight(30)
 
-        header_layout.addWidget(self.close_left_nav_button)
-        header_layout.addWidget(self.close_right_nav_button)
+        header_layout.addWidget(self.close_left_nav_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
+        header_layout.addWidget(self.close_right_nav_button, alignment=Qt.AlignmentFlag.AlignRight)
 
         info_widget = QWidget()
         info_widget.setStyleSheet(

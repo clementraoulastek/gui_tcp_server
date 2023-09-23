@@ -11,23 +11,20 @@ from src.client.view.header import HeaderView
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.left_nav import LeftNavView
 from src.client.view.right_nav import RightNavView
-from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
+from src.client.view.rooms_bar import RoomsBarWidget
 from src.client.core.qt_core import (
     QApplication,
     QHBoxLayout,
     QIcon,
     QLabel,
     QMainWindow,
-    QScrollArea,
     Qt,
     QVBoxLayout,
     QWidget,
-    QSizePolicy,
-    QPoint,
     QLineEdit
 )
 from src.tools.backend import Backend
-from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER, SOFT_VERSION
+from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg
 
 
@@ -95,6 +92,7 @@ class MainWindow(QMainWindow):
 
         # Main layout
         self.main_layout = QVBoxLayout(self.main_widget)
+        self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
         self.main_layout.setContentsMargins(0, 0, 0, 5)
         self.main_layout.setSpacing(0)
 
@@ -103,7 +101,6 @@ class MainWindow(QMainWindow):
         self.main_layout.addWidget(self.header.main_widget)
         self.main_layout.addLayout(self.header.button_layout)
     
-
         # Core widget
         self.core_widget = QWidget()
         self.core_widget.setContentsMargins(0, 0, 0, 0)
@@ -114,16 +111,16 @@ class MainWindow(QMainWindow):
         self.core_layout.setContentsMargins(0, 0, 0, 0)
 
         # Update core layout
+        self.rooms_widget = RoomsBarWidget()
         self.left_nav_widget = LeftNavView(width=250)
+        self.core_layout.addWidget(self.rooms_widget.main_widget)
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
 
         self.set_body_gui()
 
         self.right_nav_widget = RightNavView(self.controller, width=250)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
-
         self.main_layout.addWidget(self.core_widget)
-        self.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
         # Footer
         self.footer_widget = FooterView(
@@ -182,10 +179,11 @@ class MainWindow(QMainWindow):
         )
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search in Rooms | home",
-            bg_color=Color.GREY.value,
-            bg_color_active=Color.GREY.value,
+            bg_color=Color.LIGHT_BLACK.value,
+            bg_color_active=Color.LIGHT_BLACK.value,
             color=Color.LIGHT_GREY.value,
         )
+        self.frame_research.setFixedHeight(30)
         self.frame_research.setFixedWidth(200)
 
         self.frame_research.setTextMargins(0, 0, 0, 0)

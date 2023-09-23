@@ -149,6 +149,7 @@ class MessageLayout(QHBoxLayout):
             background-color: {color};
             border-radius: 8px;
             border: 0px solid transparent;
+            text-align: center;
             }} 
             """
             user_widget.setStyleSheet(style_.format(color=color))
@@ -157,6 +158,7 @@ class MessageLayout(QHBoxLayout):
             self.sender_btn.clicked.connect(
                 functools.partial(self.add_dm_layout, copy_icon)
             )
+            icon_label.mousePressEvent = lambda e : functools.partial(self.add_dm_layout, copy_icon)()
 
         if message_id and sender != self.controller.ui.client.user_name:
             self.sender_btn.enterEvent = functools.partial(
@@ -370,9 +372,9 @@ class MessageLayout(QHBoxLayout):
             self.username_label, icon_label, switch_frame=True
         )
 
-    def widget_shadow(self, widget):
-        result = QGraphicsDropShadowEffect(widget)
+    def widget_shadow(self, widget: QWidget) -> None:
+        result = QGraphicsDropShadowEffect()
         result.setColor(QColor(0, 0, 0, 150))
         result.setOffset(0, 1)
         result.setBlurRadius(1)
-        return result
+        widget.setGraphicsEffect(result)

@@ -38,6 +38,7 @@ class Icon(Enum):
     SMILEY = f"{ICON_PATH}/smiley.svg"
     ROOM = f"{ICON_PATH}/home.svg"
     SEPARATOR = f"{ICON_PATH}/separator.svg"
+    SEPARATOR_HORIZ = f"{ICON_PATH}/separator_ho.svg"
     CROWN = f"{ICON_PATH}/crown.svg"
     REPLY = f"{ICON_PATH}/reply.svg"
     REPLY_ROTATED = f"{ICON_PATH}/reply_rotated.svg"
@@ -63,7 +64,7 @@ class Color(Enum):
     BLUE = "#4986F7"
     RED = "#811919"
     GREEN = "#305C0A"
-    BLACK = "#171717"
+    BLACK = "#1C1D1F"
     YELLOW = "#F6DF91"
 
 

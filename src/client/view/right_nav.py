@@ -48,26 +48,15 @@ class RightNavView:
             border-radius: 0px;\
             border: 0px solid;\
             border-color: {Color.MIDDLE_GREY.value};\
-            margin-bottom: 0px"
+            margin-bottom: 0px;"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
         self.direct_message_layout.setSpacing(5)
         self.direct_message_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.rooms_widget = QWidget()
-        self.rooms_widget.setStyleSheet("border: none;")
-        self.rooms_layout = QVBoxLayout(self.rooms_widget)
-        self.rooms_layout.setContentsMargins(0, 0, 0, 0)
-
-        rooms_label = QLabel("Rooms")
-        self._update_label_style(rooms_label, is_top_label=False)
-        rooms_label.setContentsMargins(0, 0, 0, 0)
-        rooms_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
-        rooms_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-
         dm_label = QLabel("Messages")
-        self._update_label_style(dm_label, is_top_label=True)
+        dm_label.setContentsMargins(5, 5, 5, 5)
+        self._update_label_style(dm_label)
         dm_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         dm_icon = QLabel()
         dm_icon.setStyleSheet("border: 0px")
@@ -79,21 +68,17 @@ class RightNavView:
         self.room_list: Dict[str, QWidget] = {}
 
         # Adding widgets to the main layout
-        self.direct_message_layout.addWidget(rooms_label)
-        self.direct_message_layout.addWidget(self.rooms_widget)
         self.direct_message_layout.addWidget(dm_label)
 
         self.scroll_area_dm.setWidget(self.right_nav_widget)
 
-    def _update_label_style(self, widget: QWidget, is_top_label: bool = False):
+    def _update_label_style(self, widget: QWidget):
         style_ = f"font-weight: bold;\
         color: {Color.LIGHT_GREY.value};\
         background-color: transparent;\
         border: 0px solid;\
-        border-radius: 6px;\
-        margin-bottom: 0px;\
-        margin-top: 0px;"
-        if not is_top_label:
-            style_ += "margin-top: 0px"
+        border-radius: 0px;\
+        padding-left: 0px;\
+        padding-right: 0px;"
 
         widget.setStyleSheet(style_)

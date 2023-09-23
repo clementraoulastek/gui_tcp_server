@@ -64,11 +64,11 @@ class LeftNavView:
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.info_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.info_label.setContentsMargins(0, 0, 0, 0)
+        self.info_label.setContentsMargins(5, 5, 5, 5)
         self.info_label.setStyleSheet(
             f"font-weight: bold; color: {Color.LIGHT_GREY.value};\
             background-color: transparent;\
-            border-radius: 6px;\
+            border-radius: 0px;\
             margin-bottom: 0px;\
             margin-left: 0px;\
             border: 0px solid;"
@@ -79,7 +79,7 @@ class LeftNavView:
 
         self.info_disconnected_label = QLabel("")
         self.info_disconnected_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.info_disconnected_label.setContentsMargins(0, 0, 0, 0)
+        self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
         disconnected_label = QLabel()
         disconnected_icon = QIcon_from_svg(Icon.USER_DISCONNECTED.value).pixmap(20, 20)
         disconnected_label.setPixmap(disconnected_icon)
@@ -89,7 +89,7 @@ class LeftNavView:
             f"font-weight: bold;\
             color: {Color.LIGHT_GREY.value};\
             background-color: transparent;\
-            border-radius: 6px;\
+            border-radius: 0px;\
             margin-bottom: 0px;\
             margin-top: 0px;\
             margin-left: 0px;\

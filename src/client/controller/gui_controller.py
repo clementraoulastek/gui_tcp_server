@@ -24,6 +24,7 @@ from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, QThread, Signal, Qt
+from src.tools.constant import DEFAULT_CLIENT_NAME
 from src.tools.utils import Color, Icon, ImageAvatar, QIcon_from_svg, check_str_len
 from src.client.controller.api_controller import ApiController, ApiStatus
 from src.client.controller.tcp_controller import TcpServerController
@@ -530,7 +531,6 @@ class GuiController:
                 border: 0px solid {color};
                 }} 
                 """
-
                 def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
                     if isinstance(event, QEnterEvent):
                         color = Color.GREY.value
@@ -566,7 +566,7 @@ class GuiController:
 
                 # Create avatar label
                 user_pic, dm_pic = AvatarLabel(
-                    content=content, status=AvatarStatus.DEACTIVATED
+                    content=content, status=AvatarStatus.DEACTIVATED,
                 ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
 
                 user_widget.enterEvent = partial(
@@ -707,6 +707,9 @@ class GuiController:
         self.ui.upper_widget.show()
         self.ui.header.frame_research.show()
         self.ui.header.frame_research.clearFocus()
+        self.ui.header.welcome_label.setText(f"Welcome {self.ui.client.user_name}")
+        self.ui.header.welcome_label.show()
+        self.ui.header.separator.show()
         
         # Signal
         self.ui.header.frame_research.textChanged.connect(self.display_users_from_research)
@@ -828,12 +831,13 @@ class GuiController:
         self.update_buttons()
         self.clear_avatar("user_inline", self.ui.left_nav_widget)
         self.clear_avatar("user_offline", self.ui.left_nav_widget)
-        self.clear_avatar("rooms_layout", self.ui.right_nav_widget)
+        self.clear_avatar("main_layout", self.ui.rooms_widget)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
         self.ui.footer_widget.reply_entry_action.triggered.disconnect()
         self.ui.header.frame_research.hide()
+        self.ui.header.welcome_label.hide()
+        self.ui.header.separator.hide()
 
-        # self.ui.left_nav_widget.message_label.show()
         self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
 
@@ -1017,8 +1021,11 @@ class GuiController:
         room_layout = QHBoxLayout(room_widget)
         room_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         room_layout.setContentsMargins(0, 0, 0, 0)
-        room_btn = QLabel("home")
-        room_btn.setStyleSheet("font-weight: bold;")
+
+        divider = QIcon(QIcon_from_svg(Icon.SEPARATOR_HORIZ.value, color=Color.GREY.value))
+        divider_label = QLabel()
+        divider_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        divider_label.setPixmap(divider.pixmap(20, 20))
 
         room_icon = AvatarLabel(
             content=ImageAvatar.ROOM.value,
@@ -1032,7 +1039,7 @@ class GuiController:
             if isinstance(event, QEnterEvent):
                 color = Color.GREY.value
             else:
-                color = Color.DARK_GREY.value
+                color = Color.BLACK.value
             style_ = """
             QWidget {{
             font-weight: bold;
@@ -1057,8 +1064,8 @@ class GuiController:
         room_widget.setStyleSheet(style_.format())
 
         room_layout.addWidget(room_icon)
-        room_layout.addWidget(room_btn)
-        self.ui.right_nav_widget.rooms_layout.addWidget(room_widget)
+        self.ui.rooms_widget.main_layout.addWidget(room_widget)
+        self.ui.rooms_widget.main_layout.addWidget(divider_label)
 
     def reply_to_message(self, message: MessageLayout) -> None:
         """
@@ -1087,9 +1094,10 @@ class GuiController:
                 border: 0px"
             )
             global_variables.reply_id = ""
+            older_room_name = older_room_name.replace("\n", "")
             self.ui.footer_widget.entry.setPlaceholderText(older_room_name)
             self.ui.footer_widget.reply_entry_action.setVisible(False)
-
+            
         older_room_name = f"Enter your message to {self.ui.frame_name.text()}"
         self.ui.footer_widget.entry.setPlaceholderText(
             f"Reply to {message.username_label}"
@@ -1124,7 +1132,7 @@ class GuiController:
         Display users list from research
         """
         # Move the list under the research bar
-        x = self.ui.header.frame_research.x() + self.ui.header.frame_research.width() // 2 - 2
+        x = self.ui.header.frame_research.x()
         y = self.ui.header.frame_research.y() + self.ui.header.frame_research.height()
         self.ui.header.frame_research_list.move(x, y)
         self.ui.header.frame_research_list.clear()
@@ -1143,7 +1151,7 @@ class GuiController:
             if isinstance(event, QEnterEvent):
                 color = Color.GREY.value
             else:
-                color = Color.DARK_GREY.value
+                color = Color.LIGHT_BLACK.value
 
             style_ = """
             QWidget {{
@@ -1164,7 +1172,10 @@ class GuiController:
                 self.ui.header.frame_research.update_layout()
                 user_widget = CustomQPushButton()
                 content = global_variables.user_connected[user][0] if user in global_variables.user_connected else global_variables.user_disconnect[user][0]
-                dm_pic = AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                dm_pic = AvatarLabel(
+                    content=content, 
+                    status=AvatarStatus.IDLE,
+                )
                 
                 def callback(user, dm_pic):
                     self.add_gui_for_mp_layout(user, dm_pic, True)
@@ -1183,10 +1194,15 @@ class GuiController:
                     hover, user_widget=user_widget
                 )
                 user_widget.setContentsMargins(0, 0, 0, 0)
-                user_widget.setFixedHeight(50)
+                user_widget.setFixedHeight(30)
                 user_layout = QHBoxLayout(user_widget)
                 
-                user_pic = AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                user_pic = AvatarLabel(
+                    content=content, 
+                    status=AvatarStatus.IDLE,
+                    height=20,
+                    width=20
+                )
                 
                 user_layout.setContentsMargins(0, 0, 0, 0)
                 user = check_str_len(user)

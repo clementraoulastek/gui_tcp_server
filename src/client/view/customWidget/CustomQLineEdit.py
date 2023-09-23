@@ -117,8 +117,8 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             _border_size=1,
             _color=Color.LIGHT_GREY.value,
             _selection_color="#FFF",
-            _bg_color=Color.DARK_GREY.value,
-            _bg_color_active=Color.DARK_GREY.value,
+            _bg_color=Color.LIGHT_BLACK.value,
+            _bg_color_active=Color.LIGHT_BLACK.value,
             _context_color=Color.MIDDLE_GREY.value,
         )
         self.setStyleSheet(style_format)

@@ -54,10 +54,10 @@ QScrollBar::sub-line:vertical {{
     margin-left: 0px;
 }}
 QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {{
-    background: #2A2C2F;
+    background: transparent;
 }}
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
-    background: #2A2C2F;
+    background: transparent;
 }}
 """
 
@@ -68,7 +68,7 @@ class CustomQListWidget(QListWidget):
         border_size=1,
         color=Color.LIGHT_GREY.value,
         selection_color="#FFF",
-        bg_color=Color.DARK_GREY.value,
+        bg_color=Color.LIGHT_BLACK.value,
         bg_color_active=Color.DARK_GREY.value,
         context_color=Color.MIDDLE_GREY.value,
     ) -> None:
