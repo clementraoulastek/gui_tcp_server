@@ -122,7 +122,7 @@ class FooterView:
         self.reply_entry_action.setVisible(False)
 
         self.bottom_right_widget = QWidget()
-        self.bottom_right_widget.setContentsMargins(0, 0, 0, 0)
+        self.bottom_right_widget.setContentsMargins(0, 5, 0, 5)
         self.bottom_right_widget.setMinimumWidth(self.version_widget_width)
         self.bottom_right_widget.setStyleSheet(
             f"background-color: {self.theme.search_color};\
@@ -130,7 +130,7 @@ class FooterView:
         )
         self.bottom_right_layout = QVBoxLayout(self.bottom_right_widget)
         self.bottom_right_layout.setContentsMargins(0, 0, 0, 0)
-        self.bottom_right_layout.setSpacing(0)
+        self.bottom_right_layout.setSpacing(5)
         version_widget = QWidget()
         version_widget.setContentsMargins(10, 0, 0, 0)
         version_layout = QHBoxLayout(version_widget)

@@ -114,10 +114,9 @@ class MainWindow(QMainWindow):
         # Update core layout
         self.rooms_widget = RoomsBarWidget(theme=self.theme)
         self.left_nav_widget = LeftNavView(width=250, theme=self.theme)
-        self.core_layout.addWidget(self.rooms_widget.main_widget)
-
+    
         self.core_layout.addLayout(self.left_nav_widget.left_nav_layout)
-
+        self.core_layout.addWidget(self.rooms_widget.main_widget)
         self.set_body_gui()
 
         self.right_nav_widget = RightNavView(self.controller, width=250, theme=self.theme)

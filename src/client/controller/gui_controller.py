@@ -973,7 +973,9 @@ class GuiController:
                 close_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight
             )
             self.ui.right_nav_widget.room_list[room_name] = direct_message_layout
-            self.ui.right_nav_widget.direct_message_layout.addWidget(
+            # Insert widget after the separator
+            self.ui.right_nav_widget.direct_message_layout.insertWidget(
+                1,
                 direct_message_widget
             )
 
@@ -1043,7 +1045,7 @@ class GuiController:
         room_widget = CustomQPushButton()
         room_widget.setFixedHeight(50)
         room_layout = QHBoxLayout(room_widget)
-        room_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        room_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         room_layout.setContentsMargins(0, 0, 0, 0)
 
         divider = QIcon(QIcon_from_svg(Icon.SEPARATOR_HORIZ.value, color=self.theme.background_color))
@@ -1088,7 +1090,7 @@ class GuiController:
             """
         room_widget.setStyleSheet(style_.format())
 
-        room_layout.addWidget(room_icon)
+        room_layout.addWidget(room_icon, alignment=Qt.AlignmentFlag.AlignCenter)
         self.ui.rooms_widget.main_layout.addWidget(room_widget)
         self.ui.rooms_widget.main_layout.addWidget(divider_label)
 
@@ -1106,8 +1108,16 @@ class GuiController:
             f"color: {self.theme.title_color};\
             margin-bottom: 1px;\
             margin-right: 2px;\
-            background-color: {self.theme.inner_color};\
-            border: 0px;"
+            background-color: {self.theme.inner_color};"
+        )
+        message.left_widget.setStyleSheet(
+            f"""QWidget{{
+                border-left: 2px solid;\
+                border-color: {self.theme.emoji_color};
+            }}
+            AvatarLabel{{
+                border: 0px solid;
+            }}"""
         )
 
         def callback(message: MessageLayout, older_room_name: str):
@@ -1117,6 +1127,9 @@ class GuiController:
                 margin-right: 2px;\
                 background-color: transparent;\
                 border: 0px"
+            )
+            message.left_widget.setStyleSheet(
+                "border-left: 0px solid;"
             )
             global_variables.reply_id = ""
             older_room_name = older_room_name.replace("\n", "")

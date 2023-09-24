@@ -31,8 +31,8 @@ class AvatarLabel(QLabel):
         self,
         *args,
         content=None,
-        height=40,
-        width=40,
+        height=30,
+        width=30,
         color=None,
         status=AvatarStatus.IDLE,
         background_color=theme.rgb_background_color_actif,
@@ -144,9 +144,9 @@ class AvatarLabel(QLabel):
         icon_pixmap: QPixmap,
     ) -> None:
         painter.setPen(QPen(Qt.NoPen))
-        circle_radius = 7 if self.height_ >= 40 else 3
+        circle_radius = 6 if self.height_ >= 30 else 3
         circle_center = QPoint(
-            self.width_ - 1.5 * circle_radius, self.height_ - circle_radius * 1
+            self.width_ - 1.1 * circle_radius, self.height_ - circle_radius * 1
         )
 
         self.__draw_ellipse(outer_brush_color, painter, circle_center, circle_radius)

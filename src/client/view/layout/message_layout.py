@@ -91,7 +91,7 @@ class MessageLayout(QHBoxLayout):
         self.left_layout.setContentsMargins(0, 0, 0, 0)
         self.left_layout.setSpacing(0)
         self.left_widget = QWidget()
-        self.left_widget.setStyleSheet("padding: 0px;")
+        self.left_widget.setStyleSheet("padding: 0px; border: 0px;")
         self.left_widget.setMaximumWidth(80)
         self.left_widget.setMinimumWidth(80)
 
@@ -132,21 +132,17 @@ class MessageLayout(QHBoxLayout):
         self.sender_btn.setFixedHeight(20)
 
         def hover(event: QEvent, user_widget):
-            color = (
-                theme.inner_color
-                if isinstance(event, QEnterEvent)
-                else "transparent"
-            )
             style_ = """
-            QWidget {{
             font-weight: bold;
-            background-color: {color};
+            background-color: transparent;
             border-radius: 4px;
             border: 0px solid transparent;
             text-align: center;
-            }} 
             """
-            user_widget.setStyleSheet(style_.format(color=color))
+            if isinstance(event, QEnterEvent):
+                style_+="text-decoration: underline;"
+                
+            user_widget.setStyleSheet(style_)
 
         if sender != self.controller.ui.client.user_name:
             self.sender_btn.clicked.connect(
@@ -280,7 +276,7 @@ class MessageLayout(QHBoxLayout):
         date_label.setStyleSheet(
             f"border: 0px;\
             font-size: 8px;\
-            color: {theme.title_color}"
+            color: {theme.rooms_color}"
         )
         top_layout.addWidget(date_label)
 
@@ -317,6 +313,7 @@ class MessageLayout(QHBoxLayout):
                 model_message = response_model.str_message
 
             model_message = QLabel(f"{model_message}")
+            model_message.setStyleSheet(f"color: {theme.rooms_color};")
 
             response_layout.addWidget(icon_reply_label)
             response_layout.addWidget(model_icon)

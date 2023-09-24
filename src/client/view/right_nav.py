@@ -45,7 +45,7 @@ class RightNavView:
             margin-bottom: 0px;"
         )
         self.direct_message_layout = QVBoxLayout(self.right_nav_widget)
-        self.direct_message_layout.setSpacing(5)
+        self.direct_message_layout.setSpacing(0)
         self.direct_message_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         dm_label = QLabel("Messages")
