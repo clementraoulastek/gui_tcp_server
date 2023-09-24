@@ -102,46 +102,60 @@ class Themes:
         
         if self.theme_name == Themes.ThemeColor.BLACK.name:
             self.color = BlackColor.BLACK.value
-            self.rgb_background_color_actif = QColor(56, 58, 63)
-            self.rgb_background_color_actif_footer = QColor(35, 35, 40)
-            self.rgb_background_color_innactif = QColor(49, 51, 56)
             self.text_color = BlackColor.WHITE.value
             self.title_color = BlackColor.LIGHT_GREY.value
             self.inner_color = BlackColor.DARK_GREY.value
+            self.rgb_background_color_innactif = QColor(*self.hex_to_rgb(self.inner_color))
             self.background_color = BlackColor.GREY.value
+            self.rgb_background_color_actif = QColor(*self.hex_to_rgb(self.background_color))
             self.nav_color = BlackColor.MIDDLE_GREY.value
             self.search_color = BlackColor.LIGHT_BLACK.value
+            self.rgb_background_color_actif_footer = QColor(*self.hex_to_rgb(self.search_color))
             self.rooms_color = BlackColor.BLACK.value
             self.emoji_color = BlackColor.YELLOW.value
         elif self.theme_name == Themes.ThemeColor.WHITE.name:
             self.color = WhiteColor.WHITE.value
-            self.rgb_background_color_actif = QColor(255, 255, 255)
-            self.rgb_background_color_actif_footer = QColor(207, 207, 208)
-            self.rgb_background_color_innactif = QColor(228, 228, 228)
             self.text_color = WhiteColor.BLACK.value
             self.title_color = WhiteColor.BLACK.value
             self.inner_color = WhiteColor.LIGHT_GREY.value
+            self.rgb_background_color_innactif = QColor(*self.hex_to_rgb(self.inner_color))
             self.background_color = WhiteColor.WHITE.value
+            self.rgb_background_color_actif = QColor(*self.hex_to_rgb(self.background_color))
             self.nav_color = WhiteColor.WHITE.value
             self.search_color = WhiteColor.GREY.value
+            self.rgb_background_color_actif_footer = QColor(*self.hex_to_rgb(self.search_color))
             self.rooms_color = WhiteColor.DARK_GREY.value
             self.emoji_color = WhiteColor.BLACK.value
         elif self.theme_name == Themes.ThemeColor.CUSTOM.name:
             self.color = self.config['THEME']['inner_color']
-            self.rgb_background_color_actif = QColor(255, 255, 255)
-            self.rgb_background_color_actif_footer = QColor(207, 207, 208)
-            self.rgb_background_color_innactif = QColor(228, 228, 228)
             self.text_color = self.config['THEME']['text_color']
             self.title_color = self.config['THEME']['title_color']
             self.inner_color = self.config['THEME']['inner_color']
+            self.rgb_background_color_innactif = QColor(*self.hex_to_rgb(self.inner_color))
             self.background_color = self.config['THEME']['background_color']
+            self.rgb_background_color_actif = QColor(*self.hex_to_rgb(self.background_color))
             self.nav_color = self.config['THEME']['nav_color']
             self.search_color = self.config['THEME']['search_color']
+            self.rgb_background_color_actif_footer = QColor(*self.hex_to_rgb(self.search_color))
             self.rooms_color = self.config['THEME']['rooms_color']
             self.emoji_color = self.config['THEME']['emoji_color']
         else:
             raise NotImplementedError("Theme not found")
-        
+    
+    def hex_to_rgb(self, hex_color: str) -> Tuple[int, int, int]:
+        """
+        Convert hex color to rgb color
+
+        Args:
+            hex_color (str): hex color
+
+        Returns:
+            Tuple[int, int, int]: rgb color
+        """
+        hex_color = hex_color.lstrip("#")
+        hlen = len(hex_color)
+        return tuple(int(hex_color[i : i + hlen // 3], 16) for i in range(0, hlen, hlen // 3))
+    
     def switch_theme(self, controller, theme: ThemeColor) -> None:
         """
         Switch theme

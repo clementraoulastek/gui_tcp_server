@@ -38,7 +38,7 @@ class Backend:
 
     def send_user_icon(self, username: str, picture_path: str = None) -> bool:
         path = picture_path or QFileDialog.getOpenFileName(
-            self.parent
+            self.parent,
         )  # TODO: To remove from here
         if not path[0]:
             return

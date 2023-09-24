@@ -90,7 +90,7 @@ class HeaderView:
         logo_layout.addWidget(status_server_label, alignment=Qt.AlignmentFlag.AlignLeft)
         
         lang_layout = AvatarLabel(content=ImageAvatar.EN.value, height=20, width=20)
-        lang_label = QLabel("Language: EN")
+        lang_label = QLabel("<strong>EN</strong>")
         
         # Adding widgets to the main layout
         self.header_layout.addWidget(logo_widget)

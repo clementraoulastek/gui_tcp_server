@@ -15,7 +15,6 @@ QLineEdit {{
 	border: {_border_size}px solid {_context_color};
 	padding-left: 10px;
     padding-right: 5px;
-	selection-color: {_selection_color};
 	selection-background-color: {_context_color};
     color: {_color};
     margin-left: 0px;
@@ -37,7 +36,6 @@ QLineEdit {{
     border-bottom: 0px solid;
 	padding-left: 10px;
     padding-right: 5px;
-	selection-color: {_selection_color};
 	selection-background-color: {_context_color};
     color: {_color};
 }}
@@ -58,7 +56,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         radius=12,
         border_size=0,
         color=theme.title_color,
-        selection_color="#FFF",
         bg_color=theme.inner_color,
         bg_color_active=theme.inner_color,
         context_color=theme.nav_color,
@@ -76,7 +73,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             radius,
             border_size,
             color,
-            selection_color,
             bg_color,
             bg_color_active,
             context_color,
@@ -89,7 +85,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         radius,
         border_size,
         color,
-        selection_color,
         bg_color,
         bg_color_active,
         context_color,
@@ -99,7 +94,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             _radius=radius,
             _border_size=border_size,
             _color=color,
-            _selection_color=selection_color,
             _bg_color=bg_color,
             _bg_color_active=bg_color_active,
             _context_color=context_color,
@@ -119,7 +113,6 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             _radius=12,
             _border_size=1,
             _color=theme.title_color,
-            _selection_color="#FFF",
             _bg_color=theme.search_color,
             _bg_color_active=theme.search_color,
             _context_color=theme.nav_color,

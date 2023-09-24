@@ -461,7 +461,7 @@ class GuiController:
                     )
                 else:
                     color = self.theme.inner_color
-                    user_pic.update_pixmap(AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif)
+                    user_pic.update_pixmap(AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_innactif)
                 style_ = """
                 QWidget {{
                 background-color: {color};
@@ -892,7 +892,6 @@ class GuiController:
             activate (bool): status of the button needed
             lock_message (str): message for the entry
         """
-        self.ui.footer_widget.custom_user_button.setDisabled(activate)
         self.ui.footer_widget.logout_button.setDisabled(activate)
         self.ui.footer_widget.entry.setDisabled(activate)
         self.ui.footer_widget.entry.setPlaceholderText(lock_message)
@@ -1267,10 +1266,10 @@ class GuiController:
         self.theme_board = QWidget()
 
         height = 250
-        self.theme_board.setFixedSize(QSize(250, height))
+        self.theme_board.setFixedSize(QSize(240, height))
         self.theme_board.move(
-            self.ui.footer_widget.bottom_right_widget.x(), 
-            self.ui.footer_widget.send_widget.y() - height + self.ui.footer_widget.bottom_right_widget.height()
+            self.ui.footer_widget.bottom_right_widget.x() + 5, 
+            self.ui.footer_widget.send_widget.y() - height + self.ui.footer_widget.bottom_right_widget.height() - 5
         )
         self.theme_board.setContentsMargins(0, 0, 0, 0)
         self.theme_board.setStyleSheet(
@@ -1279,17 +1278,11 @@ class GuiController:
             border: 1px solid {self.theme.inner_color};"
         )
         theme_board_layout = QVBoxLayout(self.theme_board)
-        theme_board_layout.setContentsMargins(5, 5, 5, 5)
+        theme_board_layout.setContentsMargins(15, 15, 15, 15)
         theme_board_layout.setSpacing(5)
         list_theme_label = [
-            QLabel("text color"),
-            QLabel("title color"),
-            QLabel("inner color"),
-            QLabel("bg color"),
-            QLabel("nav color"),
-            QLabel("search color"),
-            QLabel("rooms color"),
-            QLabel("emoji color")
+            QLabel(color_name.capitalize().replace("_color", ""))
+            for color_name in self.theme.list_colors
         ]
         list_theme_line_edit = [
             CustomQLineEdit(
@@ -1309,7 +1302,6 @@ class GuiController:
             )
         for line_edit in list_theme_line_edit:
             line_edit.setFixedSize(QSize(120, 15))
-            line_edit.setAlignment(Qt.AlignmentFlag.AlignLeft)
             line_edit.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         for label, line_edit in zip(list_theme_label, list_theme_line_edit):
@@ -1318,7 +1310,7 @@ class GuiController:
                 "border: 0px solid;"
             )
             layout = QHBoxLayout(widget)
-            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setContentsMargins(5, 0, 5, 0)
             layout.setSpacing(0)
             layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
             layout.addWidget(line_edit, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -1336,7 +1328,7 @@ class GuiController:
         # Update theme button
         theme_icon = QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.title_color))
         update_button = self._create_theme_button(
-            "Update", 80, theme_icon
+            "Custom", 80, theme_icon
         )
         update_button.clicked.connect(
             partial(self.theme.create_custom_theme, self, list_theme_line_edit)

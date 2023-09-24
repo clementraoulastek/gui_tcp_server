@@ -56,6 +56,7 @@ class MainController:
                 ],
                 response_model=message_model,
             )
+            self.ui.footer_widget.reply_entry_action.triggered.emit()
             self.ui.footer_widget.entry.clearFocus()
 
     def hide_left_layout(self) -> None:

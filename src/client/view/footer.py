@@ -54,12 +54,14 @@ class FooterView:
         self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value, color=self.theme.text_color))
 
         self.user_widget = QWidget()
-        self.custom_user_button = CustomQPushButton("")
-        self.custom_user_button.setToolTip("Update your avatar")
-        self.custom_user_button.setFixedHeight(30)
-        self.custom_user_button.setFixedWidth(30)
-
+        
         self.user_picture = AvatarLabel(content="")
+        self.user_picture.setToolTip("Update your avatar")
+        self.user_picture.enterEvent = lambda event: self.user_picture.graphicsEffect().setEnabled(True)
+        self.user_picture.leaveEvent = lambda event: self.user_picture.graphicsEffect().setEnabled(False)
+        self.user_picture.mousePressEvent = lambda e : self.controller.update_user_icon()
+        self.user_picture.set_opacity(0.8)
+        self.user_picture.graphicsEffect().setEnabled(False)
         self.user_picture.setStyleSheet("border: 0px")
 
         user_widget_status = QWidget()
@@ -81,9 +83,6 @@ class FooterView:
         user_widget_status_layout.addWidget(self.user_name)
         user_widget_status_layout.addWidget(user_status)
 
-        self.custom_user_button.setIcon(self.user_icon)
-        self.custom_user_button.clicked.connect(self.controller.update_user_icon)
-        self.custom_user_button.setEnabled(False)
 
         avatar_layout = QHBoxLayout(self.user_widget)
         avatar_layout.setSpacing(5)
@@ -92,7 +91,6 @@ class FooterView:
         avatar_layout.addWidget(
             user_widget_status, stretch=1, alignment=Qt.AlignmentFlag.AlignLeft
         )
-        avatar_layout.addWidget(self.custom_user_button)
         avatar_layout.addWidget(self.logout_button)
 
         self.client_information_dashboard_layout.addWidget(self.user_widget)
@@ -127,8 +125,7 @@ class FooterView:
         self.bottom_right_widget.setContentsMargins(0, 0, 0, 0)
         self.bottom_right_widget.setMinimumWidth(self.version_widget_width)
         self.bottom_right_widget.setStyleSheet(
-            f"font-style: italic;\
-            background-color: {self.theme.search_color};\
+            f"background-color: {self.theme.search_color};\
             color: {self.theme.title_color};"
         )
         self.bottom_right_layout = QVBoxLayout(self.bottom_right_widget)
@@ -158,8 +155,8 @@ class FooterView:
         self.switch_theme_button.setIcon(QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.text_color)))
         self.switch_theme_button.clicked.connect(lambda: self.controller.gui_controller.display_theme_board())
         
-        value = QLabel(f"Alpha, Version: {SOFT_VERSION}")
-        theme_name = QLabel(f"Theme: {self.theme.theme_name}")
+        value = QLabel(f"Alpha <strong>{SOFT_VERSION}</strong>")
+        theme_name = QLabel(f"<strong>{self.theme.theme_name}</strong")
 
         theme_name.setContentsMargins(0, 0, 0, 0)
 
