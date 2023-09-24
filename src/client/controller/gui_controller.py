@@ -14,7 +14,11 @@ from src.client.core.qt_core import (
     QIcon,
     QTimer,
     QListWidgetItem,
+    QVBoxLayout,
+    QSize,
+    QSizePolicy
 )
+from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
 from src.client.view.layout.message_layout import MessageLayout
@@ -1253,5 +1257,130 @@ class GuiController:
         self.ui.header.frame_research.clear()
         self.ui.header.frame_research_list.hide()
         self.ui.header.frame_research.reset_layout()
+        
+    def display_theme_board(self):
+        """
+        Display theme board
+        """
+        if hasattr(self, "theme_board") and self.theme_board.isVisible():
+            return
+        self.theme_board = QWidget()
+
+        height = 250
+        self.theme_board.setFixedSize(QSize(250, height))
+        self.theme_board.move(
+            self.ui.footer_widget.bottom_right_widget.x(), 
+            self.ui.footer_widget.send_widget.y() - height + self.ui.footer_widget.bottom_right_widget.height()
+        )
+        self.theme_board.setContentsMargins(0, 0, 0, 0)
+        self.theme_board.setStyleSheet(
+            f"background-color: {self.theme.background_color};\
+            border-radius: 8px;\
+            border: 1px solid {self.theme.inner_color};"
+        )
+        theme_board_layout = QVBoxLayout(self.theme_board)
+        theme_board_layout.setContentsMargins(5, 5, 5, 5)
+        theme_board_layout.setSpacing(5)
+        list_theme_label = [
+            QLabel("text color"),
+            QLabel("title color"),
+            QLabel("inner color"),
+            QLabel("bg color"),
+            QLabel("nav color"),
+            QLabel("search color"),
+            QLabel("rooms color"),
+            QLabel("emoji color")
+        ]
+        list_theme_line_edit = [
+            CustomQLineEdit(
+                text=getattr(self.theme, self.theme.list_colors[i]),
+                place_holder_text="#",
+                radius=4
+            ) for i in range(len(list_theme_label))
+        ]
+
+        for label in list_theme_label:
+            label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+            label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            label.setStyleSheet(
+                f"color: {self.theme.title_color};\
+                font-weight: bold;\
+                border: 0px solid"
+            )
+        for line_edit in list_theme_line_edit:
+            line_edit.setFixedSize(QSize(120, 15))
+            line_edit.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            line_edit.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+
+        for label, line_edit in zip(list_theme_label, list_theme_line_edit):
+            widget = QWidget()
+            widget.setStyleSheet(
+                "border: 0px solid;"
+            )
+            layout = QHBoxLayout(widget)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(0)
+            layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
+            layout.addWidget(line_edit, alignment=Qt.AlignmentFlag.AlignLeft)
+            theme_board_layout.addWidget(widget)
+
+        # Update layout
+        update_widget = QWidget()
+        update_widget.setStyleSheet(
+            f"border: 0px solid;\
+            background-color: {self.theme.search_color};"
+        )
+        update_layout = QHBoxLayout(update_widget)
+        update_layout.setContentsMargins(5, 5, 5, 5)
+
+        # Update theme button
+        theme_icon = QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.title_color))
+        update_button = self._create_theme_button(
+            "Update", 80, theme_icon
+        )
+        update_button.clicked.connect(
+            partial(self.theme.create_custom_theme, self, list_theme_line_edit)
+        )
+        # Black theme
+        black_icon = QIcon(QIcon_from_svg(Icon.STATUS.value, color="#000000"))
+        black_theme_button = self._create_theme_button(
+            "", 30, black_icon
+        )
+        black_theme_button.clicked.connect(
+            partial(self.theme.switch_theme, self, Themes.ThemeColor.BLACK)
+        )
+        
+        # White theme
+        white_icon = QIcon(QIcon_from_svg(Icon.STATUS.value, color="#ffffff"))
+        white_theme_button = self._create_theme_button(
+            "", 30, white_icon
+        )
+        white_theme_button.clicked.connect(
+            partial(self.theme.switch_theme, self, Themes.ThemeColor.WHITE)
+        )
+        # close button
+        close_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, color=self.theme.title_color))
+        close_button = self._create_theme_button("", 30, close_icon)
+        close_button.clicked.connect(self.theme_board.hide)
+        
+        update_layout.addWidget(update_button)
+        update_layout.addWidget(black_theme_button)
+        update_layout.addWidget(white_theme_button)
+        update_layout.addWidget(close_button)
+        
+        theme_board_layout.addWidget(update_widget)
+
+        self.ui.main_layout.addChildWidget(self.theme_board)
+        self.theme_board.setFocus()
+        
+    def _create_theme_button(self, arg0, arg1, arg2):
+        result = CustomQPushButton(arg0)
+        result.setFixedSize(QSize(arg1, 30))
+        result.setIcon(arg2)
+
+        return result
+            
+            
+        
 
         

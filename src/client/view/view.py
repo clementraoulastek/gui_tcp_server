@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
         self.theme = Themes()
-        # self.showMaximized()
+        self.showMaximized()
         self.setWindowTitle(title)
 
         # TODO: this attr should be in the controller
@@ -213,3 +213,5 @@ class MainWindow(QMainWindow):
         self.header.frame_research.clear()
         self.header.frame_research.clearFocus()
         self.header.frame_research.reset_layout()
+        if hasattr(self.controller.gui_controller, "theme_board"):
+            self.controller.gui_controller.theme_board.hide()

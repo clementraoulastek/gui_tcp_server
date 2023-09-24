@@ -123,17 +123,17 @@ class FooterView:
         )
         self.reply_entry_action.setVisible(False)
 
-        bottom_right_widget = QWidget()
-        bottom_right_widget.setContentsMargins(0, 0, 0, 0)
-        bottom_right_widget.setMinimumWidth(self.version_widget_width)
-        bottom_right_widget.setStyleSheet(
+        self.bottom_right_widget = QWidget()
+        self.bottom_right_widget.setContentsMargins(0, 0, 0, 0)
+        self.bottom_right_widget.setMinimumWidth(self.version_widget_width)
+        self.bottom_right_widget.setStyleSheet(
             f"font-style: italic;\
             background-color: {self.theme.search_color};\
             color: {self.theme.title_color};"
         )
-        bottom_right_layout = QVBoxLayout(bottom_right_widget)
-        bottom_right_layout.setContentsMargins(0, 0, 0, 0)
-        bottom_right_layout.setSpacing(0)
+        self.bottom_right_layout = QVBoxLayout(self.bottom_right_widget)
+        self.bottom_right_layout.setContentsMargins(0, 0, 0, 0)
+        self.bottom_right_layout.setSpacing(0)
         version_widget = QWidget()
         version_widget.setContentsMargins(10, 0, 0, 0)
         version_layout = QHBoxLayout(version_widget)
@@ -156,7 +156,7 @@ class FooterView:
         self.switch_theme_button.setToolTip("Switch theme")
         self.switch_theme_button.setFixedSize(20, 20)
         self.switch_theme_button.setIcon(QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.text_color)))
-        self.switch_theme_button.clicked.connect(lambda: self.theme.switch_theme(self.controller))
+        self.switch_theme_button.clicked.connect(lambda: self.controller.gui_controller.display_theme_board())
         
         value = QLabel(f"Alpha, Version: {SOFT_VERSION}")
         theme_name = QLabel(f"Theme: {self.theme.theme_name}")
@@ -170,7 +170,7 @@ class FooterView:
         theme_layout.addWidget(theme_name)
         theme_layout.addWidget(self.switch_theme_button)
 
-        bottom_right_layout.addWidget(version_widget)
-        bottom_right_layout.addWidget(lang_widget)
+        self.bottom_right_layout.addWidget(version_widget)
+        self.bottom_right_layout.addWidget(lang_widget)
 
-        self.send_layout.addWidget(bottom_right_widget)
+        self.send_layout.addWidget(self.bottom_right_widget)

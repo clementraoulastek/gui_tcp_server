@@ -4,7 +4,7 @@ import re
 from enum import Enum, unique
 import io
 import sys
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 from cairosvg import svg2png
 from PIL import Image, ImageTk, PngImagePlugin
 import configparser
@@ -15,6 +15,8 @@ from src.client.core.qt_core import (
     QIcon,
     QPainter,
     QPixmap,
+    QWidget,
+    QVBoxLayout
 )
 
 LM_USE_SVG = 1
@@ -79,15 +81,24 @@ class WhiteColor(Enum):
 class Themes:
     class ThemeColor(Enum):
         BLACK = 0
-        WHITE = 1 
+        WHITE = 1
+        CUSTOM = 2
         
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('./config.ini')
         
         self.theme_name = self.config['THEME']['theme']
-        
-        self.emoji_color = "#F6DF91"
+        self.list_colors = [
+            "text_color",
+            "title_color",
+            "inner_color",
+            "background_color",
+            "nav_color",
+            "search_color",
+            "rooms_color",
+            "emoji_color",
+        ]
         
         if self.theme_name == Themes.ThemeColor.BLACK.name:
             self.color = BlackColor.BLACK.value
@@ -115,22 +126,52 @@ class Themes:
             self.search_color = WhiteColor.GREY.value
             self.rooms_color = WhiteColor.DARK_GREY.value
             self.emoji_color = WhiteColor.BLACK.value
+        elif self.theme_name == Themes.ThemeColor.CUSTOM.name:
+            self.color = self.config['THEME']['inner_color']
+            self.rgb_background_color_actif = QColor(255, 255, 255)
+            self.rgb_background_color_actif_footer = QColor(207, 207, 208)
+            self.rgb_background_color_innactif = QColor(228, 228, 228)
+            self.text_color = self.config['THEME']['text_color']
+            self.title_color = self.config['THEME']['title_color']
+            self.inner_color = self.config['THEME']['inner_color']
+            self.background_color = self.config['THEME']['background_color']
+            self.nav_color = self.config['THEME']['nav_color']
+            self.search_color = self.config['THEME']['search_color']
+            self.rooms_color = self.config['THEME']['rooms_color']
+            self.emoji_color = self.config['THEME']['emoji_color']
         else:
             raise NotImplementedError("Theme not found")
         
-    def switch_theme(self, controller) -> None:
+    def switch_theme(self, controller, theme: ThemeColor) -> None:
         """
         Switch theme
         """
-        self.config['THEME']['theme'] = Themes.ThemeColor.BLACK.name if self.theme_name == Themes.ThemeColor.WHITE.name else Themes.ThemeColor.WHITE.name
+        self.config['THEME']['theme'] = theme.name 
         with open('./config.ini', 'w') as configfile:
             self.config.write(configfile)
             
         # Restart the app
-        controller.gui_controller.logout()
+        controller.logout()
         os.execl(sys.executable, os.path.abspath(__file__), *sys.argv) 
-
         
+    def create_custom_theme(self, controller, list_theme_line_edit: List) -> None:
+        """
+        Create custom theme
+
+        Args:
+            controller (GuiController): the controller of the GUI
+            list_theme_line_edit (List[CustomQLineEdit]): list of CustomQLineEdit
+        """
+        for line_edit, color_name in zip(list_theme_line_edit, self.list_colors):
+            color = line_edit.text()
+            if not color or color[0] != "#" or len(color) != 7:
+                return
+            else:
+                self.config['THEME'][color_name] = color
+
+        self.switch_theme(controller, Themes.ThemeColor.CUSTOM)
+        
+
 @unique
 class ImageAvatar(Enum):
     SERVER = "./resources/images/server_picture.png"

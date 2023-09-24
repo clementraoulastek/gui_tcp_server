@@ -114,16 +114,12 @@ class MessageLayout(QHBoxLayout):
         main_layout.addWidget(right_widget)
         right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        if not self.content:
-            icon = QIcon(QIcon_from_svg(Icon.MESSAGE.value)).pixmap(QSize(15, 15))
-            icon_label, copy_icon = QLabel(""), QLabel("")
-            icon_label.setPixmap(icon)
-            copy_icon.setPixmap(icon)
-        else:
-            icon_label, copy_icon = AvatarLabel(content=self.content), AvatarLabel(
-                content=self.content, status=AvatarStatus.DM
-            )
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_label, copy_icon = AvatarLabel(content=self.content), AvatarLabel(
+            content=self.content, status=AvatarStatus.DM
+        )
+        icon_label.set_opacity(0.8)
+        icon_label.graphicsEffect().setEnabled(False)
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.str_message = coming_msg["message"]
         sender = coming_msg["id"]
@@ -157,6 +153,8 @@ class MessageLayout(QHBoxLayout):
                 functools.partial(self.add_dm_layout, copy_icon)
             )
             icon_label.mousePressEvent = lambda e : functools.partial(self.add_dm_layout, copy_icon)()
+            icon_label.leaveEvent = lambda e : functools.partial(icon_label.graphicsEffect().setEnabled, False)()
+            icon_label.enterEvent = lambda e : functools.partial(icon_label.graphicsEffect().setEnabled, True)()
 
         if message_id and sender != self.controller.ui.client.user_name:
             self.sender_btn.enterEvent = functools.partial(
@@ -307,11 +305,11 @@ class MessageLayout(QHBoxLayout):
             model_icon = AvatarLabel(
                 content=response_model.content, height=15, width=15
             )
-            icon_label = QLabel()
+            icon_reply_label = QLabel()
             icon_reply = QIcon(
                 QIcon_from_svg(Icon.LINK.value, color=theme.text_color)
             ).pixmap(QSize(15, 15))
-            icon_label.setPixmap(icon_reply)
+            icon_reply_label.setPixmap(icon_reply)
 
             if len(response_model.str_message) > 50:
                 model_message = f"{response_model.str_message[:50]}..."
@@ -320,7 +318,7 @@ class MessageLayout(QHBoxLayout):
 
             model_message = QLabel(f"{model_message}")
 
-            response_layout.addWidget(icon_label)
+            response_layout.addWidget(icon_reply_label)
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_message)
             right_layout.addLayout(response_layout)
