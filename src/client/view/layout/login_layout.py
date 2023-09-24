@@ -12,6 +12,7 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QSizePolicy,
     QLineEdit,
+    QSpacerItem
 )
 from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
@@ -47,7 +48,7 @@ class LoginLayout(QHBoxLayout):
             f"background-color: {self.theme.background_color};\
             color: {self.theme.title_color};\
             border-radius: 0px;\
-            border: 1px solid {self.theme.nav_color};"
+            border: 0px solid {self.theme.nav_color};"
         )
         self.addWidget(self.main_widget)
 
@@ -57,6 +58,8 @@ class LoginLayout(QHBoxLayout):
         self.main_layout.setAlignment(
             Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignCenter
         )
+        item = QLabel()
+        item.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         # --- Title Layout --- #
         self.title_layout = QHBoxLayout()
@@ -70,11 +73,13 @@ class LoginLayout(QHBoxLayout):
 
         # --- Username Layout --- #
         self.username_layout = QHBoxLayout()
+        self.username_layout.addWidget(item)
         self.username_layout.setContentsMargins(0, 0, 0, 0)
         self.username_layout.setSpacing(15)
 
         # --- Password Layout --- #
         self.password_layout = QHBoxLayout()
+        self.password_layout.addWidget(item)
         self.password_layout.setContentsMargins(0, 0, 0, 0)
         self.password_layout.setSpacing(15)
         self.password_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -116,11 +121,14 @@ class LoginLayout(QHBoxLayout):
             place_holder_text="Enter your username",
             text=os.environ["USERNAME"],
         )
+        self.username_entry.setMinimumWidth(300)
         self.username_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.username_entry.setFixedWidth(300)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
 
         self.username_layout.addWidget(self.username_entry)
+        item = QLabel()
+        item.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.username_layout.addWidget(item)
 
     def create_password_widgets(self):
         self.password_label = QLabel("Password: ")
@@ -133,13 +141,18 @@ class LoginLayout(QHBoxLayout):
             place_holder_text="Enter your password",
             text=os.environ["PASSWORD"],
         )
+        self.password_entry.setMinimumWidth(300)
         self.password_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.password_entry.setFixedWidth(300)
+
         self.password_entry.setTextMargins(0, 0, 0, 0)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
-
+        
+        item = QLabel()
+        item.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.password_layout.addWidget(self.password_entry)
+        self.password_layout.addWidget(item)
+
 
     def create_button_widgets(self):
         self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, color=self.theme.text_color))

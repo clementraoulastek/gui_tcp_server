@@ -14,7 +14,6 @@ from src.client.core.qt_core import (
     QIcon,
     QTimer,
     QListWidgetItem,
-    QListWidget
 )
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -679,6 +678,9 @@ class GuiController:
             self.ui.login_form.password_entry.returnPressed.connect(
                 lambda: self.login_form(self.api_controller.send_login_form)
             )
+            self.ui.login_form.username_entry.returnPressed.connect(
+                lambda: self.login_form(self.api_controller.send_login_form)
+            )
             self.ui.login_form.send_action.triggered.connect(
                 lambda: self.login_form(self.api_controller.send_login_form)
             )
@@ -1213,7 +1215,7 @@ class GuiController:
                 user_widget.leaveEvent = partial(
                     hover, user_widget=user_widget
                 )
-                user_widget.setContentsMargins(0, 0, 0, 0)
+                user_widget.setContentsMargins(5, 0, 0, 0)
                 user_widget.setFixedHeight(30)
                 user_layout = QHBoxLayout(user_widget)
                 

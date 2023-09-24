@@ -116,7 +116,7 @@ class Themes:
             self.rooms_color = WhiteColor.DARK_GREY.value
             self.emoji_color = WhiteColor.BLACK.value
         else:
-            raise Exception("Theme not found")
+            raise NotImplementedError("Theme not found")
         
     def switch_theme(self, controller) -> None:
         """
