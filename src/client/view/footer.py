@@ -11,7 +11,7 @@ from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.AvatarQLabel import AvatarLabel
 from src.tools.constant import SOFT_VERSION
-from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import GenericColor, Themes, Icon, ImageAvatar, QIcon_from_svg
 
 
 class FooterView:
@@ -105,7 +105,7 @@ class FooterView:
 
         pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, self.theme.title_color))
         send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, self.theme.title_color))
-        reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, self.theme.title_color))
+        reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, GenericColor.RED.value))
         file_icon = QIcon(QIcon_from_svg(Icon.FILE.value, self.theme.title_color))
         
         entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)

@@ -141,7 +141,7 @@ class MessageLayout(QHBoxLayout):
             QWidget {{
             font-weight: bold;
             background-color: {color};
-            border-radius: 8px;
+            border-radius: 4px;
             border: 0px solid transparent;
             text-align: center;
             }} 
@@ -205,12 +205,12 @@ class MessageLayout(QHBoxLayout):
             self.event_layout.addWidget(self.react_buttton)
 
             self.reply_button = CustomQPushButton(
-                "Reply", bg_color=theme.background_color, radius=4
+                "", bg_color=theme.background_color, radius=4
             )
             self.reply_button.setToolTip("Reply to this message")
 
             self.reply_button.clicked.connect(self.add_reply)
-            self.reply_button.setFixedSize(100, 20)
+            self.reply_button.setFixedSize(20, 20)
             response_icon = QIcon(
                 QIcon_from_svg(Icon.REPLY.value, color=theme.text_color)
             )

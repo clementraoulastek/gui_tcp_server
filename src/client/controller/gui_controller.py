@@ -26,7 +26,7 @@ from src.tools.commands import Commands
 from src.client.view.layout.login_layout import LoginLayout
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus, AvatarLabel
 from src.client.core.qt_core import QHBoxLayout, QLabel, Qt
-from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg, check_str_len
+from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg, check_str_len, GenericColor
 from src.client.controller.api_controller import ApiController, ApiStatus
 from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
@@ -1351,7 +1351,7 @@ class GuiController:
             partial(self.theme.switch_theme, self, Themes.ThemeColor.WHITE)
         )
         # close button
-        close_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, color=self.theme.title_color))
+        close_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, color=GenericColor.RED.value))
         close_button = self._create_theme_button("", 30, close_icon)
         close_button.clicked.connect(self.theme_board.hide)
         

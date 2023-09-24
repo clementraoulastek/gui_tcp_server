@@ -78,6 +78,10 @@ class WhiteColor(Enum):
     GREY = "#CFCFD0"
     BLUE = "#1D87E5"
     
+@unique
+class GenericColor(Enum):
+    RED = "#E03232"
+    
 class Themes:
     class ThemeColor(Enum):
         BLACK = 0
