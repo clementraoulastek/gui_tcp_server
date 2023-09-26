@@ -29,7 +29,9 @@ class RightNavView:
         )
 
         self.scroll_area_dm.setStyleSheet("background-color: transparent; border: 0px")
-        self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_dm.enterEvent = lambda e: self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_dm.leaveEvent = lambda e: self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area_dm.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_dm.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_dm.setWidgetResizable(True)
 

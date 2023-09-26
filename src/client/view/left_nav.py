@@ -56,7 +56,9 @@ class LeftNavView:
             scroll_bar_vertical_stylesheet.format(_background_color=self.theme.inner_color)
         )
         self.scroll_area_avatar.setStyleSheet("background-color: transparent; border: 0px")
-        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_avatar.enterEvent = lambda e: self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area_avatar.leaveEvent = lambda e: self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
 

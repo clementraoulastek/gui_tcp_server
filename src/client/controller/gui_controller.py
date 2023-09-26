@@ -167,7 +167,6 @@ class GuiController:
             )
 
             # TODO: Avoid to fetch all messages
-            # Avoid to display messages from other users
             if (
                 receiver != "home"
                 and sender != self.ui.client.user_name
@@ -1093,17 +1092,35 @@ class GuiController:
         room_layout.addWidget(room_icon, alignment=Qt.AlignmentFlag.AlignCenter)
         self.ui.rooms_widget.main_layout.addWidget(room_widget)
         self.ui.rooms_widget.main_layout.addWidget(divider_label)
-
-    def reply_to_message(self, message: MessageLayout) -> None:
+        
+    def focus_in_message(self, message: MessageLayout) -> None:
         """
-        Reply to a message
+        Focus in a message
 
         Args:
-            message_id (int): message id
+            message (MessageLayout): message layout
         """
-        # Update reply entry
-        self.ui.footer_widget.reply_entry_action.triggered.emit()
-
+        self.update_stylesheet_with_focus_event(message)
+        
+        def callback(message: MessageLayout):
+            message.main_widget.setStyleSheet(
+                f"color: {self.theme.title_color};\
+                margin-bottom: 1px;\
+                margin-right: 2px;\
+                background-color: transparent;\
+                border: 0px"
+            )
+            message.left_widget.setStyleSheet(
+                "border-left: 0px solid;"
+            )
+        
+        self.ui.scroll_area.ensureWidgetVisible(message.main_widget)
+        
+        QTimer.singleShot(1000, partial(callback, message))
+        
+    def update_stylesheet_with_focus_event(
+        self, message: MessageLayout
+    ) -> None:
         message.main_widget.setStyleSheet(
             f"color: {self.theme.title_color};\
             margin-bottom: 1px;\
@@ -1119,6 +1136,18 @@ class GuiController:
                 border: 0px solid;
             }}"""
         )
+        
+    def reply_to_message(self, message: MessageLayout) -> None:
+        """
+        Reply to a message
+
+        Args:
+            message_id (int): message id
+        """
+        # Update reply entry
+        self.ui.footer_widget.reply_entry_action.triggered.emit()
+
+        self.update_stylesheet_with_focus_event(message)
 
         def callback(message: MessageLayout, older_room_name: str):
             message.main_widget.setStyleSheet(

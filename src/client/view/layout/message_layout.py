@@ -40,12 +40,14 @@ class Contener(QFrame):
 
     def enterEvent(self, event) -> None:
         if button_list := self.findChildren(CustomQPushButton):
-            for button in button_list[1:]:
+            first_elem = 1 if len(button_list) == 3 else 2
+            for button in button_list[first_elem:]:
                 button.show()
 
     def leaveEvent(self, event) -> None:
         if button_list := self.findChildren(CustomQPushButton):
-            for button in button_list[1:]:
+            first_elem = 1 if len(button_list) == 3 else 2
+            for button in button_list[first_elem:]:
                 button.hide()
 
 
@@ -208,7 +210,7 @@ class MessageLayout(QHBoxLayout):
             self.reply_button.clicked.connect(self.add_reply)
             self.reply_button.setFixedSize(20, 20)
             response_icon = QIcon(
-                QIcon_from_svg(Icon.REPLY.value, color=theme.text_color)
+                QIcon_from_svg(Icon.REPLY.value, color=theme.emoji_color)
             )
             self.reply_button.setIcon(response_icon)
             self.reply_button.hide()
@@ -289,7 +291,7 @@ class MessageLayout(QHBoxLayout):
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
 
-        top_layout.addWidget(self.event_button)
+        top_layout.addWidget(self.event_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
 
         # Add response model
         if response_model:
@@ -312,9 +314,23 @@ class MessageLayout(QHBoxLayout):
             else:
                 model_message = response_model.str_message
 
-            model_message = QLabel(f"{model_message}")
-            model_message.setStyleSheet(f"color: {theme.rooms_color};")
-
+            model_message = CustomQPushButton(
+                model_message,
+                color=theme.title_color,
+                bg_color_active="transparent",
+            )
+            model_message.clicked.connect(
+                functools.partial(self.controller.focus_in_message, response_model)
+            )
+            model_message.setFixedHeight(20)
+            model_message.enterEvent = lambda e: model_message.setStyleSheet(
+               f"color : {theme.rooms_color};\
+                padding-left: 5px;"
+            )
+            model_message.leaveEvent = lambda e: model_message.setStyleSheet(
+               f"color : {theme.title_color};\
+                padding-left: 5px;"
+            )
             response_layout.addWidget(icon_reply_label)
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_message)
