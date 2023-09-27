@@ -37,6 +37,7 @@ class Icon(Enum):
     USER_ICON = f"{ICON_PATH}/default_user_icon.svg"
     LEFT_ARROW = f"{ICON_PATH}/left_arrow.svg"
     RIGHT_ARROW = f"{ICON_PATH}/right_arrow.svg"
+    DOWN_ARROW = f"{ICON_PATH}/down_arrow.svg"
     ARROW_RIGHT = f"{ICON_PATH}/arrow_right.svg"
     AVATAR = f"{ICON_PATH}/avatar_update.svg"
     SMILEY = f"{ICON_PATH}/smiley.svg"

@@ -1,4 +1,5 @@
 import logging
+import signal
 import sys
 from typing import Dict, List
 from src.client.client import Client
@@ -21,7 +22,8 @@ from src.client.core.qt_core import (
     Qt,
     QVBoxLayout,
     QWidget,
-    QLineEdit
+    QLineEdit,
+    QSize,
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER
@@ -29,16 +31,16 @@ from src.tools.utils import Icon, ImageAvatar, QIcon_from_svg, Themes
 
 
 class QtGui:
-    def __init__(self, title):
+    def __init__(self, title):        
         self.app = QApplication([])
         self.main_window = MainWindow(title)
         self.app.setWindowIcon(QIcon(ImageAvatar.SERVER.value))
         self.app.setApplicationName(title)
         self.main_window.show()
-
+        
         self.app.aboutToQuit.connect(self.quit)
 
-    def quit(self):
+    def quit(self, *args):
         # ? I don't know why but in a list comprehension it doesn't work
         if hasattr(self.main_window.controller.gui_controller, "read_worker"):
             if self.main_window.controller.api_controller.is_connected:
@@ -164,20 +166,20 @@ class MainWindow(QMainWindow):
         )
         self.frame_layout = QHBoxLayout(self.frame_title)
         self.frame_layout.setContentsMargins(0, 0, 0, 0)
-        self.frame_layout.setSpacing(10)
+        self.frame_layout.setSpacing(5)
 
-        self.frame_icon = AvatarLabel(
-            content=Icon.RIGHT_ARROW.value,
-            status=AvatarStatus.DEACTIVATED,
-            height=20,
-            width=20,
-            color=self.theme.title_color,
+        self.frame_icon = QIcon(QIcon_from_svg(Icon.DOWN_ARROW.value, color=self.theme.title_color))
+        self.frame_icon_button = CustomQPushButton(
+            "",
+            bg_color_active=self.theme.background_color,
         )
-        self.frame_icon.setStyleSheet("border: none")
+        self.frame_icon_button.setIcon(self.frame_icon)
+    
         self.frame_name = QLabel("Rooms \n| home")
         self.frame_name.setStyleSheet(
             "font-weight: bold;\
-            border: 0px solid"
+            border: 0px solid;\
+            margin: 0px;"
         )
         self.frame_research = CustomQLineEdit(
             place_holder_text="Search in Rooms | home",
@@ -193,8 +195,8 @@ class MainWindow(QMainWindow):
 
         self.search_action = self.frame_research.addAction(search_icon, QLineEdit.ActionPosition.TrailingPosition)
 
-        self.frame_layout.addWidget(self.frame_icon)
-        self.frame_layout.addWidget(self.frame_name)
+        self.frame_layout.addWidget(self.frame_icon_button)
+        self.frame_layout.addWidget(self.frame_name, alignment=Qt.AlignmentFlag.AlignLeft)
         self.frame_layout.addWidget(self.frame_research, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
         upper_layout.addWidget(self.frame_title)
 
@@ -202,6 +204,7 @@ class MainWindow(QMainWindow):
 
         self.body_gui_dict = {"home": BodyScrollArea(name="home")}
         self.scroll_area = self.body_gui_dict["home"]
+        self.frame_icon_button.clicked.connect(self.scroll_area.scrollToBottom)
 
         self.body_layout.addWidget(self.scroll_area)
 

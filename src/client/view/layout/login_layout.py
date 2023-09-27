@@ -122,7 +122,7 @@ class LoginLayout(QHBoxLayout):
             text=os.environ["USERNAME"],
         )
         self.username_entry.setMinimumWidth(300)
-        self.username_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.username_entry.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self.username_entry.setContentsMargins(0, 0, 0, 0)
 
         self.username_layout.addWidget(self.username_entry)
@@ -142,9 +142,9 @@ class LoginLayout(QHBoxLayout):
             text=os.environ["PASSWORD"],
         )
         self.password_entry.setMinimumWidth(300)
-        self.password_entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.password_entry.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        self.password_entry.setTextMargins(0, 0, 0, 0)
+        self.password_entry.setTextMargins(55, 0, 0, 0)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
         

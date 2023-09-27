@@ -514,7 +514,10 @@ class GuiController:
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
             user_layout.addWidget(user_name)
-            self.ui.left_nav_widget.user_inline.addWidget(user_widget)
+            self.ui.left_nav_widget.user_inline.insertWidget(
+                1,
+                user_widget
+            )
 
     # TODO: Avoid code duplication
     def __update_gui_with_disconnected_avatar(self) -> None:
@@ -612,7 +615,10 @@ class GuiController:
                 # Add widgets to the layout
                 user_layout.addWidget(user_pic)
                 user_layout.addWidget(user_name)
-                self.ui.left_nav_widget.user_offline.addWidget(user_widget)
+                self.ui.left_nav_widget.user_offline.insertWidget(
+                    1,
+                    user_widget
+                )
 
                 global_variables.user_disconnect[user] = [data[0], True]
 

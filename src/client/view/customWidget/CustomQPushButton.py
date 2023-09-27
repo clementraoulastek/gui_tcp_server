@@ -26,7 +26,6 @@ QPushButton:disabled {{
     background-color: #313338;
 }}
 """
-
 theme = Themes()
 
 class CustomQPushButton(QPushButton):

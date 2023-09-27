@@ -95,7 +95,7 @@ class FooterView:
 
         self.client_information_dashboard_layout.addWidget(self.user_widget)
 
-        self.entry = CustomQLineEdit(place_holder_text="Please login")
+        self.entry = CustomQLineEdit(place_holder_text="Please login", radius=4)
         self.entry.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.entry.setTextMargins(0, 0, 0, 0)
         self.entry.returnPressed.connect(self.controller.send_message_to_server)
