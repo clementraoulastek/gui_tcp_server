@@ -202,7 +202,7 @@ class GuiController:
                 )
                 icon = AvatarLabel(
                     content=self.ui.users_pict[direct_message_name],
-                    status=AvatarStatus.IDLE,
+                    status=AvatarStatus.DEACTIVATED,
                 )
                 self.add_gui_for_mp_layout(direct_message_name, icon)
 
@@ -268,8 +268,8 @@ class GuiController:
                 ),
             )
             # Update avatar status with DM circle popup
-            self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM)
-
+            self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
+         
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
 
         # Clear the dict values
@@ -393,12 +393,15 @@ class GuiController:
         self.api_controller.add_sender_picture(id_)
         user_disconnect[id_] = [user_connected[id_][0], False]
         self.ui.users_connected.pop(id_)
+        
+        if id_ in self.dm_avatar_dict.keys():
+            self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_innactif)
 
     def __add_sender_avatar(
         self, payload: str, user_disconnect: dict[str, List[Union[str, bool]]]
     ) -> None:
         """
-        Add the user icon to the connected layout from a HELLO WORLD message
+        Add the user icon to the connected layout from a HELLO WORLD or WELCOME message
 
         Args:
             payload (str): payload of the command
@@ -417,6 +420,9 @@ class GuiController:
             )
             with global_variables.user_disconnect_lock:
                 user_disconnect.pop(id_)
+
+        if id_ in self.dm_avatar_dict.keys():
+            self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.ACTIVATED)
 
         # Add the user icon to the connected layout
         if id_ not in self.ui.users_connected.keys():
@@ -456,11 +462,11 @@ class GuiController:
                 if isinstance(event, QEnterEvent):
                     color = self.theme.background_color
                     user_pic.update_pixmap(
-                        AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif
+                        AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_innactif
                     )
                 else:
                     color = self.theme.inner_color
-                    user_pic.update_pixmap(AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_innactif)
+                    user_pic.update_pixmap(AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif)
                 style_ = """
                 QWidget {{
                 background-color: {color};
@@ -472,17 +478,23 @@ class GuiController:
 
             # Create avatar label
             user_pic, dm_pic = AvatarLabel(
-                content=content, status=AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_innactif
-            ), AvatarLabel(content=content, status=AvatarStatus.IDLE, background_color=self.theme.rgb_background_color_innactif)
+                content=content, status=AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif
+            ), AvatarLabel(content=content, status=AvatarStatus.ACTIVATED, background_color=self.theme.rgb_background_color_actif)
 
             # Update picture alignment
             user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
             dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
             user_pic.setStyleSheet("border: 0px;")
-
+            
             # Avoid gui troubles with bigger username
             username_label = check_str_len(username)
             user_name = QLabel(username_label)
+            
+            if username in self.dm_avatar_dict.keys():
+                self.dm_avatar_dict[username].update_pixmap(
+                    AvatarStatus.ACTIVATED, 
+                    background_color=self.theme.rgb_background_color_actif
+                )
 
             # StyleSheet
             style_ = """
@@ -544,12 +556,12 @@ class GuiController:
                         user_pic.graphicsEffect().setEnabled(False)
                         user_pic.update_pixmap(
                             AvatarStatus.DEACTIVATED,
-                            background_color=self.theme.rgb_background_color_actif,
+                            background_color=self.theme.rgb_background_color_innactif,
                         )
                     else:
                         color = self.theme.inner_color
                         user_pic.graphicsEffect().setEnabled(True)
-                        user_pic.update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_innactif)
+                        user_pic.update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_actif)
                     style_ = """
                     QWidget {{
                     background-color: {color};
@@ -574,7 +586,7 @@ class GuiController:
                 # Create avatar label
                 user_pic, dm_pic = AvatarLabel(
                     content=content, status=AvatarStatus.DEACTIVATED,
-                ), AvatarLabel(content=content, status=AvatarStatus.IDLE)
+                ), AvatarLabel(content=content, status=AvatarStatus.DEACTIVATED)
 
                 user_widget.enterEvent = partial(
                     hover, user_widget=user_widget, user_pic=user_pic
@@ -845,12 +857,16 @@ class GuiController:
 
         # Socket disconnection
         self.ui.client.close_connection()
+        
+        # Update the gui with home layout for reconnection
+        self.update_gui_for_mp_layout("home")
 
         # Dict clear
         global_variables.user_connected.clear()
         global_variables.user_disconnect.clear()
-        self.ui.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.ui.users_pict.clear()
         self.ui.users_connected.clear()
+        self.dm_avatar_dict.clear()
         self.ui.right_nav_widget.room_list.clear()
 
         # UI update
@@ -869,6 +885,7 @@ class GuiController:
         self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
 
+        # Show login form
         self.login()
 
     def update_buttons(self) -> None:
@@ -1001,7 +1018,7 @@ class GuiController:
 
         if room_name != "home":
             # Update avatar status with iddle
-            self.update_pixmap_avatar(room_name, AvatarStatus.IDLE)
+            self.update_pixmap_avatar(room_name, AvatarStatus.ACTIVATED if room_name in self.ui.users_connected.keys() else AvatarStatus.DEACTIVATED)
             self.api_controller.update_is_readed_status(
                 room_name, self.ui.client.user_name
             )

@@ -37,19 +37,13 @@ class EnumReact(Enum):
 class Contener(QFrame):
     def __init__(self):
         super(Contener, self).__init__()
+        self.event_button = QWidget()
 
     def enterEvent(self, event) -> None:
-        if button_list := self.findChildren(CustomQPushButton):
-            first_elem = 1 if len(button_list) == 3 else 2
-            for button in button_list[first_elem:]:
-                button.show()
+        self.event_button.show()
 
     def leaveEvent(self, event) -> None:
-        if button_list := self.findChildren(CustomQPushButton):
-            first_elem = 1 if len(button_list) == 3 else 2
-            for button in button_list[first_elem:]:
-                button.hide()
-
+        self.event_button.hide()
 
 class MessageLayout(QHBoxLayout):
     def __init__(
@@ -177,11 +171,16 @@ class MessageLayout(QHBoxLayout):
 
         if message_id:
             # ------------------------------- React Button ------------------------------- #
-            self.event_button = QWidget()
-            self.event_button.setContentsMargins(0, 0, 0, 0)
-            self.event_layout = QHBoxLayout(self.event_button)
+            right_widget.event_button = QWidget()
+            right_widget.event_button.setStyleSheet(
+                f"background-color: transparent;\
+                border: 1px solid {theme.inner_color};\
+                border-radius: 2px;"
+            )
+            right_widget.event_button.setContentsMargins(0, 0, 0, 0)
+            self.event_layout = QHBoxLayout(right_widget.event_button)
             self.event_layout.setSpacing(0)
-            self.event_layout.setContentsMargins(0, 0, 0, 0)
+            self.event_layout.setContentsMargins(1, 1, 1, 1)
             self.react_buttton = CustomQPushButton(
                 "", bg_color=theme.background_color, radius=4
             )
@@ -199,7 +198,6 @@ class MessageLayout(QHBoxLayout):
             )
 
             self.react_buttton.setIcon(react_icon)
-            self.react_buttton.hide()
             self.event_layout.addWidget(self.react_buttton)
 
             self.reply_button = CustomQPushButton(
@@ -213,8 +211,12 @@ class MessageLayout(QHBoxLayout):
                 QIcon_from_svg(Icon.REPLY.value, color=theme.emoji_color)
             )
             self.reply_button.setIcon(response_icon)
-            self.reply_button.hide()
             self.event_layout.addWidget(self.reply_button)
+            
+            retain = right_widget.event_button.sizePolicy()
+            retain.setRetainSizeWhenHidden(True)
+            right_widget.event_button.setSizePolicy(retain)
+            right_widget.event_button.hide()
             # ---------------------------------------------------------------------------- #
 
         # -------------------------------- React widget ------------------------------- #
@@ -291,7 +293,7 @@ class MessageLayout(QHBoxLayout):
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
 
-        top_layout.addWidget(self.event_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
+        top_layout.addWidget(right_widget.event_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
 
         # Add response model
         if response_model:

@@ -148,13 +148,15 @@ class AvatarLabel(QLabel):
         circle_center = QPoint(
             self.width_ - 1.1 * circle_radius, self.height_ - circle_radius * 1
         )
-
+        # Outer circle
         self.__draw_ellipse(outer_brush_color, painter, circle_center, circle_radius)
 
         inner_radius = circle_radius / 1.5
         inner_center = circle_center
 
+        # Inner circle
         self.__draw_ellipse(inner_brush_color, painter, inner_center, inner_radius)
+        
         painter.end()
         self.setPixmap(icon_pixmap)
 

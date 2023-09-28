@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
 
         # TODO: this attr should be in the controller
-        self.users_pict = {"server": ImageAvatar.SERVER.value}
+        self.users_pict = {}
         self.users_connected = {}
 
         # Init controller
