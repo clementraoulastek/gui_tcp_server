@@ -1,5 +1,4 @@
 import logging
-import re
 from threading import Thread
 import time
 from typing import List, Optional, Union
@@ -427,8 +426,7 @@ class GuiController:
             self.clear_avatar(
                 "user_offline", self.ui.left_nav_widget, f"{id_}_layout_disconnected"
             )
-            with global_variables.user_disconnect_lock:
-                user_disconnect.pop(id_)
+            user_disconnect.pop(id_)
 
         if id_ in self.dm_avatar_dict.keys() and self.dm_avatar_dict[id_].status != AvatarStatus.DM:
             self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.ACTIVATED)
@@ -451,7 +449,9 @@ class GuiController:
         """
         Callback to update gui with input connected avatar
         """
-        for user, data in global_variables.user_connected.items():
+        user_connected_dict = global_variables.user_connected.copy()
+        
+        for user, data in user_connected_dict.items():
             if data[1] == True:
                 continue
             global_variables.user_connected[user] = [data[0], True]
@@ -539,113 +539,116 @@ class GuiController:
                 1,
                 user_widget
             )
+            self.ui.left_nav_widget.user_inline.update()
 
     # TODO: Avoid code duplication
     def __update_gui_with_disconnected_avatar(self) -> None:
         """
         Callback to update gui with input disconnected avatar
         """
-        with global_variables.user_disconnect_lock:
-            for user, data in global_variables.user_disconnect.items():
-                if data[1] == True:
-                    continue
-                # Layout
-                user_widget = CustomQPushButton()
-                user_widget.setToolTip("Open direct message")
-                user_widget.setFixedHeight(50)
+        user_disconnected_dict = global_variables.user_disconnect.copy()
+        
+        for user, data in user_disconnected_dict.items():
+            if data[1] == True:
+                continue
+            # Layout
+            user_widget = CustomQPushButton()
+            user_widget.setToolTip("Open direct message")
+            user_widget.setFixedHeight(50)
+            style_ = """
+            QWidget {{
+            border-radius: 8px;
+            border: 0px solid {color};
+            }} 
+            """
+            def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
+                if isinstance(event, QEnterEvent):
+                    color = self.theme.background_color
+                    user_pic.graphicsEffect().setEnabled(False)
+                    user_pic.update_pixmap(
+                        AvatarStatus.DEACTIVATED,
+                        background_color=self.theme.rgb_background_color_innactif,
+                    )
+                else:
+                    color = self.theme.inner_color
+                    user_pic.graphicsEffect().setEnabled(True)
+                    user_pic.update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_actif)
                 style_ = """
                 QWidget {{
+                background-color: {color};
                 border-radius: 8px;
                 border: 0px solid {color};
                 }} 
                 """
-                def hover(event: QEvent, user_widget, user_pic: AvatarLabel):
-                    if isinstance(event, QEnterEvent):
-                        color = self.theme.background_color
-                        user_pic.graphicsEffect().setEnabled(False)
-                        user_pic.update_pixmap(
-                            AvatarStatus.DEACTIVATED,
-                            background_color=self.theme.rgb_background_color_innactif,
-                        )
-                    else:
-                        color = self.theme.inner_color
-                        user_pic.graphicsEffect().setEnabled(True)
-                        user_pic.update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_actif)
-                    style_ = """
-                    QWidget {{
-                    background-color: {color};
-                    border-radius: 8px;
-                    border: 0px solid {color};
-                    }} 
-                    """
-                    user_widget.setStyleSheet(style_.format(color=color))
-                    user_widget.update()
+                user_widget.setStyleSheet(style_.format(color=color))
+                user_widget.update()
 
-                user_widget.setStyleSheet(style_.format(color=self.theme.background_color))
-                user_widget.setContentsMargins(0, 0, 0, 0)
+            user_widget.setStyleSheet(style_.format(color=self.theme.background_color))
+            user_widget.setContentsMargins(0, 0, 0, 0)
 
-                user_layout = QHBoxLayout(user_widget)
-                user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-                user_layout.setSpacing(10)
-                user_layout.setContentsMargins(5, 0, 0, 0)
-                username = user
-                content = data[0]
-                user_layout.setObjectName(f"{username}_layout_disconnected")
+            user_layout = QHBoxLayout(user_widget)
+            user_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            user_layout.setSpacing(10)
+            user_layout.setContentsMargins(5, 0, 0, 0)
+            username = user
+            content = data[0]
+            user_layout.setObjectName(f"{username}_layout_disconnected")
 
-                # Create avatar label
-                user_pic, dm_pic = AvatarLabel(
-                    content=content, status=AvatarStatus.DEACTIVATED,
-                ), AvatarLabel(content=content, status=AvatarStatus.DEACTIVATED)
+            # Create avatar label
+            user_pic, dm_pic = AvatarLabel(
+                content=content, status=AvatarStatus.DEACTIVATED,
+            ), AvatarLabel(content=content, status=AvatarStatus.DEACTIVATED)
 
-                user_widget.enterEvent = partial(
-                    hover, user_widget=user_widget, user_pic=user_pic
-                )
-                user_widget.leaveEvent = partial(
-                    hover, user_widget=user_widget, user_pic=user_pic
-                )
-
-                # Update picture
-                user_pic.set_opacity(0.2)
-                user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                user_pic.setStyleSheet(
-                    f"border: 0px solid;\
-                    border-color: {self.theme.background_color};"
-                )
-
-                # Avoid gui troubles with bigger username
-                username_label = check_str_len(username)
-                user_name = QLabel(username_label)
-                user_name.setContentsMargins(0, 0, 0, 0)
-
-                # Add user menu
-                user_widget.clicked.connect(
-                    partial(self.add_gui_for_mp_layout, username, dm_pic, True)
-                )
-                style_ = """
-                QLabel {{
-                text-align: left;
-                font-weight: bold;
-                border-radius: 8px;
-                border: 1px solid;
-                border-color: {color};
-                }}
-                """
-                user_name.setStyleSheet(style_.format(color="transparent"))
-
-                # Add widgets to the layout
-                user_layout.addWidget(user_pic)
-                user_layout.addWidget(user_name)
-                self.ui.left_nav_widget.user_offline.insertWidget(
-                    1,
-                    user_widget
-                )
-
-                global_variables.user_disconnect[user] = [data[0], True]
-
-            self.ui.left_nav_widget.info_disconnected_label.setText(
-                f"Users offline   |   {len(global_variables.user_disconnect)}"
+            user_widget.enterEvent = partial(
+                hover, user_widget=user_widget, user_pic=user_pic
             )
+            user_widget.leaveEvent = partial(
+                hover, user_widget=user_widget, user_pic=user_pic
+            )
+
+            # Update picture
+            user_pic.set_opacity(0.2)
+            user_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            dm_pic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            user_pic.setStyleSheet(
+                f"border: 0px solid;\
+                border-color: {self.theme.background_color};"
+            )
+
+            # Avoid gui troubles with bigger username
+            username_label = check_str_len(username)
+            user_name = QLabel(username_label)
+            user_name.setContentsMargins(0, 0, 0, 0)
+
+            # Add user menu
+            user_widget.clicked.connect(
+                partial(self.add_gui_for_mp_layout, username, dm_pic, True)
+            )
+            style_ = """
+            QLabel {{
+            text-align: left;
+            font-weight: bold;
+            border-radius: 8px;
+            border: 1px solid;
+            border-color: {color};
+            }}
+            """
+            user_name.setStyleSheet(style_.format(color="transparent"))
+
+            # Add widgets to the layout
+            user_layout.addWidget(user_pic)
+            user_layout.addWidget(user_name)
+            self.ui.left_nav_widget.user_offline.insertWidget(
+                1,
+                user_widget
+            )
+            self.ui.left_nav_widget.user_offline.update()
+
+            global_variables.user_disconnect[user] = [data[0], True]
+
+        self.ui.left_nav_widget.info_disconnected_label.setText(
+            f"Users offline   |   {len(global_variables.user_disconnect)}"
+        )
 
     def clear(self) -> None:
         """
