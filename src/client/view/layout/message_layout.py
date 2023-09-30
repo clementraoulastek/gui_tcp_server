@@ -306,7 +306,7 @@ class MessageLayout(QHBoxLayout):
             icon_label.setStyleSheet("padding-top: 20px;")
             response_layout = QHBoxLayout()
             response_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            response_layout.setSpacing(5)
+            response_layout.setSpacing(0)
 
             model_icon = AvatarLabel(
                 content=response_model.content, 
@@ -326,10 +326,16 @@ class MessageLayout(QHBoxLayout):
             else:
                 model_message = response_model.str_message
 
+            model_username = QLabel(username_response)
+            model_username.setContentsMargins(0, 0, 0, 0)
+            model_username.setStyleSheet(
+                "font-weight: bold;"
+            )
             model_message = CustomQPushButton(
-                f"{username_response} {model_message}",
+                model_message,
                 color=theme.title_color,
             )
+            model_message.setContentsMargins(0, 0, 0, 0)
 
             model_message.clicked.connect(
                 functools.partial(self.controller.focus_in_message, response_model)
@@ -343,6 +349,7 @@ class MessageLayout(QHBoxLayout):
             )
             response_layout.addWidget(icon_reply_label, alignment=Qt.AlignmentFlag.AlignHCenter)
             response_layout.addWidget(model_icon)
+            response_layout.addWidget(model_username)
             response_layout.addWidget(model_message)
             right_layout.addLayout(response_layout)
         else:
