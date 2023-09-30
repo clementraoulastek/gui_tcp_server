@@ -35,6 +35,13 @@ class Bot:
         routing_thread = Thread(target=self.__callback_routing_messages_on_ui, daemon=False)
         routing_thread.start()
         
+    def disconnect(self) -> None:
+        self.backend.send_login_status(username=self.username, status=False)
+        self.client.close_connection()
+        
+    def send_message(self, message: str) -> None:
+        self.client.send_data(Commands.MESSAGE, message)
+        
     def __callback_routing_messages_on_ui(self) -> None:
         """
         Read messages comming from server
@@ -73,7 +80,5 @@ class Bot:
         elif header == Commands.LAST_ID.value:
             pass
 
-    def disconnect(self) -> None:
-        self.backend.send_login_status(username=self.username, status=False)
-        self.client.close_connection()
+
         
