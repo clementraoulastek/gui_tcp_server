@@ -6,7 +6,7 @@ import io
 import sys
 from typing import Optional, Tuple, List
 from cairosvg import svg2png
-from PIL import Image, ImageTk, PngImagePlugin
+from PIL import Image, ImageTk, PngImagePlugin, ImageDraw
 import configparser
 
 from resources.icon.icon_path import ICON_PATH
@@ -117,6 +117,7 @@ class Themes:
             self.search_color = BlackColor.LIGHT_BLACK.value
             self.rgb_background_color_actif_footer = QColor(*self.hex_to_rgb(self.search_color))
             self.rooms_color = BlackColor.BLACK.value
+            self.rgb_background_color_rooms = QColor(*self.hex_to_rgb(self.rooms_color))
             self.emoji_color = BlackColor.YELLOW.value
         elif self.theme_name == Themes.ThemeColor.WHITE.name:
             self.color = WhiteColor.WHITE.value
@@ -130,6 +131,7 @@ class Themes:
             self.search_color = WhiteColor.GREY.value
             self.rgb_background_color_actif_footer = QColor(*self.hex_to_rgb(self.search_color))
             self.rooms_color = WhiteColor.DARK_GREY.value
+            self.rgb_background_color_rooms = QColor(*self.hex_to_rgb(self.rooms_color))
             self.emoji_color = WhiteColor.BLACK.value
         elif self.theme_name == Themes.ThemeColor.CUSTOM.name:
             self.color = self.config['THEME']['inner_color']
@@ -143,6 +145,7 @@ class Themes:
             self.search_color = self.config['THEME']['search_color']
             self.rgb_background_color_actif_footer = QColor(*self.hex_to_rgb(self.search_color))
             self.rooms_color = self.config['THEME']['rooms_color']
+            self.rgb_background_color_rooms = QColor(*self.hex_to_rgb(self.rooms_color))
             self.emoji_color = self.config['THEME']['emoji_color']
         else:
             raise NotImplementedError("Theme not found")
@@ -281,3 +284,18 @@ def resize_picture(path: str, size: Optional[Tuple] = (520, 520)) -> bytes:
     output_bytes.seek(0)
 
     return output_bytes.read()
+
+
+def round_image(picture_path: str) -> Image:
+    image = Image.open(picture_path)
+    # Create a mask for the rounded effect
+    mask = Image.new('L', image.size, 0)
+    draw = ImageDraw.Draw(mask)
+    width, height = image.size
+    draw.ellipse((0, 0, width, height), fill=255)
+
+    # Apply the mask to the image
+    rounded_image = Image.new('RGBA', image.size)
+    rounded_image.paste(image, mask=mask)
+
+    return rounded_image

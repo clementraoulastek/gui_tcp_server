@@ -128,6 +128,9 @@ class GuiController:
             date=date,
             response_model=response_model,
         )
+        if response_model and response_model.sender_ == self.ui.client.user_name:
+            self.update_stylesheet_with_focus_event(message, border_color=self.theme.emoji_color)
+            
         self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
 
         # Update the dict
@@ -230,12 +233,13 @@ class GuiController:
         """
         if not global_variables.comming_msg["message"]:
             return
-
+        
         if global_variables.comming_msg["id"] != "server":
             self.last_message_id += 1
 
         message_model = None
         message = global_variables.comming_msg["message"]
+        
 
         if response_id := global_variables.comming_msg["response_id"]:
             response_id = int(response_id)
@@ -251,6 +255,11 @@ class GuiController:
             else None,
             response_model=message_model,
         )
+        if message_model and message_model.sender_ == self.ui.client.user_name:
+            self.update_stylesheet_with_focus_event(message, border_color=self.theme.emoji_color)
+            if global_variables.comming_msg["receiver"] == "home":
+                self.room_icon.update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_rooms)
+            
         if global_variables.comming_msg["id"] != "server":
             self.messages_dict[self.last_message_id] = message
 
@@ -394,8 +403,8 @@ class GuiController:
         user_disconnect[id_] = [user_connected[id_][0], False]
         self.ui.users_connected.pop(id_)
         
-        if id_ in self.dm_avatar_dict.keys():
-            self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.DEACTIVATED, background_color=self.theme.rgb_background_color_innactif)
+        if id_ in self.dm_avatar_dict.keys() and self.dm_avatar_dict[id_].status != AvatarStatus.DM:
+            self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.DEACTIVATED)
 
     def __add_sender_avatar(
         self, payload: str, user_disconnect: dict[str, List[Union[str, bool]]]
@@ -421,7 +430,7 @@ class GuiController:
             with global_variables.user_disconnect_lock:
                 user_disconnect.pop(id_)
 
-        if id_ in self.dm_avatar_dict.keys():
+        if id_ in self.dm_avatar_dict.keys() and self.dm_avatar_dict[id_].status != AvatarStatus.DM:
             self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.ACTIVATED)
 
         # Add the user icon to the connected layout
@@ -435,7 +444,7 @@ class GuiController:
         """
         username = self.ui.client.user_name
         if self.ui.backend.send_user_icon(username, None):
-            self.clear_avatar("user_inline", self.ui, f"{username}_layout")
+            self.clear_avatar("user_inline", self.ui.left_nav_widget, f"{username}_layout")
             self.api_controller.get_user_icon(update_personal_avatar=True)
 
     def __update_gui_with_connected_avatar(self) -> None:
@@ -490,7 +499,7 @@ class GuiController:
             username_label = check_str_len(username)
             user_name = QLabel(username_label)
             
-            if username in self.dm_avatar_dict.keys():
+            if username in self.dm_avatar_dict.keys() and self.dm_avatar_dict[username].status != AvatarStatus.DM:
                 self.dm_avatar_dict[username].update_pixmap(
                     AvatarStatus.ACTIVATED, 
                     background_color=self.theme.rgb_background_color_actif
@@ -1015,13 +1024,15 @@ class GuiController:
         """
         # Update reply entry
         self.ui.footer_widget.reply_entry_action.triggered.emit()
-
+    
         if room_name != "home":
             # Update avatar status with iddle
             self.update_pixmap_avatar(room_name, AvatarStatus.ACTIVATED if room_name in self.ui.users_connected.keys() else AvatarStatus.DEACTIVATED)
             self.api_controller.update_is_readed_status(
                 room_name, self.ui.client.user_name
             )
+        else:
+            self.room_icon.update_pixmap(AvatarStatus.IDLE, background_color=self.theme.rgb_background_color_rooms)
 
         old_widget = self.ui.scroll_area
         old_widget.hide()
@@ -1075,13 +1086,13 @@ class GuiController:
         divider_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         divider_label.setPixmap(divider.pixmap(20, 20))
 
-        room_icon = AvatarLabel(
+        self.room_icon = AvatarLabel(
             content=ImageAvatar.ROOM.value,
             status=AvatarStatus.DEACTIVATED,
         )
-        room_icon.setToolTip("Display home room")
+        self.room_icon.setToolTip("Display home room")
 
-        room_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.room_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         room_widget.clicked.connect(lambda: self.update_gui_for_mp_layout("home"))
 
         def hover(event: QEvent, user_widget):
@@ -1112,7 +1123,7 @@ class GuiController:
             """
         room_widget.setStyleSheet(style_.format())
 
-        room_layout.addWidget(room_icon, alignment=Qt.AlignmentFlag.AlignCenter)
+        room_layout.addWidget(self.room_icon, alignment=Qt.AlignmentFlag.AlignCenter)
         self.ui.rooms_widget.main_layout.addWidget(room_widget)
         self.ui.rooms_widget.main_layout.addWidget(divider_label)
         
@@ -1123,26 +1134,39 @@ class GuiController:
         Args:
             message (MessageLayout): message layout
         """
-        self.update_stylesheet_with_focus_event(message)
+        style_sheet_main = message.main_widget.styleSheet()
+        style_sheet_left = message.left_widget.styleSheet()
         
-        def callback(message: MessageLayout):
+        self.update_stylesheet_with_reply(message)
+        
+        def callback(message: MessageLayout, styleSheet_main: str, styleSheet_left):
             message.main_widget.setStyleSheet(
-                f"color: {self.theme.title_color};\
-                margin-bottom: 1px;\
-                margin-right: 2px;\
-                background-color: transparent;\
-                border: 0px"
+                styleSheet_main
             )
             message.left_widget.setStyleSheet(
-                "border-left: 0px solid;"
+                styleSheet_left
             )
-        
         self.ui.scroll_area.ensureWidgetVisible(message.main_widget)
         
-        QTimer.singleShot(1000, partial(callback, message))
+        QTimer.singleShot(1000, partial(callback, message, style_sheet_main, style_sheet_left))
+        
+        
+    def update_stylesheet_with_reply(
+        self, message: MessageLayout
+    ) -> None:
+        message.main_widget.setStyleSheet(
+            f"color: {self.theme.title_color};\
+            margin-bottom: 1px;\
+            margin-right: 2px;\
+            background-color: {self.theme.inner_color};\
+            border-left: 0px solid;"
+        )
+        message.left_widget.setStyleSheet(
+            "border-left: 0px solid"
+        )
         
     def update_stylesheet_with_focus_event(
-        self, message: MessageLayout
+        self, message: MessageLayout, border_color: str
     ) -> None:
         message.main_widget.setStyleSheet(
             f"color: {self.theme.title_color};\
@@ -1153,7 +1177,7 @@ class GuiController:
         message.left_widget.setStyleSheet(
             f"""QWidget{{
                 border-left: 2px solid;\
-                border-color: {self.theme.emoji_color};
+                border-color: {border_color};
             }}
             AvatarLabel{{
                 border: 0px solid;
@@ -1169,19 +1193,18 @@ class GuiController:
         """
         # Update reply entry
         self.ui.footer_widget.reply_entry_action.triggered.emit()
+        
+        style_sheet_main = message.main_widget.styleSheet()
+        style_sheet_left = message.left_widget.styleSheet()
 
-        self.update_stylesheet_with_focus_event(message)
+        self.update_stylesheet_with_focus_event(message, border_color=GenericColor.RED.value)
 
-        def callback(message: MessageLayout, older_room_name: str):
+        def callback(message: MessageLayout, older_room_name: str, styleSheet_main: str, styleSheet_left: str):
             message.main_widget.setStyleSheet(
-                f"color: {self.theme.title_color};\
-                margin-bottom: 1px;\
-                margin-right: 2px;\
-                background-color: transparent;\
-                border: 0px"
+                styleSheet_main
             )
             message.left_widget.setStyleSheet(
-                "border-left: 0px solid;"
+                styleSheet_left
             )
             global_variables.reply_id = ""
             older_room_name = older_room_name.replace("\n", "")
@@ -1194,7 +1217,7 @@ class GuiController:
         )
         self.ui.footer_widget.entry.setFocus()
         self.ui.footer_widget.reply_entry_action.triggered.connect(
-            partial(callback, message, older_room_name)
+            partial(callback, message, older_room_name, style_sheet_main, style_sheet_left)
         )
         global_variables.reply_id = f"#{message.message_id}/"
 

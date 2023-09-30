@@ -1,8 +1,10 @@
+import logging
+import os
 from typing import Optional, Union
 import requests
 from src.client.core.qt_core import QFileDialog, QMainWindow
 from src.tools.commands import Commands
-
+from src.tools.utils import round_image
 
 class Backend:
     def __init__(self, ip: str, port: str, parent: Union[QMainWindow, None] = None):
@@ -42,10 +44,21 @@ class Backend:
         )  # TODO: To remove from here
         if not path[0]:
             return
+        rounded_image = round_image(path[0])
+        temp_image_path = './resources/images/temp_rounded_image.png'
+        rounded_image.save(temp_image_path, 'PNG')
+        
         endpoint = f"http://{self.ip}:{self.port}/user/{username}"
-
-        files = {"file": open(path[0], "rb")}
-        response = requests.put(url=endpoint, files=files)
+        
+        with open(temp_image_path, "rb") as file:
+            files = {"file": file}
+            response = requests.put(url=endpoint, files=files)
+            
+        try:
+            os.remove(temp_image_path)
+        except OSError:
+            logging.error("Error while deleting file temp_rounded_image.png")
+        
         return response.status_code == 200
 
     def get_user_icon(self, username: str) -> Union[bool, bytes]:
@@ -107,3 +120,4 @@ class Backend:
         endpoint = f"http://{self.ip}:{self.port}/messages/readed/?sender={sender}&receiver={receiver}&is_readed={is_readed}"
         response = requests.patch(url=endpoint)
         return response.status_code
+

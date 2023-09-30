@@ -47,8 +47,12 @@ class AvatarLabel(QLabel):
         self.setStyleSheet("border: none")
 
     def update_picture(self, status: AvatarStatus, background_color: Optional[QColor] = theme.rgb_background_color_actif, content: Optional[bytes] = None) -> None:
+        # Update Avatar status
+        self.status = status
+        
         if content:
             self.content = content
+            
         if isinstance(self.content, str):
             p = QIcon(self.content).pixmap(QSize(self.height_, self.width_))
             if self.color:
@@ -63,6 +67,9 @@ class AvatarLabel(QLabel):
     def update_icon_status(
         self, status: AvatarStatus, background_color: QColor
     ) -> None:
+        # Update Avatar status
+        self.status = status
+        
         icon_pixmap = self.__init_pixmap()
         if status == AvatarStatus.IDLE:
             self.setPixmap(icon_pixmap)
@@ -110,8 +117,12 @@ class AvatarLabel(QLabel):
         Args:
             status (AvatarStatus): avatar status
         """
+        # Update Avatar status
+        self.status = status
+        
         icon_pixmap = self.__init_pixmap()
         painter = self.__create_painter(icon_pixmap)
+        
         if status == AvatarStatus.ACTIVATED:
             brush_color = self._update_circle_color(74, 160, 50)
         elif status == AvatarStatus.DM:
@@ -133,7 +144,10 @@ class AvatarLabel(QLabel):
 
     def __init_pixmap(self) -> QPixmap:
         pm = QPixmap()
-        pm.loadFromData(self.content)
+        if not isinstance(self.content, str):
+            pm.loadFromData(self.content)
+        else:
+            pm = self.content
         return QIcon(pm).pixmap(QSize(self.height_, self.width_))
 
     def __create_ellipse(

@@ -60,7 +60,7 @@ class MessageLayout(QHBoxLayout):
         super(MessageLayout, self).__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
-        
+
         # Attributes
         self.controller = controller
         self.message_id = message_id
@@ -118,9 +118,9 @@ class MessageLayout(QHBoxLayout):
         icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.str_message = coming_msg["message"]
-        sender = coming_msg["id"]
+        self.sender_ = coming_msg["id"]
 
-        self.username_label = check_str_len(sender)
+        self.username_label = check_str_len(self.sender_)
 
         self.left_layout.addWidget(icon_label)
 
@@ -137,10 +137,10 @@ class MessageLayout(QHBoxLayout):
             """
             if isinstance(event, QEnterEvent):
                 style_+="text-decoration: underline;"
-                
+
             user_widget.setStyleSheet(style_)
 
-        if sender != self.controller.ui.client.user_name:
+        if self.sender_ != self.controller.ui.client.user_name:
             self.sender_btn.clicked.connect(
                 functools.partial(self.add_dm_layout, copy_icon)
             )
@@ -148,7 +148,7 @@ class MessageLayout(QHBoxLayout):
             icon_label.leaveEvent = lambda e : functools.partial(icon_label.graphicsEffect().setEnabled, False)()
             icon_label.enterEvent = lambda e : functools.partial(icon_label.graphicsEffect().setEnabled, True)()
 
-        if message_id and sender != self.controller.ui.client.user_name:
+        if message_id and self.sender_ != self.controller.ui.client.user_name:
             self.sender_btn.enterEvent = functools.partial(
                 hover, user_widget=self.sender_btn
             )
@@ -173,16 +173,19 @@ class MessageLayout(QHBoxLayout):
             # ------------------------------- React Button ------------------------------- #
             right_widget.event_button = QWidget()
             right_widget.event_button.setStyleSheet(
-                f"background-color: transparent;\
-                border: 1px solid {theme.inner_color};\
-                border-radius: 2px;"
+                f"background-color: {theme.inner_color};\
+                border: 1px solid {theme.nav_color};\
+                border-radius: 6px;"
             )
             right_widget.event_button.setContentsMargins(0, 0, 0, 0)
             self.event_layout = QHBoxLayout(right_widget.event_button)
             self.event_layout.setSpacing(0)
             self.event_layout.setContentsMargins(1, 1, 1, 1)
             self.react_buttton = CustomQPushButton(
-                "", bg_color=theme.background_color, radius=4
+                "", 
+                bg_color=theme.inner_color,
+                bg_color_active=theme.nav_color,
+                radius=4
             )
             self.react_buttton.setToolTip("React to this message")
             retain = self.react_buttton.sizePolicy()
@@ -201,7 +204,10 @@ class MessageLayout(QHBoxLayout):
             self.event_layout.addWidget(self.react_buttton)
 
             self.reply_button = CustomQPushButton(
-                "", bg_color=theme.background_color, radius=4
+                "", 
+                bg_color=theme.inner_color, 
+                bg_color_active=theme.nav_color,
+                radius=4
             )
             self.reply_button.setToolTip("Reply to this message")
 
@@ -212,7 +218,7 @@ class MessageLayout(QHBoxLayout):
             )
             self.reply_button.setIcon(response_icon)
             self.event_layout.addWidget(self.reply_button)
-            
+
             retain = right_widget.event_button.sizePolicy()
             retain.setRetainSizeWhenHidden(True)
             right_widget.event_button.setSizePolicy(retain)
@@ -253,7 +259,7 @@ class MessageLayout(QHBoxLayout):
         top_layout = QHBoxLayout()
         top_layout.setContentsMargins(0, 0, 0, 0)
         top_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        
+
         top_layout.addWidget(self.sender_btn)
 
         if "admin" in self.username_label:  # TODO: must be a column for user tab
@@ -303,7 +309,9 @@ class MessageLayout(QHBoxLayout):
             response_layout.setSpacing(5)
 
             model_icon = AvatarLabel(
-                content=response_model.content, height=15, width=15
+                content=response_model.content, 
+                height=15, 
+                width=15,
             )
             icon_reply_label = QLabel()
             icon_reply = QIcon(
@@ -311,29 +319,29 @@ class MessageLayout(QHBoxLayout):
             ).pixmap(QSize(15, 15))
             icon_reply_label.setPixmap(icon_reply)
 
-            if len(response_model.str_message) > 50:
+            username_response = f"@{response_model.username_label}:"
+
+            if len(response_model.str_message) > 60:
                 model_message = f"{response_model.str_message[:50]}..."
             else:
                 model_message = response_model.str_message
 
             model_message = CustomQPushButton(
-                model_message,
+                f"{username_response} {model_message}",
                 color=theme.title_color,
-                bg_color_active="transparent",
             )
+
             model_message.clicked.connect(
                 functools.partial(self.controller.focus_in_message, response_model)
             )
             model_message.setFixedHeight(20)
             model_message.enterEvent = lambda e: model_message.setStyleSheet(
-               f"color : {theme.rooms_color};\
-                padding-left: 5px;"
+               f"color : {theme.rooms_color};"
             )
             model_message.leaveEvent = lambda e: model_message.setStyleSheet(
-               f"color : {theme.title_color};\
-                padding-left: 5px;"
+               f"color : {theme.title_color};"
             )
-            response_layout.addWidget(icon_reply_label)
+            response_layout.addWidget(icon_reply_label, alignment=Qt.AlignmentFlag.AlignHCenter)
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_message)
             right_layout.addLayout(response_layout)
