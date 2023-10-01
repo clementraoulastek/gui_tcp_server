@@ -6,6 +6,7 @@ comming_msg: dict[str, str] = {
     "message": "",
     "reaction": "",
     "response_id": "",
+    "message_id": "",
 }
 
 user_connected: dict[str, List[Tuple[bytes, bool]]] = {}

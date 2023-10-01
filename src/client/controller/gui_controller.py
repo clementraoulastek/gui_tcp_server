@@ -200,8 +200,13 @@ class GuiController:
             ):
                 self.last_message_id = message_id
                 continue
-
-            message_model = self.messages_dict[receiver][response_id] if response_id else None
+            
+            if receiver == "home":
+                dict_name = "home"
+            else:
+                dict_name = receiver if sender == self.ui.client.user_name else sender
+            
+            message_model = self.messages_dict[dict_name][response_id] if response_id else None
 
             # Add a special char to handle the ":" in the message
             message = message.replace(Client.SPECIAL_CHAR, ":")
@@ -264,11 +269,14 @@ class GuiController:
 
         message_model = None
         message = global_variables.comming_msg["message"]
-        
+        if global_variables.comming_msg["receiver"] == "home":
+            dict_name = "home"
+        else:
+            dict_name = global_variables.comming_msg["receiver"] if global_variables.comming_msg["id"] == self.ui.client.user_name else global_variables.comming_msg["id"]
 
         if response_id := global_variables.comming_msg["response_id"]:
             response_id = int(response_id)
-            message_model = self.messages_dict[global_variables.comming_msg["id"]][response_id]
+            message_model = self.messages_dict[dict_name][response_id]
 
         message = MessageLayout(
             self.ui.main_widget,
@@ -286,7 +294,7 @@ class GuiController:
                 self.room_icon.update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_rooms)
             
         if global_variables.comming_msg["id"] != "server":
-            self.messages_dict[global_variables.comming_msg["id"]][self.last_message_id] = message
+            self.messages_dict[dict_name][self.last_message_id] = message
 
         if global_variables.comming_msg["receiver"] == "home":
             dict_key = "home"
@@ -324,16 +332,27 @@ class GuiController:
             return
 
         message_id, nb_reaction = (
-            global_variables.comming_msg["id"],
+            global_variables.comming_msg["message_id"],
             global_variables.comming_msg["reaction"],
         )
-        message: MessageLayout = self.messages_dict[global_variables.comming_msg["id"]][int(message_id)]
+        if global_variables.comming_msg["receiver"] == "home":
+            dict_name = "home"
+        else:
+            dict_name = global_variables.comming_msg["receiver"] if global_variables.comming_msg["id"] == self.ui.client.user_name else global_variables.comming_msg["id"]
+        
+        print(dict_name, message_id, nb_reaction)
+        message: MessageLayout = self.messages_dict[dict_name][int(message_id)]
         message.update_react(int(nb_reaction))
 
         # Reset global variables
-        global_variables.comming_msg["reaction"], global_variables.comming_msg["id"] = (
+        global_variables.comming_msg["reaction"], 
+        global_variables.comming_msg["id"],
+        global_variables.comming_msg["receiver"],
+        global_variables.comming_msg["message_id"] = (
             "",
             "",
+            "",
+            ""
         )
 
     def __callback_routing_messages_on_ui(self) -> None:
@@ -379,15 +398,32 @@ class GuiController:
                     global_variables.user_disconnect,
                 )
             elif header in [Commands.ADD_REACT.value, Commands.RM_REACT.value]:
-                payload = payload.split(":")[-1].replace(" ", "")
-                payload_list = payload.split(";")
-                message_id, nb_reaction = payload_list[0], payload_list[1]
-                global_variables.comming_msg["id"] = message_id
-                global_variables.comming_msg["reaction"] = nb_reaction
+                self.__handle_reaction(payload)
             else:
                 self.__handle_message(payload)
         elif header == Commands.LAST_ID.value:
             self.last_message_id += 1
+            
+    def __handle_reaction(self, payload: str) -> None:
+        """
+        Get the message reaction and update global variables
+
+        Args:
+            payload (str): payload of the message with reaction number inside
+        """
+        payload_fields = payload.split(":")
+        sender = payload_fields[0]
+        receiver = payload_fields[1]
+        message = payload_fields[2]
+        payload = message.replace(" ", "")
+        payload_list = payload.split(";")
+        
+        message_id, nb_reaction = payload_list[0], payload_list[1]
+        
+        global_variables.comming_msg["id"] = sender
+        global_variables.comming_msg["receiver"] = receiver
+        global_variables.comming_msg["message_id"] = message_id
+        global_variables.comming_msg["reaction"] = nb_reaction
 
     def __handle_message(self, payload: str) -> None:
         """
@@ -397,7 +433,7 @@ class GuiController:
             payload (str): payload of the message
         """
         payload_fields = payload.split(":")
-        message_id = payload_fields[0]
+        sender = payload_fields[0]
         receiver = payload_fields[1]
         message = payload_fields[2]
 
@@ -405,7 +441,7 @@ class GuiController:
             response_id = payload_fields[3]
             global_variables.comming_msg["response_id"] = response_id
 
-        global_variables.comming_msg["id"] = message_id
+        global_variables.comming_msg["id"] = sender
         global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
         global_variables.comming_msg["message"] = message.replace("$replaced$", ":")
 
