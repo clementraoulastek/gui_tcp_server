@@ -138,7 +138,7 @@ class ApiController:
         Returns:
             dict: return a dict of older messages
         """
-        older_messages: dict = self.ui.backend.get_older_messages()
+        older_messages: list = self.ui.backend.get_older_messages()
         return older_messages["messages"]
 
     def add_sender_picture(self, sender_id: str) -> None:

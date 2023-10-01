@@ -1,7 +1,8 @@
+from collections import OrderedDict
 import logging
 from threading import Thread
 import time
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 from src.client.client import Client
 from src.client.controller.worker import Worker
 from src.client.core.qt_core import (
@@ -31,6 +32,7 @@ from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
 from functools import partial
 
+NB_OF_MESSAGES = 50
 
 class GuiController:
     def __init__(
@@ -44,7 +46,7 @@ class GuiController:
     ) -> None:
         self.ui = ui
         self.theme = theme
-        self.messages_dict = messages_dict
+        self.messages_dict: dict[str, List[MessageLayout]] = messages_dict
         self.last_message_id = last_message_id
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
@@ -96,6 +98,7 @@ class GuiController:
         nb_react: Optional[int] = 0,
         date: Optional[str] = "",
         response_model: Optional[Union[MessageLayout, None]] = None,
+        display: Optional[bool] = True
     ) -> None:
         """
         Display message on gui and clear the message entry
@@ -112,6 +115,7 @@ class GuiController:
         comming_msg: dict[str, str] = {"id": sender, "message": message}
 
         # Update the last message id
+
         if messsage_id:
             self.last_message_id = messsage_id
         else:
@@ -129,25 +133,47 @@ class GuiController:
         )
         if response_model and response_model.sender_ == self.ui.client.user_name:
             self.update_stylesheet_with_focus_event(message, border_color=self.theme.emoji_color)
+        
+        # Display message on gui on the frame
+        if display:
+            self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
+            message.is_displayed = True
             
-        self.ui.body_gui_dict[frame_name].main_layout.addLayout(message)
-
+        # Init dict key
+        if frame_name not in self.messages_dict.keys():
+            self.messages_dict[frame_name] = {}
         # Update the dict
-        self.messages_dict[self.last_message_id] = message
+        self.messages_dict[frame_name][self.last_message_id] = message
+        
         self.ui.footer_widget.entry.clear()
-
+        
         QTimer.singleShot(0, self.__update_scroll_bar)
+        
+    def add_older_messages_on_scroll(self) -> None:
+        """
+        Add older messages on scroll
+        """
+        copy_list = list(self.messages_dict[self.ui.scroll_area.name].items()).copy()
+        copy_list.reverse()
+        nb_messages_displayed = 0
+        for i, message in copy_list:
+            if nb_messages_displayed >= NB_OF_MESSAGES:
+                break
+            message: MessageLayout
+            if message.is_displayed:
+                continue
+            self.ui.scroll_area.main_layout.insertLayout(0, message)
+            self.messages_dict[self.ui.scroll_area.name][i].is_displayed = True
+            nb_messages_displayed +=1
 
-    def display_older_messages(self) -> None:
+
+    def display_older_messages(self, older_messages: dict) -> None:
         """
         Update gui with older messages
         """
         sender_list: list[str] = []
 
-        # Get older messages from the server
-        messages_dict = self.api_controller.get_older_messages()
-
-        for message in messages_dict:
+        for i, message in enumerate(older_messages):
             (
                 message_id,
                 sender,
@@ -167,8 +193,6 @@ class GuiController:
                 message["is_readed"],
                 message["response_id"],
             )
-
-            # TODO: Avoid to fetch all messages
             if (
                 receiver != "home"
                 and sender != self.ui.client.user_name
@@ -177,7 +201,7 @@ class GuiController:
                 self.last_message_id = message_id
                 continue
 
-            message_model = self.messages_dict[response_id] if response_id else None
+            message_model = self.messages_dict[receiver][response_id] if response_id else None
 
             # Add a special char to handle the ":" in the message
             message = message.replace(Client.SPECIAL_CHAR, ":")
@@ -196,6 +220,7 @@ class GuiController:
                     nb_react=int(reaction_nb),
                     date=date,
                     response_model=message_model,
+                    display=len(older_messages) - i <= NB_OF_MESSAGES
                 )
             # Display message on gui on the direct message frame
             elif self.ui.client.user_name in (sender, receiver):
@@ -220,6 +245,7 @@ class GuiController:
                     nb_react=int(reaction_nb),
                     date=date,
                     response_model=message_model,
+                    display=len(older_messages) - i <= NB_OF_MESSAGES
                 )
 
         # Reset dict to handle new avatar images from conn
@@ -242,7 +268,7 @@ class GuiController:
 
         if response_id := global_variables.comming_msg["response_id"]:
             response_id = int(response_id)
-            message_model = self.messages_dict[response_id]
+            message_model = self.messages_dict[global_variables.comming_msg["id"]][response_id]
 
         message = MessageLayout(
             self.ui.main_widget,
@@ -260,7 +286,7 @@ class GuiController:
                 self.room_icon.update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_rooms)
             
         if global_variables.comming_msg["id"] != "server":
-            self.messages_dict[self.last_message_id] = message
+            self.messages_dict[global_variables.comming_msg["id"]][self.last_message_id] = message
 
         if global_variables.comming_msg["receiver"] == "home":
             dict_key = "home"
@@ -279,6 +305,7 @@ class GuiController:
             self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
          
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
+        message.is_displayed = True
 
         # Clear the dict values
         global_variables.comming_msg = dict.fromkeys(global_variables.comming_msg, "")
@@ -300,7 +327,7 @@ class GuiController:
             global_variables.comming_msg["id"],
             global_variables.comming_msg["reaction"],
         )
-        message: MessageLayout = self.messages_dict[int(message_id)]
+        message: MessageLayout = self.messages_dict[global_variables.comming_msg["id"]][int(message_id)]
         message.update_react(int(nb_reaction))
 
         # Reset global variables
@@ -773,6 +800,7 @@ class GuiController:
             update_avatar (bool): update user avatar
         """
         self.ui.users_connected[self.ui.client.user_name] = True
+        
         if self.tcp_controller.is_connected_to_server():
             self.__init_working_signals()
             self.ui.client.send_data(Commands.HELLO_WORLD, Commands.HELLO_WORLD.name)
@@ -782,8 +810,27 @@ class GuiController:
             self.ui.left_nav_widget.info_disconnected_label.show()
             self.fetch_all_users_username()
             self.fetch_all_rooms()
-            self.display_older_messages()
-
+            
+            # Get older messages from the server
+            # TODO: Avoid to fetch all messages
+            older_messages_list: List = self.api_controller.get_older_messages()
+            
+            older_message_dict: Dict = {}
+            
+            for message in older_messages_list:
+                receiver = message["receiver"]
+                sender = message["sender"]
+                if receiver != "home":
+                    dict_name = receiver if sender == self.ui.client.user_name else sender
+                else:
+                    dict_name = receiver
+                if dict_name not in older_message_dict.keys():
+                    older_message_dict[dict_name] = []
+                older_message_dict[dict_name].append(message)
+            
+            for message in older_message_dict.values():
+                self.display_older_messages(message)
+            
             self.ui.footer_widget.reply_entry_action.triggered.connect(lambda: None)
 
     def hide_left_layouts_buttons(self) -> None:
@@ -880,6 +927,7 @@ class GuiController:
         self.ui.users_connected.clear()
         self.dm_avatar_dict.clear()
         self.ui.right_nav_widget.room_list.clear()
+        self.messages_dict.clear()
 
         # UI update
         self.update_buttons()
@@ -1014,7 +1062,7 @@ class GuiController:
             )
 
             # --- Add Body Scroll Area --- #
-            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=room_name)
+            self.ui.body_gui_dict[room_name] = BodyScrollArea(name=room_name, gui_controller=self)
         if switch_frame:
             self.update_gui_for_mp_layout(room_name)
 
@@ -1152,7 +1200,6 @@ class GuiController:
         self.ui.scroll_area.ensureWidgetVisible(message.main_widget)
         
         QTimer.singleShot(1000, partial(callback, message, style_sheet_main, style_sheet_left))
-        
         
     def update_stylesheet_with_reply(
         self, message: MessageLayout

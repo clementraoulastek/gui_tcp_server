@@ -67,6 +67,7 @@ class MessageLayout(QHBoxLayout):
         self.is_reacted = False
         self.nb_react = nb_react
         self.content = content
+        self.is_displayed = False
         self.timer = QTimer()
         self.timer.setSingleShot(True)
 

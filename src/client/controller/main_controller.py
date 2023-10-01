@@ -39,7 +39,7 @@ class MainController:
 
             if message_id := re.findall("#(\w+)/", global_variables.reply_id):
                 message_id = int(message_id[0])
-                message_model = self.gui_controller.messages_dict[message_id]
+                message_model = self.gui_controller.messages_dict[receiver][message_id]
 
             self.ui.client.send_data(
                 Commands.MESSAGE,

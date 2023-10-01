@@ -202,7 +202,7 @@ class MainWindow(QMainWindow):
 
         self.body_layout.addWidget(self.upper_widget)
 
-        self.body_gui_dict = {"home": BodyScrollArea(name="home")}
+        self.body_gui_dict = {"home": BodyScrollArea(name="home", gui_controller=self.controller.gui_controller)}
         self.scroll_area = self.body_gui_dict["home"]
         self.frame_icon_button.clicked.connect(self.scroll_area.scrollToBottom)
 

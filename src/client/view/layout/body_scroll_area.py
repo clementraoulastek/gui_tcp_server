@@ -13,13 +13,15 @@ from src.tools.utils import Themes, check_str_len
 theme = Themes()
 
 class BodyScrollArea(QScrollArea):
-    def __init__(self, name: str):
+    def __init__(self, name: str, gui_controller):
         """
         Update the core GUI
         """
         super(BodyScrollArea, self).__init__()
 
         self.name = name
+        self.gui_controller = gui_controller
+        self.nb_message_displayed = 0
 
         # ----------------- Main Layout ----------------- #
         self.main_layout = QVBoxLayout()
@@ -58,10 +60,13 @@ class BodyScrollArea(QScrollArea):
         """
         Check if the scrollbar is at the bottom
         """
+        if self.verticalScrollBar().value() == self.verticalScrollBar().minimum():
+            self.gui_controller.add_older_messages_on_scroll()
+            
         self.is_auto_scroll_ = (
             self.verticalScrollBar().value() == self.verticalScrollBar().maximum()
         )
-
+        
     def update_scrollbar(self):
         """
         If the scrollbar is at the bottom, update it to the bottom
