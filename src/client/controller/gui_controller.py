@@ -94,7 +94,7 @@ class GuiController:
         sender: str,
         message: str,
         frame_name: Optional[Union[str, None]] = None,
-        messsage_id: Optional[Union[int, None]] = None,
+        message_id: Optional[Union[int, None]] = None,
         nb_react: Optional[int] = 0,
         date: Optional[str] = "",
         response_model: Optional[Union[MessageLayout, None]] = None,
@@ -114,19 +114,16 @@ class GuiController:
         """
         comming_msg: dict[str, str] = {"id": sender, "message": message}
 
-        # Update the last message id
-
-        if messsage_id:
-            self.last_message_id = messsage_id
-        else:
+        if not message_id:
             self.last_message_id += 1
+            message_id = self.last_message_id
 
         message = MessageLayout(
             self.ui.main_widget,
             self,
             comming_msg,
             content=self.ui.users_pict[sender],
-            message_id=self.last_message_id,
+            message_id=message_id,
             nb_react=nb_react,
             date=date,
             response_model=response_model,
@@ -143,7 +140,7 @@ class GuiController:
         if frame_name not in self.messages_dict.keys():
             self.messages_dict[frame_name] = {}
         # Update the dict
-        self.messages_dict[frame_name][self.last_message_id] = message
+        self.messages_dict[frame_name][message_id] = message
         
         self.ui.footer_widget.entry.clear()
         
@@ -193,12 +190,13 @@ class GuiController:
                 message["is_readed"],
                 message["response_id"],
             )
+            if message_id > self.last_message_id:
+                self.last_message_id = message_id
             if (
                 receiver != "home"
                 and sender != self.ui.client.user_name
                 and receiver != self.ui.client.user_name
             ):
-                self.last_message_id = message_id
                 continue
             
             if receiver == "home":
@@ -221,7 +219,7 @@ class GuiController:
                     sender,
                     message,
                     frame_name="home",
-                    messsage_id=message_id,
+                    message_id=message_id,
                     nb_react=int(reaction_nb),
                     date=date,
                     response_model=message_model,
@@ -246,7 +244,7 @@ class GuiController:
                     sender,
                     message,
                     frame_name=direct_message_name,
-                    messsage_id=message_id,
+                    message_id=message_id,
                     nb_react=int(reaction_nb),
                     date=date,
                     response_model=message_model,
@@ -293,9 +291,6 @@ class GuiController:
             if global_variables.comming_msg["receiver"] == "home":
                 self.room_icon.update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_rooms)
             
-        if global_variables.comming_msg["id"] != "server":
-            self.messages_dict[dict_name][self.last_message_id] = message
-
         if global_variables.comming_msg["receiver"] == "home":
             dict_key = "home"
         else:
@@ -311,6 +306,8 @@ class GuiController:
             )
             # Update avatar status with DM circle popup
             self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
+            
+        self.messages_dict[dict_name][self.last_message_id] = message
          
         self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
         message.is_displayed = True
@@ -345,10 +342,12 @@ class GuiController:
         message.update_react(int(nb_reaction))
 
         # Reset global variables
-        global_variables.comming_msg["reaction"], 
-        global_variables.comming_msg["id"],
-        global_variables.comming_msg["receiver"],
-        global_variables.comming_msg["message_id"] = (
+        (
+            global_variables.comming_msg["reaction"], 
+            global_variables.comming_msg["id"],
+            global_variables.comming_msg["receiver"],
+            global_variables.comming_msg["message_id"]
+        ) = (
             "",
             "",
             "",
@@ -1099,6 +1098,11 @@ class GuiController:
 
             # --- Add Body Scroll Area --- #
             self.ui.body_gui_dict[room_name] = BodyScrollArea(name=room_name, gui_controller=self)
+            
+            # Add new room to the messages dict
+            if room_name not in self.messages_dict.keys():
+                self.messages_dict[room_name] = {}
+            
         if switch_frame:
             self.update_gui_for_mp_layout(room_name)
 
@@ -1278,6 +1282,8 @@ class GuiController:
             message_id (int): message id
         """
         # Update reply entry
+        print(message.message_id)
+        
         self.ui.footer_widget.reply_entry_action.triggered.emit()
         
         style_sheet_main = message.main_widget.styleSheet()
