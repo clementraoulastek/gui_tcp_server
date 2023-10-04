@@ -80,9 +80,50 @@ class Backend:
             return response.json()
         else:
             return False
+    
+    def get_all_dm_users_username(self, username) -> Union[bool, bytes]:
+        endpoint = f"http://{self.ip}:{self.port}/dm"
+        response = requests.get(
+            url=f"{endpoint}?username={username}",
+        )
+        if response.status_code == 200 and response.content:
+            return response.json()
+        else:
+            return False
+        
+    def get_last_message_id(self) -> int:
+        endpoint = f"http://{self.ip}:{self.port}/last_id"
+        response = requests.get(
+            url=endpoint,
+        )
+        if response.status_code == 200 and response.content:
+            return response.json()["last_id"]
+        else:
+            return False
+        
+    def get_first_message_id(self, user1: str, user2: str) -> int:
+        endpoint = f"http://{self.ip}:{self.port}/first_id" + f"?user1={user1}&user2={user2}"
+        response = requests.get(
+            url=endpoint,
+        )
+        if response.status_code == 200 and response.content:
+            return response.json()["first_id"]
+        else:
+            return False
 
-    def get_older_messages(self):
-        endpoint = f"http://{self.ip}:{self.port}/messages/"
+
+    def get_older_messages(self, start: int, number: int, user1: str, user2: str) -> dict:
+        endpoint = f"http://{self.ip}:{self.port}/messages/" + f"?message_id={start}&number={number}&user1={user1}&user2={user2}"
+        response = requests.get(
+            url=endpoint,
+        )
+        if response.status_code == 200 and response.content:
+            return response.json()
+        else:
+            return False
+        
+    def get_older_message(self, message_id: int):
+        endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}"
         response = requests.get(
             url=endpoint,
         )

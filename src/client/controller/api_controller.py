@@ -5,6 +5,7 @@ from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
 from src.client.core.qt_core import QColor
 from src.tools.utils import Themes
+from functools import lru_cache
 @unique
 class ApiStatus(Enum):
     """
@@ -81,6 +82,28 @@ class ApiController:
         if self.ui.backend.send_register_form(username, password):
             self.ui.client.user_name = username
             return True
+        
+    def get_last_message_id(self) -> int:
+        """
+        Backend request for getting last message id
+
+        Returns:
+            int: return last message id
+        """
+        return self.ui.backend.get_last_message_id()
+    
+    @lru_cache
+    def get_first_message_id(self, user1: str, user2: str) -> int:
+        """
+        Backend request for getting first message id
+
+        Args:
+            username (str): username
+
+        Returns:
+            int: return first message id
+        """
+        return self.ui.backend.get_first_message_id(user1, user2)
 
     def get_user_icon(
         self,
@@ -131,15 +154,32 @@ class ApiController:
             self.ui.users_connected["username"] = False
             global_variables.user_disconnect[username] = [content, False]
 
-    def get_older_messages(self) -> dict:
+    def get_older_messages(self, start: int, number: int, user1: str, user2: str) -> dict:
         """
         Get older messages from the server
 
         Returns:
             dict: return a dict of older messages
         """
-        older_messages: list = self.ui.backend.get_older_messages()
+        older_messages: list = self.ui.backend.get_older_messages(start, number, user1, user2)
+
         return older_messages["messages"]
+    
+    def get_older_message(self, message_id: int) -> dict:
+        """
+        Get older message from the server
+        """
+        older_message = self.ui.backend.get_older_message(message_id)
+        return older_message["message"]
+        
+    def get_all_dm_users_username(self, username: str) -> list:
+        """
+        Get all dm users username from the server
+
+        Returns:
+            list: return a list of dm for the user
+        """
+        return self.ui.backend.get_all_dm_users_username(username)
 
     def add_sender_picture(self, sender_id: str) -> None:
         """Add sender picture to the list of sender pictures
