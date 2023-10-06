@@ -60,7 +60,7 @@ class BodyScrollArea(QScrollArea):
         """
         Check if the scrollbar is at the bottom
         """
-        if self.verticalScrollBar().value() == self.verticalScrollBar().minimum():
+        if self.verticalScrollBar().value() <= self.verticalScrollBar().maximum() // 3:
             self.gui_controller.add_older_messages_on_scroll()
             
         self.is_auto_scroll_ = (

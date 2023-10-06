@@ -6,7 +6,7 @@ from src.tools.commands import Commands
 from src.tools.utils import Themes
 import re
 import src.client.controller.global_variables as global_variables
-
+from src.client.core.qt_core import QTimer
 
 class MainController:
     def __init__(self, ui, theme: Themes) -> None:
@@ -48,17 +48,10 @@ class MainController:
                 receiver=receiver,
                 response_id=message_id or None,
             )
-
-            self.gui_controller.diplay_self_message_on_gui(
-                self.ui.client.user_name,
-                message,
-                list(self.ui.body_gui_dict.keys())[
-                    list(self.ui.body_gui_dict.values()).index(self.ui.scroll_area)
-                ],
-                response_model=message_model,
-            )
             self.ui.footer_widget.reply_entry_action.triggered.emit()
+            self.ui.footer_widget.entry.clear()
             self.ui.footer_widget.entry.clearFocus()
+            #QTimer.singleShot(0, self.gui_controller.__update_scroll_bar)
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()

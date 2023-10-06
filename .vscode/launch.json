@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python : src/launch_client.py",
+            "name": "launch client",
             "type": "python",
             "request": "launch",
             "program": "src/launch_client.py",

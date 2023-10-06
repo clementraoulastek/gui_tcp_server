@@ -122,21 +122,25 @@ class GuiController:
         if frame_name not in self.messages_dict.keys():
             self.messages_dict[frame_name] = OrderedDict()
 
-        message = MessageLayout(
-            self.ui.main_widget,
-            self,
-            comming_msg,
-            content=self.ui.users_pict[sender],
-            message_id=message_id,
-            nb_react=nb_react,
-            date=date,
-            response_model=response_model,
-        )
-        # Update the dict
-        self.messages_dict[frame_name][message_id] = message
-        
-        if response_model and response_model.sender_ == self.ui.client.user_name:
-            self.update_stylesheet_with_focus_event(message, border_color=self.theme.emoji_color)
+        # Avoid to re-create the same message from an older request from a response model
+        if message_id not in self.messages_dict[frame_name].keys():
+            message = MessageLayout(
+                self.ui.main_widget,
+                self,
+                comming_msg,
+                content=self.ui.users_pict[sender],
+                message_id=message_id,
+                nb_react=nb_react,
+                date=date,
+                response_model=response_model,
+            )
+            # Update the dict
+            self.messages_dict[frame_name][message_id] = message
+            
+            if response_model and response_model.sender_ == self.ui.client.user_name:
+                self.update_stylesheet_with_focus_event(message, border_color=self.theme.emoji_color)
+        else:
+            message = self.messages_dict[frame_name][message_id]
         
         # Display message on gui on the frame
         if display:
@@ -159,16 +163,16 @@ class GuiController:
         # To avoid multiple scroll event, fetch the first message id
         first_id = self.api_controller.get_first_message_id(self.ui.scroll_area.name, self.ui.client.user_name)
         message_id_list = list(self.messages_dict[self.ui.scroll_area.name].values())
+
         message_id_list.sort(key=lambda x: x.message_id)
 
         last_message_id = next((message.message_id for message in message_id_list if message.is_displayed))
 
         # If the first id is the same as the last message id, it means that we have reached the end of the messages
         if first_id == last_message_id:
-            return
+            return True
         
         self.fetch_older_messages(last_message_id, NB_OF_MESSAGES, self.ui.scroll_area.name, display=True)
-
 
     def display_older_messages(
         self, 
@@ -222,7 +226,11 @@ class GuiController:
 
             if response_id and response_id not in self.messages_dict[dict_name]:
                 older_message = self.api_controller.get_older_message(response_id)
-                self.display_older_messages(older_message, display=False)
+                self.display_older_messages(
+                    older_message, 
+                    display=False, 
+                    reverse=True
+                )
 
             message_model = self.messages_dict[dict_name][response_id] if response_id else None
 
@@ -285,18 +293,20 @@ class GuiController:
             return
         
         if global_variables.comming_msg["id"] != "server":
-            self.last_message_id += 1
+            self.last_message_id = global_variables.comming_msg["message_id"]
 
         message_model = None
         message = global_variables.comming_msg["message"]
-        if global_variables.comming_msg["receiver"] == "home":
-            dict_name = "home"
-        else:
-            dict_name = global_variables.comming_msg["receiver"] if global_variables.comming_msg["id"] == self.ui.client.user_name else global_variables.comming_msg["id"]
 
+        receiver = global_variables.comming_msg["receiver"]
+        
         if response_id := global_variables.comming_msg["response_id"]:
             response_id = int(response_id)
-            message_model = self.messages_dict[dict_name][response_id]
+            if receiver == self.ui.client.user_name:
+                response_model_receiver = global_variables.comming_msg["id"]
+            else:
+                response_model_receiver = receiver
+            message_model = self.messages_dict[response_model_receiver][response_id]
 
         message = MessageLayout(
             self.ui.main_widget,
@@ -312,26 +322,26 @@ class GuiController:
             self.update_stylesheet_with_focus_event(message, border_color=self.theme.emoji_color)
             if global_variables.comming_msg["receiver"] == "home":
                 self.room_icon.update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_rooms)
-            
-        if global_variables.comming_msg["receiver"] == "home":
-            dict_key = "home"
-        else:
-            dict_key = global_variables.comming_msg["id"]
-
-        if dict_key != "home":
+        
+        if receiver not in {"home", self.ui.client.user_name}:
             self.add_gui_for_mp_layout(
-                dict_key,
+                receiver,
                 AvatarLabel(
                     content=self.ui.users_pict[global_variables.comming_msg["id"]],
                     status=AvatarStatus.DM,
                 ),
             )
-            # Update avatar status with DM circle popup
-            self.dm_avatar_dict[dict_key].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
             
-        self.messages_dict[dict_name][self.last_message_id] = message
+        # Revert sender and receiver for DM if the sender is the user
+        if receiver == self.ui.client.user_name:
+            receiver = global_variables.comming_msg["id"]
+            
+            # Update avatar status with DM circle popup
+            self.dm_avatar_dict[receiver].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
+          
+        self.messages_dict[receiver][self.last_message_id] = message
          
-        self.ui.body_gui_dict[dict_key].main_layout.addLayout(message)
+        self.ui.body_gui_dict[receiver].main_layout.addLayout(message)
         message.is_displayed = True
 
         # Clear the dict values
@@ -421,8 +431,6 @@ class GuiController:
                 self.__handle_reaction(payload)
             else:
                 self.__handle_message(payload)
-        elif header == Commands.LAST_ID.value:
-            self.last_message_id += 1
             
     def __handle_reaction(self, payload: str) -> None:
         """
@@ -453,14 +461,17 @@ class GuiController:
             payload (str): payload of the message
         """
         payload_fields = payload.split(":")
-        sender = payload_fields[0]
-        receiver = payload_fields[1]
-        message = payload_fields[2]
+        
+        message_id = payload_fields[0]
+        sender = payload_fields[1]
+        receiver = payload_fields[2]
+        message = payload_fields[3]
 
-        if len(payload_fields) == 4:
-            response_id = payload_fields[3]
+        if len(payload_fields) == 5:
+            response_id = payload_fields[4]
             global_variables.comming_msg["response_id"] = response_id
 
+        global_variables.comming_msg["message_id"] = int(message_id)
         global_variables.comming_msg["id"] = sender
         global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
         global_variables.comming_msg["message"] = message.replace("$replaced$", ":")

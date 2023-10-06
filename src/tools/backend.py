@@ -148,7 +148,10 @@ class Backend:
         }
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
-        return response.status_code
+        
+        if response.status_code == 200:
+            return response.json()
+        
 
     def update_reaction_nb(self, message_id: int, reaction_nb: int):
         endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}/reaction/?new_reaction_nb={reaction_nb}"
