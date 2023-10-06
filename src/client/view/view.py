@@ -173,6 +173,7 @@ class MainWindow(QMainWindow):
             "",
             bg_color_active=self.theme.background_color,
         )
+        self.frame_icon_button.setFixedSize(QSize(40, 40))
         self.frame_icon_button.setIcon(self.frame_icon)
     
         self.frame_name = QLabel("Rooms \n| home")

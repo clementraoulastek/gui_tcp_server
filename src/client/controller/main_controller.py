@@ -12,7 +12,6 @@ class MainController:
     def __init__(self, ui, theme: Themes) -> None:
         self.ui = ui
         self.messages_dict: dict[str, MessageLayout] = {}
-        self.last_message_id = 0
 
         self.tcp_controller = TcpServerController(self.ui)
         self.api_controller = ApiController(self.ui)
@@ -20,7 +19,6 @@ class MainController:
         self.gui_controller = GuiController(
             self.ui,
             self.messages_dict,
-            self.last_message_id,
             self.api_controller,
             self.tcp_controller,
             theme

@@ -1,3 +1,4 @@
+import time
 from src.client.core.qt_core import (
     QScrollArea,
     Qt,
@@ -6,6 +7,7 @@ from src.client.core.qt_core import (
     QHBoxLayout,
     QLabel,
     QSizePolicy,
+    QTimer
 )
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.tools.utils import Themes, check_str_len
@@ -22,6 +24,9 @@ class BodyScrollArea(QScrollArea):
         self.name = name
         self.gui_controller = gui_controller
         self.nb_message_displayed = 0
+        self.is_adding_older_messages = False
+        self.scrolling_timer = QTimer()
+        self.scrolling_timer.setSingleShot(True)
 
         # ----------------- Main Layout ----------------- #
         self.main_layout = QVBoxLayout()
@@ -49,6 +54,7 @@ class BodyScrollArea(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.is_auto_scroll_ = True
         self.verticalScrollBar().actionTriggered.connect(self.is_auto_scroll)
+        self.verticalScrollBar().actionTriggered.connect(self.add_older_messages_on_scroll)
         self.verticalScrollBar().rangeChanged.connect(self.update_scrollbar)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
@@ -60,12 +66,20 @@ class BodyScrollArea(QScrollArea):
         """
         Check if the scrollbar is at the bottom
         """
-        if self.verticalScrollBar().value() <= self.verticalScrollBar().maximum() // 3:
-            self.gui_controller.add_older_messages_on_scroll()
-            
         self.is_auto_scroll_ = (
             self.verticalScrollBar().value() == self.verticalScrollBar().maximum()
         )
+    
+    def add_older_messages_on_scroll(self):
+        """
+        Add older messages when the scrollbar is at the top
+        """
+        if not self.scrolling_timer.isActive() and self.verticalScrollBar().value() == self.verticalScrollBar().minimum():
+            is_max_ranged = self.gui_controller.add_older_messages_on_scroll()
+            if not is_max_ranged:
+                self.verticalScrollBar().setValue(self.verticalScrollBar().maximum() // 3)
+            self.scrolling_timer.start(1000)
+            
         
     def update_scrollbar(self):
         """

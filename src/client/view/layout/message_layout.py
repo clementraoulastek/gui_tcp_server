@@ -48,7 +48,6 @@ class Contener(QFrame):
 class MessageLayout(QHBoxLayout):
     def __init__(
         self,
-        parent: QWidget,
         controller,
         coming_msg: dict,
         nb_react: Optional[int] = 0,
@@ -111,7 +110,11 @@ class MessageLayout(QHBoxLayout):
         main_layout.addWidget(right_widget)
         right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        icon_label, copy_icon = AvatarLabel(content=self.content), AvatarLabel(
+        icon_label, copy_icon = AvatarLabel(
+            content=self.content,
+            height=38,
+            width=38,
+        ), AvatarLabel(
             content=self.content, status=AvatarStatus.DM
         )
         icon_label.set_opacity(0.8)

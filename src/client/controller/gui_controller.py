@@ -39,7 +39,6 @@ class GuiController:
         self,
         ui,
         messages_dict: dict[str, MessageLayout],
-        last_message_id: int,
         api_controller: ApiController,
         tcp_controller: TcpServerController,
         theme: Themes
@@ -47,7 +46,6 @@ class GuiController:
         self.ui = ui
         self.theme = theme
         self.messages_dict: dict[str, List[MessageLayout]] = messages_dict
-        self.last_message_id = last_message_id
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
         self.dm_avatar_dict: dict[str, AvatarLabel] = {}
@@ -113,11 +111,7 @@ class GuiController:
             response_model (Optional[Union[MessageLayout, None]]): MessageLayout object. Defaults to None.
         """
         comming_msg: dict[str, str] = {"id": sender, "message": message}
-
-        if not message_id:
-            self.last_message_id += 1
-            message_id = self.last_message_id
-            
+ 
         # Init dict key
         if frame_name not in self.messages_dict.keys():
             self.messages_dict[frame_name] = OrderedDict()
@@ -125,7 +119,6 @@ class GuiController:
         # Avoid to re-create the same message from an older request from a response model
         if message_id not in self.messages_dict[frame_name].keys():
             message = MessageLayout(
-                self.ui.main_widget,
                 self,
                 comming_msg,
                 content=self.ui.users_pict[sender],
@@ -205,9 +198,6 @@ class GuiController:
                 message["is_readed"],
                 message["response_id"],
             )
-
-            if message_id > self.last_message_id:
-                self.last_message_id = message_id
             if (
                 receiver != "home"
                 and sender != self.ui.client.user_name
@@ -292,8 +282,7 @@ class GuiController:
         if not global_variables.comming_msg["message"]:
             return
         
-        if global_variables.comming_msg["id"] != "server":
-            self.last_message_id = global_variables.comming_msg["message_id"]
+        message_id= global_variables.comming_msg["message_id"]
 
         message_model = None
         message = global_variables.comming_msg["message"]
@@ -309,11 +298,10 @@ class GuiController:
             message_model = self.messages_dict[response_model_receiver][response_id]
 
         message = MessageLayout(
-            self.ui.main_widget,
             self,
             global_variables.comming_msg,
             content=self.ui.users_pict[global_variables.comming_msg["id"]],
-            message_id=self.last_message_id
+            message_id=message_id
             if global_variables.comming_msg["id"] != "server"
             else None,
             response_model=message_model,
@@ -338,8 +326,12 @@ class GuiController:
             
             # Update avatar status with DM circle popup
             self.dm_avatar_dict[receiver].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
+            
+        # Init dict key
+        if receiver not in self.messages_dict.keys():
+            self.messages_dict[receiver] = OrderedDict()
           
-        self.messages_dict[receiver][self.last_message_id] = message
+        self.messages_dict[receiver][message_id] = message
          
         self.ui.body_gui_dict[receiver].main_layout.addLayout(message)
         message.is_displayed = True
@@ -1284,6 +1276,7 @@ class GuiController:
             message.left_widget.setStyleSheet(
                 styleSheet_left
             )
+            self.is_focused = False
         self.ui.scroll_area.ensureWidgetVisible(message.main_widget)
         
         QTimer.singleShot(1000, partial(callback, message, style_sheet_main, style_sheet_left))
