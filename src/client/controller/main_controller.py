@@ -1,3 +1,4 @@
+from src.client.controller.event_manager import EventManager
 from src.client.controller.api_controller import ApiController
 from src.client.controller.gui_controller import GuiController
 from src.client.controller.tcp_controller import TcpServerController
@@ -6,21 +7,25 @@ from src.tools.commands import Commands
 from src.tools.utils import Themes
 import re
 import src.client.controller.global_variables as global_variables
-from src.client.core.qt_core import QTimer
 
+
+        
 class MainController:
     def __init__(self, ui, theme: Themes) -> None:
         self.ui = ui
         self.messages_dict: dict[str, MessageLayout] = {}
+        
+        self.event_manager = EventManager()
 
         self.tcp_controller = TcpServerController(self.ui)
-        self.api_controller = ApiController(self.ui)
+        self.api_controller = ApiController(self.ui, self.event_manager)
 
         self.gui_controller = GuiController(
             self.ui,
             self.messages_dict,
             self.api_controller,
             self.tcp_controller,
+            self.event_manager,
             theme
         )
 
@@ -49,7 +54,6 @@ class MainController:
             self.ui.footer_widget.reply_entry_action.triggered.emit()
             self.ui.footer_widget.entry.clear()
             self.ui.footer_widget.entry.clearFocus()
-            #QTimer.singleShot(0, self.gui_controller.__update_scroll_bar)
 
     def hide_left_layout(self) -> None:
         self.gui_controller.hide_left_layout()

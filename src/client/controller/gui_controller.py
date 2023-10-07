@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Union
 from src.client.client import Client
 from src.client.controller.worker import Worker
 from src.client.core.qt_core import (
+    QObject,
     QHBoxLayout,
     QLayout,
     QWidget,
@@ -16,8 +17,10 @@ from src.client.core.qt_core import (
     QListWidgetItem,
     QVBoxLayout,
     QSize,
-    QSizePolicy
+    QSizePolicy,
+    Signal
 )
+from src.client.controller.event_manager import EventManager
 from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
 from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
 from src.client.view.layout.body_scroll_area import BodyScrollArea
@@ -41,6 +44,7 @@ class GuiController:
         messages_dict: dict[str, MessageLayout],
         api_controller: ApiController,
         tcp_controller: TcpServerController,
+        event_manager: EventManager,
         theme: Themes
     ) -> None:
         self.ui = ui
@@ -49,35 +53,22 @@ class GuiController:
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
         self.dm_avatar_dict: dict[str, AvatarLabel] = {}
+        self.event_manager = event_manager
         
     def __init_working_signals(self) -> None:
         """
         Init signals for incoming messages
         """
-        # Worker for incoming messages
-        self.read_worker = Worker(parent=self.ui)
-        self.read_worker.signal.connect(self.__diplay_coming_message_on_gui)
-        self.read_worker.start()
+        self.event_manager.coming_message_signal.connect(self.__diplay_coming_message_on_gui)
 
-        # Worker for incoming avatar
-        self.read_avatar_worker = Worker(parent=self.ui)
-        self.read_avatar_worker.signal.connect(self.__update_gui_with_connected_avatar)
-        self.read_avatar_worker.start()
+        self.event_manager.users_connected_signal.connect(self.__update_gui_with_connected_avatar)
 
-        # Worker for outdated avatar
-        self.read_outdated_avatar_worker = Worker(parent=self.ui)
-        self.read_outdated_avatar_worker.signal.connect(
+        self.event_manager.users_disconnected_signal.connect(
             self.__update_gui_with_disconnected_avatar
         )
-        self.read_outdated_avatar_worker.start()
-
-        # Worker for react
-        self.read_react_message_worker = Worker(parent=self.ui)
-        self.read_react_message_worker.signal.connect(
+        self.event_manager.react_message_signal.connect(
             self.__update_react_message_on_gui
         )
-        self.read_react_message_worker.start()
-
         self.worker_thread = Thread(
             target=self.__callback_routing_messages_on_ui, daemon=False
         )
@@ -311,6 +302,13 @@ class GuiController:
             if global_variables.comming_msg["receiver"] == "home":
                 self.room_icon.update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_rooms)
         
+        # Revert sender and receiver for DM if the sender is the user
+        if receiver == self.ui.client.user_name:
+            receiver = global_variables.comming_msg["id"]
+            update_avatar = True
+        else:
+            update_avatar = False
+            
         if receiver not in {"home", self.ui.client.user_name}:
             self.add_gui_for_mp_layout(
                 receiver,
@@ -320,10 +318,7 @@ class GuiController:
                 ),
             )
             
-        # Revert sender and receiver for DM if the sender is the user
-        if receiver == self.ui.client.user_name:
-            receiver = global_variables.comming_msg["id"]
-            
+        if update_avatar:
             # Update avatar status with DM circle popup
             self.dm_avatar_dict[receiver].update_pixmap(AvatarStatus.DM, background_color=self.theme.rgb_background_color_actif)
             
@@ -444,6 +439,8 @@ class GuiController:
         global_variables.comming_msg["receiver"] = receiver
         global_variables.comming_msg["message_id"] = message_id
         global_variables.comming_msg["reaction"] = nb_reaction
+        
+        self.event_manager.event_react_message()
 
     def __handle_message(self, payload: str) -> None:
         """
@@ -467,6 +464,8 @@ class GuiController:
         global_variables.comming_msg["id"] = sender
         global_variables.comming_msg["receiver"] = receiver.replace(" ", "")
         global_variables.comming_msg["message"] = message.replace("$replaced$", ":")
+        
+        self.event_manager.event_coming_message()
 
     def __remove_sender_avatar(
         self,
@@ -490,6 +489,8 @@ class GuiController:
         
         if id_ in self.dm_avatar_dict.keys() and self.dm_avatar_dict[id_].status != AvatarStatus.DM:
             self.dm_avatar_dict[id_].update_pixmap(AvatarStatus.DEACTIVATED)
+        
+        self.event_manager.event_users_disconnected()
 
     def __add_sender_avatar(
         self, payload: str, user_disconnect: dict[str, List[Union[str, bool]]]
@@ -521,6 +522,8 @@ class GuiController:
         if id_ not in self.ui.users_connected.keys():
             self.ui.users_connected[id_] = True
             self.api_controller.update_user_connected(id_, self.ui.users_pict[id_])
+            
+        self.event_manager.event_users_connected()
 
     def update_user_icon(self) -> None:
         """
@@ -872,7 +875,7 @@ class GuiController:
             
             # Get older messages from the server
             dm_list = self.get_all_dm_users_username()["usernames"]
-            
+
             last_message_id = int(self.api_controller.get_last_message_id())
 
             for dm in dm_list:

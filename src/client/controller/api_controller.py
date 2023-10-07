@@ -3,7 +3,7 @@ from typing import Optional
 from src.client.view.customWidget.AvatarQLabel import AvatarStatus
 from src.tools.commands import Commands
 import src.client.controller.global_variables as global_variables
-from src.client.core.qt_core import QColor
+from src.client.controller.event_manager import EventManager
 from src.tools.utils import Themes
 from functools import lru_cache
 @unique
@@ -18,10 +18,11 @@ class ApiStatus(Enum):
 
 theme = Themes()
 class ApiController:
-    def __init__(self, ui) -> None:
+    def __init__(self, ui, event_manager: EventManager) -> None:
         self.ui = ui
         self.is_connected = False
-
+        self.event_manager = event_manager
+        
     def send_login_form(self) -> bool:
         """
         Backend request for login form
@@ -153,6 +154,9 @@ class ApiController:
         else:
             self.ui.users_connected["username"] = False
             global_variables.user_disconnect[username] = [content, False]
+            
+        self.event_manager.event_users_connected()
+        self.event_manager.event_users_disconnected()
 
     def get_older_messages(self, start: int, number: int, user1: str, user2: str) -> dict:
         """

@@ -41,12 +41,10 @@ class QtGui:
         self.app.aboutToQuit.connect(self.quit)
 
     def quit(self, *args):
-        # ? I don't know why but in a list comprehension it doesn't work
-        if hasattr(self.main_window.controller.gui_controller, "read_worker"):
-            if self.main_window.controller.api_controller.is_connected:
-                self.main_window.controller.api_controller.send_login_status(
-                    username=self.main_window.client.user_name, status=False
-                )
+        if self.main_window.controller.api_controller.is_connected:
+            self.main_window.controller.api_controller.send_login_status(
+                username=self.main_window.client.user_name, status=False
+            )
 
             if self.main_window.client.is_connected:
                 self.main_window.client.close_connection()
