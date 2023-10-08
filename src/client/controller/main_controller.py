@@ -75,18 +75,24 @@ class MainController:
 
     def login(self) -> None:
         self.gui_controller.login()
-        self._hide_components()
+        self._hide()
 
     def logout(self) -> None:
         self.gui_controller.logout()
+        self._hide()
+
+    def _hide(self):
+        self.gui_controller.ui.left_nav_widget.scroll_area_avatar.hide()
+        self.gui_controller.ui.right_nav_widget.scroll_area_dm.hide()
         self._hide_components()
 
     def _hide_components(self) -> None:
-        self.gui_controller.hide_left_layout()
-        self.gui_controller.hide_right_layout()
         self.gui_controller.hide_footer_layout()
         self.gui_controller.hide_left_layouts_buttons()
         self.gui_controller.hide_right_layouts_buttons()
 
     def update_user_icon(self) -> None:
         self.gui_controller.update_user_icon()
+        
+    def show_user_profile(self) -> None:
+        self.gui_controller.show_user_profile()

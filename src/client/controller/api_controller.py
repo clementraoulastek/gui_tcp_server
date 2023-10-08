@@ -77,12 +77,12 @@ class ApiController:
 
         # Avoid empty username or password
         if not username or not password:
-            return False
+            return ApiStatus.FORBIDDEN
 
         # Send register form to the server
         if self.ui.backend.send_register_form(username, password):
             self.ui.client.user_name = username
-            return True
+            return ApiStatus.SUCCESS
         
     def get_last_message_id(self) -> int:
         """
@@ -218,3 +218,9 @@ class ApiController:
         password = self.ui.login_form.password_entry.text().replace(" ", "")
 
         return username, password
+    
+    def get_user_creation_date(self, username: str) :
+        return self.ui.backend.get_user_creation_date(username)
+    
+    def update_user_description(self, username: str, description: str) -> bool:
+        return self.ui.backend.update_user_description(username, description)

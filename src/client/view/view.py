@@ -24,6 +24,7 @@ from src.client.core.qt_core import (
     QWidget,
     QLineEdit,
     QSize,
+    QSizePolicy
 )
 from src.tools.backend import Backend
 from src.tools.constant import IP_API, IP_SERVER, PORT_API, PORT_SERVER
@@ -80,7 +81,7 @@ class MainWindow(QMainWindow):
         self.setup_gui()
         
         self.resizeEvent = self.resize_event
-
+        
     def setup_gui(self) -> None:
         """
         Add elements to the main window
@@ -105,6 +106,7 @@ class MainWindow(QMainWindow):
         # Core widget
         self.core_widget = QWidget()
         self.core_widget.setContentsMargins(0, 0, 0, 0)
+        self.core_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Core layout
         self.core_layout = QHBoxLayout(self.core_widget)
@@ -122,7 +124,7 @@ class MainWindow(QMainWindow):
         self.right_nav_widget = RightNavView(self.controller, width=250, theme=self.theme)
         self.core_layout.addWidget(self.right_nav_widget.scroll_area_dm)
         self.main_layout.addWidget(self.core_widget)
-
+        
         # Footer
         self.footer_widget = FooterView(
             self.controller, self.left_nav_widget.scroll_widget_avatar.width(), theme=self.theme
@@ -216,3 +218,5 @@ class MainWindow(QMainWindow):
         self.header.frame_research.reset_layout()
         if hasattr(self.controller.gui_controller, "theme_board"):
             self.controller.gui_controller.theme_board.hide()
+        if hasattr(self.controller.gui_controller, "user_profile_widget"):
+            self.controller.gui_controller.user_profile_widget.hide()

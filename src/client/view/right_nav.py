@@ -5,6 +5,8 @@ from src.client.core.qt_core import (
     QScrollArea,
     Qt,
     QVBoxLayout,
+    QPropertyAnimation,
+    QEasingCurve
 )
 from src.tools.utils import Themes, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
@@ -24,6 +26,13 @@ class RightNavView:
         # Scroll area
         self.scroll_area_dm = QScrollArea()
         self.scroll_area_dm.setFixedWidth(self.width)
+        
+        self.max_width_geometry = self.scroll_area_dm.geometry()
+        self.animation = QPropertyAnimation(self.scroll_area_dm, b'geometry')
+        self.animation.finished.connect(self.on_animation_finished)
+        self.animation.setDuration(150)  # Animation duration in milliseconds
+        self.animation.setEasingCurve(QEasingCurve.OutCubic)  # Easing curve for smooth animation
+        
         self.scroll_area_dm.verticalScrollBar().setStyleSheet(
             scroll_bar_vertical_stylesheet.format(_background_color=self.theme.inner_color)
         )
@@ -78,3 +87,27 @@ class RightNavView:
         padding-right: 0px;"
 
         widget.setStyleSheet(style_)
+    
+    def slide_out(self):
+        self.max_width_geometry = self.scroll_area_dm.geometry()
+        self.slide_animation = "out"
+        self.scroll_area_dm.show()
+        current_geometry = self.scroll_area_dm.geometry()
+        target_geometry = self.max_width_geometry.translated(current_geometry.width(), 0)
+        self.animation.setEndValue(current_geometry)
+        self.animation.setStartValue(target_geometry)
+        self.animation.start()
+
+    def slide_in(self):
+        self.slide_animation = "in"
+        current_geometry = self.scroll_area_dm.geometry()
+        target_geometry = current_geometry.translated(self.max_width_geometry.width(), 0)
+        self.animation.setStartValue(current_geometry)
+        self.animation.setEndValue(target_geometry)
+        self.animation.start()
+
+    def on_animation_finished(self):
+        if self.slide_animation == "in":
+            self.scroll_area_dm.hide()
+        else:
+            self.scroll_area_dm.show()

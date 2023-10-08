@@ -6,6 +6,8 @@ from src.client.core.qt_core import (
     QVBoxLayout,
     QHBoxLayout,
     QSizePolicy,
+    QPropertyAnimation,
+    QEasingCurve,
 )
 from src.tools.utils import Themes, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
@@ -29,8 +31,14 @@ class LeftNavView:
         self.scroll_area_avatar = QScrollArea()
         self.scroll_area_avatar.setFixedWidth(self.width)
 
+        self.max_width_geometry = self.scroll_area_avatar.geometry()
+        self.animation = QPropertyAnimation(self.scroll_area_avatar, b'geometry')
+        self.animation.finished.connect(self.on_animation_finished)
+        self.animation.setDuration(150)  # Animation duration in milliseconds
+        self.animation.setEasingCurve(QEasingCurve.OutCubic)  # Easing curve for smooth animation
+
         self.scroll_widget_avatar = QWidget()
-        
+
 
         self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
@@ -104,3 +112,29 @@ class LeftNavView:
         self.user_inline_layout.addLayout(self.user_offline)
 
         self.left_nav_layout.addWidget(self.scroll_area_avatar)
+    
+    def slide_out(self):
+        self.slide_animation = "out"
+        self.scroll_area_avatar.show()
+        current_geometry = self.scroll_area_avatar.geometry()
+        target_geometry = self.max_width_geometry.translated(-current_geometry.width(), 0)
+        self.animation.setEndValue(current_geometry)
+        self.animation.setStartValue(target_geometry)
+        self.animation.start()
+
+    def slide_in(self):
+        self.slide_animation = "in"
+        current_geometry = self.scroll_area_avatar.geometry()
+        target_geometry = current_geometry.translated(-self.max_width_geometry.width(), 0)
+        self.animation.setStartValue(current_geometry)
+        self.animation.setEndValue(target_geometry)
+        self.animation.start()
+
+    def on_animation_finished(self):
+        self.scroll_area_avatar.updateGeometry()
+        if self.slide_animation == "in":
+            self.scroll_area_avatar.hide()
+        else:
+            self.scroll_area_avatar.show()
+
+        

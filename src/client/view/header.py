@@ -26,6 +26,7 @@ class HeaderView:
             color: {self.theme.title_color};\
             border-radius: 0px;\
             border: 0px solid;\
+            margin-bottom: 0px;\
             border-color: {self.theme.nav_color};"
         )
 
@@ -35,11 +36,14 @@ class HeaderView:
         
         # Logo widget
         logo_widget = QWidget()
+        logo_widget.setStyleSheet(
+            "border-bottom: 1px solid"
+        )
 
         # Logo layout
         logo_layout = QHBoxLayout(logo_widget)
         logo_layout.setSpacing(10)
-        logo_widget.setStyleSheet("border: none")
+        logo_widget.setStyleSheet("border: 0px solid")
         logo_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
         icon_soft.setStyleSheet(
@@ -50,14 +54,18 @@ class HeaderView:
         # Server Name
         status_server_label = QLabel(DEFAULT_CLIENT_NAME.upper())
         status_server_label.setStyleSheet(
-            "font-weight: bold;\
-            border: none;\
-            font-style: italic"
+            f"font-weight: bold;\
+            border: 0px solid;\
+            font-style: italic;\
+            border-color: {self.theme.nav_color};"
         )
         separator_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, color=self.theme.title_color))
         self.separator = QLabel()
         self.separator.hide()
         self.separator.setPixmap(separator_icon.pixmap(20, 20))
+        self.separator.setStyleSheet(
+            "border: 0px solid"
+        )
         
         self.welcome_label = QLabel("")
         self.welcome_label.setStyleSheet("font-weight: bold")
@@ -91,6 +99,7 @@ class HeaderView:
         
         lang_layout = AvatarLabel(content=ImageAvatar.EN.value, height=20, width=20)
         lang_label = QLabel("<strong>EN</strong>")
+        lang_label.setStyleSheet("border: 0px solid")
         
         # Adding widgets to the main layout
         self.header_layout.addWidget(logo_widget)

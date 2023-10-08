@@ -59,7 +59,7 @@ class FooterView:
         self.user_picture.setToolTip("Update your avatar")
         self.user_picture.enterEvent = lambda event: self.user_picture.graphicsEffect().setEnabled(True)
         self.user_picture.leaveEvent = lambda event: self.user_picture.graphicsEffect().setEnabled(False)
-        self.user_picture.mousePressEvent = lambda e : self.controller.update_user_icon()
+        self.user_picture.mousePressEvent = lambda e : self.controller.show_user_profile()
         self.user_picture.set_opacity(0.8)
         self.user_picture.graphicsEffect().setEnabled(False)
         self.user_picture.setStyleSheet("border: 0px")

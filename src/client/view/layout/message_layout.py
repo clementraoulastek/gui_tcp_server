@@ -283,7 +283,7 @@ class MessageLayout(QHBoxLayout):
             local_dt_object = dt_object.replace(tzinfo=pytz.utc).astimezone(
                 local_timezone
             )
-            date_time = local_dt_object.strftime("%d/%m/%Y à %H:%M:%S")
+            date_time = local_dt_object.strftime("%d/%m/%Y at %H:%M:%S")
 
         date_label = QLabel(date_time)
         date_label.setContentsMargins(0, 0, 0, 0)

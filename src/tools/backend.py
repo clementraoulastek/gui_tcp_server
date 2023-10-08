@@ -33,7 +33,10 @@ class Backend:
 
     def send_register_form(self, username: str, password: str) -> bool:
         endpoint = f"http://{self.ip}:{self.port}/register"
-        data = {"username": username, "password": password}
+        data = {   
+                "username": username, 
+                "password": password,
+            }
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data)
         return response.status_code == 200
@@ -165,3 +168,19 @@ class Backend:
         response = requests.patch(url=endpoint)
         return response.status_code
 
+    def get_user_creation_date(self, username: str) -> Union[bool, bytes]:
+        endpoint = f"http://{self.ip}:{self.port}/user/{username}/creation-date"
+        response = requests.get(
+            url=endpoint,
+        )
+        if response.status_code == 200 and response.content:
+            response = response.json()
+            return response["register_date"], response["description"]
+        else:
+            return False
+        
+    def update_user_description(self, username: str, description: str) -> bool:
+        endpoint = f"http://{self.ip}:{self.port}/user/{username}/description"
+        endpoint += f"?description={description}"
+        response = requests.patch(url=endpoint)
+        return response.status_code == 200

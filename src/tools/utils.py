@@ -57,6 +57,7 @@ class Icon(Enum):
     FILE = f"{ICON_PATH}/file.svg"
     SEARCH = f"{ICON_PATH}/search.svg"
     SWITCH_COLOR = f"{ICON_PATH}/switch_color.svg"
+    SAVE = f"{ICON_PATH}/save.svg"
 
 
 @unique
