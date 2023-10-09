@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super().__init__()
         self.theme = Themes()
-        # self.showMaximized()
+        self.showMaximized()
         self.setWindowTitle(title)
 
         # TODO: this attr should be in the controller

@@ -1,3 +1,4 @@
+import contextlib
 from collections import OrderedDict
 import datetime
 import logging
@@ -576,7 +577,10 @@ class GuiController:
             status=AvatarStatus.ACTIVATED,
         )
         user_name = QLabel(self.ui.client.user_name)
-        user_name.setStyleSheet("font-weight: bold; border: 0px solid;")
+        user_name.setStyleSheet(
+            f"font-weight: bold;\
+            border: 0px solid;\
+            color: {self.theme.text_color};")
         
         user_info = QLabel(
             f"<strong>Creation date:</strong>\
@@ -586,15 +590,20 @@ class GuiController:
             <strong>Description:</strong>"
         )
         user_info.setWordWrap(True)
-        user_info.setStyleSheet("border: 0px solid;")
+        user_info.setStyleSheet(
+            f"border: 0px solid;\
+            color: {self.theme.text_color};"
+        )
         user_info.setContentsMargins(5, 5, 5, 5)
         
         self.status_widget = QPlainTextEdit()
+        self.status_widget.setContentsMargins(5, 5, 5, 5)
         self.status_widget.setPlaceholderText(
-            description or "Right your description here ..."
+            description or "Write your description here 🌈"
         )
         self.status_widget.setStyleSheet(
-            f"background-color: {self.theme.inner_color};"
+            f"background-color: {self.theme.inner_color};\
+            color: {self.theme.text_color};"
         )
         self.status_widget.setFixedHeight(60)
         
@@ -612,7 +621,7 @@ class GuiController:
         user_info_layout.setSpacing(10)
         
         # Add user update button
-        update_button = CustomQPushButton(" Update")
+        update_button = CustomQPushButton(" Upload")
         update_button.setToolTip("Update Avatar")
         update_button.setFixedSize(QSize(80, 30))
         update_button.clicked.connect(self.update_user_icon)
@@ -628,7 +637,7 @@ class GuiController:
         close_btn.setToolTip("Close")
         close_btn.setFixedSize(QSize(30, 30))
         
-        update_user_icon = QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.text_color))
+        update_user_icon = QIcon(QIcon_from_svg(Icon.FILE.value, color=self.theme.text_color))
         close_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, color=GenericColor.RED.value))
         update_button.setIcon(update_user_icon)
         close_btn.setIcon(close_icon)
@@ -1110,7 +1119,7 @@ class GuiController:
 
         # Socket disconnection
         self.ui.client.close_connection()
-        
+
         # Update the gui with home layout for reconnection
         self.update_gui_for_mp_layout("home")
 
@@ -1122,7 +1131,7 @@ class GuiController:
         self.dm_avatar_dict.clear()
         self.ui.right_nav_widget.room_list.clear()
         self.messages_dict.clear()
-        
+
         # Reset scroll variables
         self.api_messages_max_range = False
         self.nb_of_scroll = 1
@@ -1133,7 +1142,8 @@ class GuiController:
         self.clear_avatar("user_offline", self.ui.left_nav_widget)
         self.clear_avatar("main_layout", self.ui.rooms_widget, delete_all=True)
         self.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
-        self.ui.footer_widget.reply_entry_action.triggered.disconnect()
+        with contextlib.suppress(RuntimeError):
+            self.ui.footer_widget.reply_entry_action.triggered.disconnect()
         self.ui.header.frame_research.hide()
         self.ui.header.welcome_label.hide()
         self.ui.header.separator.hide()
@@ -1670,7 +1680,7 @@ class GuiController:
         # Update theme button
         theme_icon = QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.title_color))
         update_button = self._create_theme_button(
-            "Custom", 80, theme_icon
+            " Custom", 80, theme_icon
         )
         update_button.clicked.connect(
             partial(self.theme.create_custom_theme, self, list_theme_line_edit)

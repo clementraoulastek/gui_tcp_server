@@ -13,7 +13,7 @@ QLineEdit {{
 	background-color: {_bg_color};
 	border-radius: {_radius}px;
 	border: {_border_size}px solid {_context_color};
-	padding-left: 10px;
+	padding-left: 5px;
     padding-right: 5px;
 	selection-background-color: {_context_color};
     color: {_color};
@@ -34,7 +34,7 @@ QLineEdit {{
     border-bottom-right-radius: 0px;
 	border: {_border_size}px solid {_context_color};
     border-bottom: 0px solid;
-	padding-left: 10px;
+	padding-left: 5px;
     padding-right: 5px;
 	selection-background-color: {_context_color};
     color: {_color};
@@ -67,7 +67,7 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         if place_holder_text:
             self.setPlaceholderText(place_holder_text)
 
-        self.setFixedHeight(40)
+        self.setFixedHeight(45)
 
         self.set_stylesheet(
             radius,

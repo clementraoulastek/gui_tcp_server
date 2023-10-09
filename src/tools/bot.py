@@ -39,8 +39,8 @@ class Bot:
         self.backend.send_login_status(username=self.username, status=False)
         self.client.close_connection()
         
-    def send_message(self, message: str) -> None:
-        self.client.send_data(Commands.MESSAGE, message)
+    def send_message(self, message: str, receiver: str) -> None:
+        self.client.send_data(Commands.MESSAGE, message, receiver=receiver)
         
     def __callback_routing_messages_on_ui(self) -> None:
         """
@@ -77,8 +77,6 @@ class Bot:
                 pass
             else:
                 pass
-        elif header == Commands.LAST_ID.value:
-            pass
 
 
         

@@ -33,6 +33,14 @@ class FooterView:
         self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value, color=self.theme.text_color))
         self.logout_button.setIcon(self.logout_icon)
         self.logout_button.setDisabled(True)
+        
+        settings_btn = CustomQPushButton()
+        settings_btn.setToolTip("Settings")
+        settings_btn.setFixedHeight(30)
+        settings_btn.setFixedWidth(30)
+        settings_btn.clicked.connect(self.controller.gui_controller.show_user_profile)
+        settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value, color=self.theme.text_color))
+        settings_btn.setIcon(settings_icon)
 
         self.send_widget = QWidget()
         self.send_layout = QHBoxLayout(self.send_widget)
@@ -83,7 +91,6 @@ class FooterView:
         user_widget_status_layout.addWidget(self.user_name)
         user_widget_status_layout.addWidget(user_status)
 
-
         avatar_layout = QHBoxLayout(self.user_widget)
         avatar_layout.setSpacing(5)
 
@@ -91,6 +98,7 @@ class FooterView:
         avatar_layout.addWidget(
             user_widget_status, stretch=1, alignment=Qt.AlignmentFlag.AlignLeft
         )
+        avatar_layout.addWidget(settings_btn, stretch=2, alignment=Qt.AlignmentFlag.AlignLeft)
         avatar_layout.addWidget(self.logout_button)
 
         self.client_information_dashboard_layout.addWidget(self.user_widget)
@@ -101,7 +109,7 @@ class FooterView:
         self.entry.returnPressed.connect(self.controller.send_message_to_server)
 
         self.send_layout.addWidget(self.user_info_widget)
-        self.send_layout.addWidget(self.entry)
+        self.send_layout.addWidget(self.entry, alignment=Qt.AlignmentFlag.AlignTop)
 
         pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, self.theme.title_color))
         send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, self.theme.title_color))

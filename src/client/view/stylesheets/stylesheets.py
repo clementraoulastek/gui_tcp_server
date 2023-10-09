@@ -5,7 +5,7 @@ QScrollArea {{
 }}
 QScrollBar:vertical {{
     background: transparent;
-    width: 7px;
+    width: 6px;
     margin-left: 0px;
 }}
 QScrollBar::handle:vertical {{
