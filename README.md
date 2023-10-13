@@ -1,13 +1,12 @@
 
-# Robot Messenger 
+# Messenger 
 
 This project provide:
 - TCP server
-- GUI client
+- Backend API
+- **GUI client**
 
-This project need the Robot Messenger backend API, to register/connect to the app
-
-The TCP client (last updated on 16/08/2023):
+The GUI client (last updated on 14/10/2023):
 
 ![Alt text](./resources/images/readme_pic.png?raw=true "Client GUI")
 
@@ -26,10 +25,8 @@ for installating dependencies (need to be in the venv):
 
  
 ## Launch project
-Launch the server:
-- python src/launch_server.py
 
-Launch a client:
+Launch the GUI client:
 - python src/launch_client.py
 
 
