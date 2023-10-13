@@ -40,7 +40,6 @@ from src.client.controller.tcp_controller import TcpServerController
 import src.client.controller.global_variables as global_variables
 from functools import partial
 
-NB_OF_MESSAGES = 50
 
 class GuiController:
     def __init__(
@@ -165,7 +164,7 @@ class GuiController:
         if first_id == last_message_id:
             return True
         
-        self.fetch_older_messages(last_message_id, NB_OF_MESSAGES, self.ui.scroll_area.name, display=True)
+        self.fetch_older_messages(last_message_id, 4, self.ui.scroll_area.name, display=True)
 
     def display_older_messages(
         self, 
@@ -295,6 +294,14 @@ class GuiController:
                 response_model_receiver = global_variables.comming_msg["id"]
             else:
                 response_model_receiver = receiver
+                
+            if response_id and response_id not in self.messages_dict[response_model_receiver]:
+                older_message = self.api_controller.get_older_message(response_id)
+                self.display_older_messages(
+                    older_message, 
+                    display=False, 
+                    reverse=True
+                )
             message_model = self.messages_dict[response_model_receiver][response_id]
 
         message = MessageLayout(
@@ -1007,7 +1014,7 @@ class GuiController:
                 last_message_id = int(last_message_id)
             else:
                 return
-                
+            NB_OF_MESSAGES = 20
             for dm in dm_list:
                 self.fetch_older_messages(
                     start=last_message_id + 1,

@@ -13,7 +13,9 @@ from src.client.core.qt_core import (
     QPen,
     QGraphicsOpacityEffect,
     QGraphicsDropShadowEffect,
-    QStaticText,
+    QFont,
+    QRectF
+    
 )
 from src.tools.utils import Themes
 
@@ -162,6 +164,7 @@ class AvatarLabel(QLabel):
         circle_center = QPoint(
             self.width_ - 1.1 * circle_radius, self.height_ - circle_radius * 1
         )
+
         # Outer circle
         self.__draw_ellipse(outer_brush_color, painter, circle_center, circle_radius)
 
@@ -170,9 +173,26 @@ class AvatarLabel(QLabel):
 
         # Inner circle
         self.__draw_ellipse(inner_brush_color, painter, inner_center, inner_radius)
-        
+
+        if inner_brush_color == QColor(255, 0, 0):
+            self.__create_symbole(painter, inner_center, inner_radius)
         painter.end()
         self.setPixmap(icon_pixmap)
+
+    def __create_symbole(self, painter, inner_center, inner_radius):
+        # Draw "!" inside the circle
+        painter.setPen(QPen(Qt.black))  # Set text color
+        font = QFont()
+        font.setPointSize(8)  # Adjust the font size as needed
+        painter.setFont(font)
+        text = "!"
+        text_rect = QRectF(
+            inner_center.x() - inner_radius,
+            inner_center.y() - inner_radius,
+            2 * inner_radius,
+            2 * inner_radius,
+        )
+        painter.drawText(text_rect, Qt.AlignCenter, text)
 
     def __draw_ellipse(self, arg0, painter, arg2, arg3):
         outer_brush = QBrush(arg0)

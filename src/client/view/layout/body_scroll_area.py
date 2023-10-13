@@ -43,8 +43,8 @@ class BodyScrollArea(QScrollArea):
         self.setMinimumHeight(380)
 
         self.scroll_widget = QWidget()
-        self.scroll_widget.setContentsMargins(0, 0, 0, 0)
-        self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet.format(_background_color=theme.background_color))
+        self.scroll_widget.setContentsMargins(0, 10, 0, 10)
+        self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet.format(_background_color=theme.search_color))
         self.setStyleSheet(
             "background-color: transparent;\
             color: white;\
@@ -75,10 +75,8 @@ class BodyScrollArea(QScrollArea):
         Add older messages when the scrollbar is at the top
         """
         if not self.scrolling_timer.isActive() and self.verticalScrollBar().value() == self.verticalScrollBar().minimum():
-            is_max_ranged = self.gui_controller.add_older_messages_on_scroll()
-            if not is_max_ranged:
-                self.verticalScrollBar().setValue(self.verticalScrollBar().maximum() // 3)
-            self.scrolling_timer.start(1000)
+            self.gui_controller.add_older_messages_on_scroll()
+            self.scrolling_timer.start(100)
             
         
     def update_scrollbar(self):
