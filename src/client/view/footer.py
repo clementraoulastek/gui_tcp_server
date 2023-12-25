@@ -50,7 +50,9 @@ class FooterView:
         settings_btn.setToolTip("Settings")
         settings_btn.setFixedHeight(30)
         settings_btn.setFixedWidth(30)
-        settings_btn.clicked.connect(self.controller.gui_controller.user_profile_controller.show_user_profile)
+        settings_btn.clicked.connect(
+            self.controller.gui_controller.user_profile_controller.show_user_profile
+        )
         settings_icon = QIcon(
             icon_from_svg(Icon.CONFIG.value, color=self.theme.text_color)
         )

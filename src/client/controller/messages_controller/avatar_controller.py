@@ -1,18 +1,33 @@
+"""Module for avatar controller"""
+
 from functools import partial
 from typing import List, Optional, Union
 
+from src.client.controller import global_variables
+from src.client.core.qt_core import (
+    QEnterEvent,
+    QEvent,
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    Qt,
+    QWidget,
+)
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
-import src.client.controller.global_variables as global_variables
 from src.client.view.custom_widget.custom_button import CustomQPushButton
-from src.client.core.qt_core import QHBoxLayout, Qt, QEvent, QEnterEvent, QLabel, QLayout, QWidget
 from src.tools.utils import check_str_len
 
+
 class AvatarController:
+    """
+    Avatar controller class.
+    """
+
     def __init__(self, parent, ui, dm_avatar_dict: dict):
         self.parent = parent
         self.ui = ui
         self.dm_avatar_dict = dm_avatar_dict
-    
+
     def remove_sender_avatar(
         self,
         payload: str,
@@ -73,10 +88,12 @@ class AvatarController:
         # Add the user icon to the connected layout
         if id_ not in self.ui.users_connected.keys():
             self.ui.users_connected[id_] = True
-            self.parent.api_controller.update_user_connected(id_, self.ui.users_pict[id_])
+            self.parent.api_controller.update_user_connected(
+                id_, self.ui.users_pict[id_]
+            )
 
         self.parent.event_manager.event_users_connected()
-        
+
     def update_gui_with_connected_avatar(self) -> None:
         """
         Callback to update gui with input connected avatar
@@ -84,7 +101,7 @@ class AvatarController:
         user_connected_dict = global_variables.user_connected.copy()
 
         for user, data in user_connected_dict.items():
-            if data[1] == True:
+            if data[1] is True:
                 continue
             global_variables.user_connected[user] = [data[0], True]
             # Layout
@@ -99,6 +116,7 @@ class AvatarController:
             user_layout.setObjectName(f"{username}_layout")
             content = data[0]
 
+            # pylint: disable=cell-var-from-loop
             def hover(event: QEvent, user_widget):
                 if isinstance(event, QEnterEvent):
                     color = self.parent.theme.background_color
@@ -175,14 +193,16 @@ class AvatarController:
                 }}
                 """
                 style_ = f"{style_}{hover_}"
-            user_name.setStyleSheet(style_.format(color=self.parent.theme.background_color))
+            user_name.setStyleSheet(
+                style_.format(color=self.parent.theme.background_color)
+            )
 
             # Add widgets to the layout
             user_layout.addWidget(user_pic)
             user_layout.addWidget(user_name)
             self.ui.left_nav_widget.user_inline.insertWidget(1, user_widget)
             self.ui.left_nav_widget.user_inline.update()
-            
+
     def update_gui_with_disconnected_avatar(self) -> None:
         """
         Callback to update gui with input disconnected avatar
@@ -190,7 +210,7 @@ class AvatarController:
         user_disconnected_dict = global_variables.user_disconnect.copy()
 
         for user, data in user_disconnected_dict.items():
-            if data[1] == True:
+            if data[1] is True:
                 continue
             # Layout
             user_widget = CustomQPushButton()
@@ -228,7 +248,9 @@ class AvatarController:
                 user_widget.setStyleSheet(style_.format(color=color))
                 user_widget.update()
 
-            user_widget.setStyleSheet(style_.format(color=self.parent.theme.background_color))
+            user_widget.setStyleSheet(
+                style_.format(color=self.parent.theme.background_color)
+            )
             user_widget.setContentsMargins(0, 0, 0, 0)
 
             user_layout = QHBoxLayout(user_widget)
@@ -292,7 +314,7 @@ class AvatarController:
         self.ui.left_nav_widget.info_disconnected_label.setText(
             f"Users offline   |   {len(global_variables.user_disconnect)}"
         )
-        
+
     def clear_avatar(
         self,
         parent_layout: QLayout,
@@ -305,13 +327,13 @@ class AvatarController:
 
         Args:
             parent_layout (QLayout): parent layout
-            layout_name (Optional[Union[QHBoxLayout, None]], optional): layout name. Defaults to None.
-            delete_all (Optional[bool], optional): delete all widgets. Defaults to False.
+            layout_name (Optional[Union[QHBoxLayout, None]], optional): Defaults to None.
+            delete_all (Optional[bool], optional): Defaults to False.
         """
         for i in reversed(range(getattr(parent or self.ui, parent_layout).count())):
             if widget := getattr(parent or self.ui, parent_layout).itemAt(i).widget():
                 widget: QWidget
-                if type(widget) != CustomQPushButton and not delete_all:
+                if not isinstance(widget, CustomQPushButton) and not delete_all:
                     continue
                 layout = widget.layout()
                 if not layout:
@@ -328,7 +350,7 @@ class AvatarController:
                     widget.deleteLater()
 
         getattr(parent or self.ui, parent_layout).update()
-        
+
     def update_pixmap_avatar(self, room_name: str, status: AvatarStatus) -> None:
         """
         Update pixmap avatar

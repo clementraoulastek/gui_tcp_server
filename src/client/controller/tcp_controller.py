@@ -1,7 +1,12 @@
 """Module for the TCP server controller."""
 
 
+# pylint: disable=too-few-public-methods
 class TcpServerController:
+    """
+    Class that handle the TCP server.
+    """
+
     def __init__(self, ui) -> None:
         self.ui = ui
 

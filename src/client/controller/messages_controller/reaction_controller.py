@@ -1,14 +1,20 @@
-import src.client.controller.global_variables as global_variables
+"""Reaction controller module."""
+
+from src.client.controller import global_variables
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 
 
 class ReactController:
+    """
+    Reaction controller class.
+    """
+
     def __init__(self, parent, ui, messages_dict: dict) -> None:
         self.parent = parent
         self.ui = ui
         self.messages_dict = messages_dict
-    
+
     def update_react_message_on_gui(self) -> None:
         """
         Callback to update gui with input messages
@@ -20,7 +26,7 @@ class ReactController:
             global_variables.comming_msg["message_id"],
             global_variables.comming_msg["reaction"],
         )
-        
+
         if global_variables.comming_msg["receiver"] == "home":
             dict_name = "home"
         else:
@@ -40,7 +46,7 @@ class ReactController:
             global_variables.comming_msg["receiver"],
             global_variables.comming_msg["message_id"],
         ) = ("", "", "", "")
-        
+
     def handle_reaction(self, payload: str) -> None:
         """
         Get the message reaction and update global variables
@@ -63,8 +69,8 @@ class ReactController:
         global_variables.comming_msg["reaction"] = nb_reaction
 
         self.parent.event_manager.event_react_message()
-        
-    def send_emot_react(self, cmd: Commands, messageId: int, react_nb: int) -> None:
+
+    def send_emot_react(self, cmd: Commands, message_id: int, react_nb: int) -> None:
         """
         Send emot message to the server
 
@@ -77,6 +83,6 @@ class ReactController:
 
         self.ui.client.send_data(
             cmd,
-            ";".join([str(messageId), str(react_nb)]),
+            ";".join([str(message_id), str(react_nb)]),
             receiver=receiver,
         )

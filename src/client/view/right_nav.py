@@ -29,7 +29,6 @@ class RightNavView:
         self.slide_animation = None
         self.set_right_nav()
 
-
     def set_right_nav(self) -> None:
         """
         Create a right navigation widget

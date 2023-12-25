@@ -1,20 +1,29 @@
-    
-from functools import partial
+"""Module for messages controller"""
+
 import logging
+from functools import partial
 from typing import List, Optional, OrderedDict, Union
+
 from src.client.client import Client
+from src.client.controller import global_variables
+from src.client.core.qt_core import QTimer
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.layout.message_layout import MessageLayout
-import src.client.controller.global_variables as global_variables
-from src.client.core.qt_core import QTimer
 from src.tools.utils import GenericColor
 
+
 class MessagesController:
+    """
+    Messages controller class.
+    """
+
     def __init__(self, parent, ui, messages_dict: dict) -> None:
         self.parent = parent
         self.ui = ui
         self.messages_dict = messages_dict
-    
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-locals
     def diplay_self_message_on_gui(
         self,
         sender: str,
@@ -37,7 +46,7 @@ class MessagesController:
             messsage_id (Optional[Union[int, None]], optional): message id. Defaults to None.
             nb_react (Optional[int], optional): number of reactions. Defaults to 0.
             date (Optional[str], optional): date to display. Defaults to "".
-            response_model (Optional[Union[MessageLayout, None]]): MessageLayout object. Defaults to None.
+            response_model (Optional[Union[MessageLayout, None]]): Defaults to None.
         """
         comming_msg: dict[str, str] = {"id": sender, "message": message}
 
@@ -79,7 +88,7 @@ class MessagesController:
         # Avoid gui troubles on scroll
         if not reverse:
             QTimer.singleShot(0, self.parent.update_scroll_bar)
-            
+
     def display_older_messages(
         self,
         older_messages: dict,
@@ -128,7 +137,9 @@ class MessagesController:
                 self.messages_dict[dict_name] = OrderedDict()
 
             if response_id and response_id not in self.messages_dict[dict_name]:
-                older_message = self.parent.api_controller.get_older_message(response_id)
+                older_message = self.parent.api_controller.get_older_message(
+                    response_id
+                )
                 self.display_older_messages(older_message, display=False, reverse=True)
 
             message_model = (
@@ -167,8 +178,10 @@ class MessagesController:
                 self.parent.add_gui_for_mp_layout(direct_message_name, icon)
 
                 # Update avatar status with DM circle popup
-                if is_readed == False and self.ui.client.user_name == receiver:
-                    self.parent.avatar_controller.update_pixmap_avatar(direct_message_name, AvatarStatus.DM)
+                if is_readed is False and self.ui.client.user_name == receiver:
+                    self.parent.avatar_controller.update_pixmap_avatar(
+                        direct_message_name, AvatarStatus.DM
+                    )
 
                 self.diplay_self_message_on_gui(
                     sender,
@@ -185,14 +198,13 @@ class MessagesController:
         # Reset dict to handle new avatar images from conn
         if self.ui.client.user_name in sender_list:
             sender_list.remove(self.ui.client.user_name)
-            
-        
+
     def diplay_coming_message_on_gui(self) -> None:
         """
         Callback to update gui with input messages
         """
         if not global_variables.comming_msg["message"]:
-            return
+            return None
 
         message_id = global_variables.comming_msg["message_id"]
 
@@ -212,7 +224,9 @@ class MessagesController:
                 response_id
                 and response_id not in self.messages_dict[response_model_receiver]
             ):
-                older_message = self.parent.api_controller.get_older_message(response_id)
+                older_message = self.parent.api_controller.get_older_message(
+                    response_id
+                )
                 self.display_older_messages(older_message, display=False, reverse=True)
             message_model = self.messages_dict[response_model_receiver][response_id]
 
@@ -254,7 +268,8 @@ class MessagesController:
         if update_avatar:
             # Update avatar status with DM circle popup
             self.parent.dm_avatar_dict[receiver].update_pixmap(
-                AvatarStatus.DM, background_color=self.parent.theme.rgb_background_color_actif
+                AvatarStatus.DM,
+                background_color=self.parent.theme.rgb_background_color_actif,
             )
 
         # Init dict key
@@ -268,8 +283,8 @@ class MessagesController:
 
         # Clear the dict values
         global_variables.comming_msg = dict.fromkeys(global_variables.comming_msg, "")
-        
-        
+        return None
+
     def add_older_messages_on_scroll(self) -> None:
         """
         Add older messages on scroll
@@ -292,14 +307,16 @@ class MessagesController:
             (message.message_id for message in message_id_list if message.is_displayed)
         )
 
-        # If the first id is the same as the last message id, it means that we have reached the end of the messages
+        # If the first id is the same as the last message id,
+        # it means that we have reached the end of the messages
         if first_id == last_message_id:
             return True
 
         self.parent.fetch_older_messages(
             last_message_id, 4, self.ui.scroll_area.name, display=True
         )
-        
+        return None
+
     def handle_message(self, payload: str) -> None:
         """
         Get the message and update global variables
@@ -324,12 +341,14 @@ class MessagesController:
         global_variables.comming_msg["message"] = message.replace("$replaced$", ":")
 
         self.parent.event_manager.event_coming_message()
-        
+
     def get_all_dm_users_username(self) -> dict[str, list[str]]:
         """
         Get all dm users username
         """
-        return self.parent.api_controller.get_all_dm_users_username(self.ui.client.user_name)
+        return self.parent.api_controller.get_all_dm_users_username(
+            self.ui.client.user_name
+        )
 
     def fetch_older_messages(
         self, start: int, number: int, username: str, display=True
@@ -346,7 +365,7 @@ class MessagesController:
         )
 
         self.display_older_messages(older_messages_list, display, reverse=True)
-        
+
     def reply_to_message(self, message: MessageLayout) -> None:
         """
         Reply to a message
@@ -367,11 +386,11 @@ class MessagesController:
         def callback(
             message: MessageLayout,
             older_room_name: str,
-            styleSheet_main: str,
-            styleSheet_left: str,
+            style_sheet_main_: str,
+            style_sheet_left_: str,
         ):
-            message.main_widget.setStyleSheet(styleSheet_main)
-            message.left_widget.setStyleSheet(styleSheet_left)
+            message.main_widget.setStyleSheet(style_sheet_main_)
+            message.left_widget.setStyleSheet(style_sheet_left_)
             global_variables.reply_id = ""
             older_room_name = older_room_name.replace("\n", "")
             self.ui.footer_widget.entry.setPlaceholderText(older_room_name)
