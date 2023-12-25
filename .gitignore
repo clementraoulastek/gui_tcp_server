@@ -1,2 +1,9 @@
-/.venv
-/src/__pycache__
+.venv/
+*__pycache__
+*.log
+.DS_Store
+monkeytype.sqlite3
+reports/
+.env
+.pytest_cache
+.vscode

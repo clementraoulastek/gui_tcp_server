@@ -1,3 +1,7 @@
-requirements:	
-	pip freeze >requirements.txt 
-	pip install -r requirements.txt
+run:
+	python -m src
+
+lint:
+	python -m isort . --profile black
+	python -m black .
+	python -m pylint src --disable=import-error --disable=wildcard-import
