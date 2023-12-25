@@ -25,9 +25,10 @@ class RightNavView:
         self.width = width
         self.controller = controller
         self.theme = theme
-        self.set_right_nav()
         self.max_width_geometry = None
         self.slide_animation = None
+        self.set_right_nav()
+
 
     def set_right_nav(self) -> None:
         """

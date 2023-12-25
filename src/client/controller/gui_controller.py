@@ -1782,20 +1782,20 @@ class GuiController:
         theme_icon = QIcon(
             icon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.title_color)
         )
-        update_button = self._create_theme_button(" Custom", 80, theme_icon)
+        update_button = self._create_theme_button(" Custom", 80, 40, theme_icon)
         update_button.clicked.connect(
             partial(self.theme.create_custom_theme, self, list_theme_line_edit)
         )
         # Black theme
         black_icon = QIcon(icon_from_svg(Icon.STATUS.value, color="#000000"))
-        black_theme_button = self._create_theme_button("", 30, black_icon)
+        black_theme_button = self._create_theme_button("", 30, 30, black_icon)
         black_theme_button.clicked.connect(
             partial(self.theme.switch_theme, self, Themes.ThemeColor.BLACK)
         )
 
         # White theme
         white_icon = QIcon(icon_from_svg(Icon.STATUS.value, color="#ffffff"))
-        white_theme_button = self._create_theme_button("", 30, white_icon)
+        white_theme_button = self._create_theme_button("", 30, 30, white_icon)
         white_theme_button.clicked.connect(
             partial(self.theme.switch_theme, self, Themes.ThemeColor.WHITE)
         )
@@ -1803,7 +1803,7 @@ class GuiController:
         close_icon = QIcon(
             icon_from_svg(Icon.CLOSE.value, color=GenericColor.RED.value)
         )
-        close_button = self._create_theme_button("", 30, close_icon)
+        close_button = self._create_theme_button("", 30, 30, close_icon)
         close_button.clicked.connect(self.theme_board.hide)
 
         update_layout.addWidget(update_button)
@@ -1816,7 +1816,7 @@ class GuiController:
         self.ui.main_layout.addChildWidget(self.theme_board)
         self.theme_board.setFocus()
 
-    def _create_theme_button(self, text: str, w: int, h: int) -> CustomQPushButton:
+    def _create_theme_button(self, text: str, w: int, h: int, icon: QIcon) -> CustomQPushButton:
         """
         Create theme button
 
@@ -1824,13 +1824,14 @@ class GuiController:
             text (str): button text
             w (int): width
             h (int): height
+            icon (QIcon): Icon
 
         Returns:
             CustomQPushButton: button
         """
         result = CustomQPushButton(text)
         result.setFixedSize(QSize(w, h))
-        result.setIcon(h)
+        result.setIcon(icon)
 
         return result
 
