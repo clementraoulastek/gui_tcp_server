@@ -1,16 +1,16 @@
 """Module for the left navigation bar."""
 
-from src.client.core.qt_core import (
-    QEasingCurve,
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation
+from PySide6.QtGui import Qt
+from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QPropertyAnimation,
     QScrollArea,
     QSizePolicy,
-    Qt,
     QVBoxLayout,
     QWidget,
 )
+
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.tools.utils import Icon, Themes, icon_from_svg
 

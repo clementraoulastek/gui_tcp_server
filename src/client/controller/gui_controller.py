@@ -5,6 +5,18 @@ from functools import partial
 from threading import Thread
 from typing import List, Optional
 
+from PySide6.QtCore import QEvent, QSize, QTimer
+from PySide6.QtGui import QEnterEvent, QIcon, Qt
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QListWidgetItem,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
+
 from src.client.controller import global_variables
 from src.client.controller.api_controller import ApiController
 from src.client.controller.connection_controller import ConnectionController
@@ -19,21 +31,6 @@ from src.client.controller.messages_controller.reaction_controller import (
 from src.client.controller.messages_controller.router_controller import RouterController
 from src.client.controller.tcp_controller import TcpServerController
 from src.client.controller.user_profile_controller import UserProfileController
-from src.client.core.qt_core import (
-    QEnterEvent,
-    QEvent,
-    QHBoxLayout,
-    QIcon,
-    QLabel,
-    QLayout,
-    QListWidgetItem,
-    QSize,
-    QSizePolicy,
-    Qt,
-    QTimer,
-    QVBoxLayout,
-    QWidget,
-)
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.client.view.custom_widget.custom_line_edit import CustomQLineEdit

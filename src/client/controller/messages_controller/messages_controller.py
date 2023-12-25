@@ -4,9 +4,10 @@ import logging
 from functools import partial
 from typing import List, Optional, OrderedDict, Union
 
+from PySide6.QtCore import QTimer
+
 from src.client.client import Client
 from src.client.controller import global_variables
-from src.client.core.qt_core import QTimer
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.utils import GenericColor

@@ -1,6 +1,7 @@
 """Module for graphical effects."""
 
-from src.client.core.qt_core import QColor, QGraphicsDropShadowEffect, QWidget
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QGraphicsDropShadowEffect, QWidget
 
 
 def widget_shadow(obj: QWidget) -> None:

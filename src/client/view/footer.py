@@ -1,14 +1,8 @@
 """Footer view module."""
 
-from src.client.core.qt_core import (
-    QHBoxLayout,
-    QIcon,
-    QLabel,
-    QLineEdit,
-    Qt,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtGui import QIcon, Qt
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
+
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.client.view.custom_widget.custom_line_edit import CustomQLineEdit

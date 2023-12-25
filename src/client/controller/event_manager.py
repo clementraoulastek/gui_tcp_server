@@ -1,6 +1,6 @@
 """Event manager for client."""
 
-from src.client.core.qt_core import QObject, Signal
+from PySide6.QtCore import QObject, Signal
 
 
 class EventManager(QObject):

@@ -4,22 +4,10 @@
 from enum import Enum, unique
 from typing import Optional
 
-from src.client.core.qt_core import (
-    QBrush,
-    QColor,
-    QFont,
-    QGraphicsDropShadowEffect,
-    QGraphicsOpacityEffect,
-    QIcon,
-    QLabel,
-    QPainter,
-    QPen,
-    QPixmap,
-    QPoint,
-    QRectF,
-    QSize,
-    Qt,
-)
+from PySide6.QtCore import QPoint, QRectF, QSize, Qt
+from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap
+from PySide6.QtWidgets import QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QLabel
+
 from src.tools.utils import Themes
 
 theme = Themes()

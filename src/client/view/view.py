@@ -3,21 +3,21 @@
 import logging
 import sys
 
-from src.client.client import Client
-from src.client.controller.main_controller import MainController
-from src.client.core.qt_core import (
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
-    QIcon,
     QLabel,
     QLineEdit,
     QMainWindow,
-    QSize,
     QSizePolicy,
-    Qt,
     QVBoxLayout,
     QWidget,
 )
+
+from src.client.client import Client
+from src.client.controller.main_controller import MainController
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.client.view.custom_widget.custom_line_edit import CustomQLineEdit
 from src.client.view.footer import FooterView

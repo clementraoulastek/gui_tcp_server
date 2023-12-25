@@ -1,6 +1,8 @@
 """Module for RoomsBarWidget class."""
 
-from src.client.core.qt_core import Qt, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QVBoxLayout, QWidget
+
 from src.tools.utils import Themes
 
 
