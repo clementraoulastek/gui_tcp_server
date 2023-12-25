@@ -3,9 +3,10 @@
 import contextlib
 from typing import Callable
 
+from PySide6.QtCore import Qt
+
 from src.client.controller import global_variables
 from src.client.controller.api_controller import ApiStatus
-from src.client.core.qt_core import Qt
 from src.client.view.custom_widget.custom_avatar_label import AvatarStatus
 from src.client.view.layout.login_layout import LoginLayout
 from src.tools.commands import Commands

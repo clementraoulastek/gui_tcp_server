@@ -1,12 +1,9 @@
 """Module for CustomQLineEdit class.""" ""
 
-from src.client.core.qt_core import (
-    QColor,
-    QGraphicsDropShadowEffect,
-    QLineEdit,
-    Qt,
-    QToolButton,
-)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QGraphicsDropShadowEffect, QLineEdit, QToolButton
+
 from src.client.view.stylesheets.stylesheets import (
     custom_line_edit_style,
     custom_line_edit_style_rounded,

@@ -1,7 +1,9 @@
 """Module for custom QPushButton class."""
 
 # pylint: disable=duplicate-code
-from src.client.core.qt_core import QColor, QGraphicsDropShadowEffect, QPushButton
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
+
 from src.client.view.stylesheets.stylesheets import custom_button_style
 from src.tools.utils import Themes
 

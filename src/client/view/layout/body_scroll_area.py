@@ -1,15 +1,15 @@
 """BodyScrollArea Layout Module."""
 
-from src.client.core.qt_core import (
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QScrollArea,
     QSizePolicy,
-    Qt,
-    QTimer,
     QVBoxLayout,
     QWidget,
 )
+
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.tools.utils import Themes, check_str_len
 

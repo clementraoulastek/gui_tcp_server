@@ -3,16 +3,11 @@
 from functools import partial
 from typing import List, Optional, Union
 
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtGui import QEnterEvent
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QWidget
+
 from src.client.controller import global_variables
-from src.client.core.qt_core import (
-    QEnterEvent,
-    QEvent,
-    QHBoxLayout,
-    QLabel,
-    QLayout,
-    Qt,
-    QWidget,
-)
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.tools.utils import check_str_len

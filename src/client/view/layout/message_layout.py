@@ -4,24 +4,19 @@ from enum import Enum, unique
 from typing import Optional
 
 import pytz
-from tzlocal import get_localzone
-
-from src.client.core.qt_core import (
-    QColor,
-    QEnterEvent,
-    QEvent,
+from PySide6.QtCore import QEvent, QSize, Qt, QTimer
+from PySide6.QtGui import QColor, QEnterEvent, QIcon
+from PySide6.QtWidgets import (
     QFrame,
     QGraphicsDropShadowEffect,
     QHBoxLayout,
-    QIcon,
     QLabel,
-    QSize,
     QSizePolicy,
-    Qt,
-    QTimer,
     QVBoxLayout,
     QWidget,
 )
+from tzlocal import get_localzone
+
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.tools.commands import Commands
@@ -273,7 +268,7 @@ class MessageLayout(QHBoxLayout):
 
         top_layout.addWidget(self.sender_btn)
 
-        if "admin" in self.username_label:  # TODO: must be a column for user tab
+        if "admin" in self.username_label:
             crown_icon = QIcon(
                 icon_from_svg(Icon.CROWN.value, color=theme.emoji_color)
             ).pixmap(QSize(15, 15))

@@ -2,15 +2,9 @@
 
 from typing import Dict
 
-from src.client.core.qt_core import (
-    QEasingCurve,
-    QLabel,
-    QPropertyAnimation,
-    QScrollArea,
-    Qt,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
+from PySide6.QtWidgets import QLabel, QScrollArea, QVBoxLayout, QWidget
+
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.tools.utils import Icon, Themes, icon_from_svg
 

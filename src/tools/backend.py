@@ -5,8 +5,8 @@ import os
 from typing import Optional, Union
 
 import requests
+from PySide6.QtWidgets import QFileDialog, QMainWindow
 
-from src.client.core.qt_core import QFileDialog, QMainWindow
 from src.tools.utils import round_image
 
 

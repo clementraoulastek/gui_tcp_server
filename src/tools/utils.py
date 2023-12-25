@@ -8,9 +8,9 @@ from enum import Enum, unique
 from typing import List, Tuple
 
 from PIL import Image, ImageDraw
+from PySide6.QtGui import QColor, QIcon, QPainter, QPixmap
 
 from resources.icon.icon_path import ICON_PATH
-from src.client.core.qt_core import QColor, QIcon, QPainter, QPixmap
 
 LM_USE_SVG = 1
 

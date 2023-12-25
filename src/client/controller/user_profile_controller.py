@@ -3,18 +3,11 @@
 import datetime
 
 import pytz
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPlainTextEdit, QVBoxLayout, QWidget
 from tzlocal import get_localzone
 
-from src.client.core.qt_core import (
-    QHBoxLayout,
-    QIcon,
-    QLabel,
-    QPlainTextEdit,
-    QSize,
-    Qt,
-    QVBoxLayout,
-    QWidget,
-)
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.tools.utils import GenericColor, Icon, icon_from_svg

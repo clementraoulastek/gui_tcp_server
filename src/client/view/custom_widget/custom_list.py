@@ -1,6 +1,7 @@
 """Module for CustomQListWidget class."""
 
-from src.client.core.qt_core import QListWidget
+from PySide6.QtWidgets import QListWidget
+
 from src.client.view.stylesheets.stylesheets import custom_liste_style
 from src.tools.utils import Themes
 
