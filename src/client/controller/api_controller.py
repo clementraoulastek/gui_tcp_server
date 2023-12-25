@@ -1,28 +1,40 @@
+"""Module for api controller"""
+
 from enum import Enum, unique
+from functools import lru_cache
 from typing import Optional
-from src.client.view.customWidget.AvatarQLabel import AvatarStatus
-from src.tools.commands import Commands
+
 import src.client.controller.global_variables as global_variables
 from src.client.controller.event_manager import EventManager
+from src.client.view.custom_widget.custom_avatar_label import AvatarStatus
 from src.tools.utils import Themes
-from functools import lru_cache
+
+
 @unique
 class ApiStatus(Enum):
     """
     Enum for api status
     """
+
     SUCCESS = 200
     ERROR = 400
     NOT_FOUND = 404
     FORBIDDEN = 403
 
+
 theme = Themes()
+
+
 class ApiController:
+    """
+    Api controller class.
+    """
+
     def __init__(self, ui, event_manager: EventManager) -> None:
         self.ui = ui
         self.is_connected = False
         self.event_manager = event_manager
-        
+
     def send_login_form(self) -> bool:
         """
         Backend request for login form
@@ -43,15 +55,14 @@ class ApiController:
         # Check if the login is successful and if the user is not already connected
         if status_code != 200 or is_connected:
             return ApiStatus.ERROR
-        
+
         self.ui.client.user_name = username
 
         # Update login status to connected
         if self.send_login_status(username=username, status=True):
             self.is_connected = True
             return ApiStatus.SUCCESS
-        else:
-            return ApiStatus.ERROR
+        return ApiStatus.ERROR
 
     def send_login_status(self, username: str, status: bool) -> bool:
         """
@@ -83,7 +94,7 @@ class ApiController:
         if self.ui.backend.send_register_form(username, password):
             self.ui.client.user_name = username
             return ApiStatus.SUCCESS
-        
+
     def get_last_message_id(self) -> int:
         """
         Backend request for getting last message id
@@ -92,7 +103,7 @@ class ApiController:
             int: return last message id
         """
         return self.ui.backend.get_last_message_id()
-    
+
     @lru_cache
     def get_first_message_id(self, user1: str, user2: str) -> int:
         """
@@ -154,28 +165,32 @@ class ApiController:
         else:
             self.ui.users_connected["username"] = False
             global_variables.user_disconnect[username] = [content, False]
-            
+
         self.event_manager.event_users_connected()
         self.event_manager.event_users_disconnected()
 
-    def get_older_messages(self, start: int, number: int, user1: str, user2: str) -> dict:
+    def get_older_messages(
+        self, start: int, number: int, user1: str, user2: str
+    ) -> dict:
         """
         Get older messages from the server
 
         Returns:
             dict: return a dict of older messages
         """
-        older_messages: list = self.ui.backend.get_older_messages(start, number, user1, user2)
+        older_messages: list = self.ui.backend.get_older_messages(
+            start, number, user1, user2
+        )
 
         return older_messages["messages"]
-    
+
     def get_older_message(self, message_id: int) -> dict:
         """
         Get older message from the server
         """
         older_message = self.ui.backend.get_older_message(message_id)
         return older_message["message"]
-        
+
     def get_all_dm_users_username(self, username: str) -> list:
         """
         Get all dm users username from the server
@@ -218,9 +233,28 @@ class ApiController:
         password = self.ui.login_form.password_entry.text().replace(" ", "")
 
         return username, password
-    
-    def get_user_creation_date(self, username: str) :
+
+    def get_user_creation_date(self, username: str) -> str:
+        """
+        Get user creation date from the server
+
+        Args:
+            username (str): username
+
+        Returns:
+            str: return user creation date
+        """
         return self.ui.backend.get_user_creation_date(username)
-    
+
     def update_user_description(self, username: str, description: str) -> bool:
+        """
+        Update user description
+
+        Args:
+            username (str): username
+            description (str): description
+
+        Returns:
+            bool: return True if the description is successfully updated
+        """
         return self.ui.backend.update_user_description(username, description)

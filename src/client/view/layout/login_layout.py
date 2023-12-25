@@ -1,21 +1,23 @@
-from src.client.view.customWidget.AvatarQLabel import AvatarLabel
-from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
-from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
+
 from src.client.core.qt_core import (
     QHBoxLayout,
-    QLabel,
-    Qt,
-    QWidget,
     QIcon,
-    QVBoxLayout,
-    QSizePolicy,
+    QLabel,
     QLineEdit,
-    QSpacerItem
+    QSizePolicy,
+    QSpacerItem,
+    Qt,
+    QVBoxLayout,
+    QWidget,
 )
+from src.client.view.custom_widget.custom_avatar_label import AvatarLabel
+from src.client.view.custom_widget.custom_button import CustomQPushButton
+from src.client.view.custom_widget.custom_line_edit import CustomQLineEdit
 from src.client.view.tools.graphical_effects import widget_shadow
-from src.tools.utils import Themes, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import Icon, ImageAvatar, Themes, icon_from_svg
 
 load_dotenv()
 
@@ -23,7 +25,7 @@ load_dotenv()
 class LoginLayout(QHBoxLayout):
     def __init__(self, theme: Themes):
         super(LoginLayout, self).__init__()
-        
+
         self.theme = theme
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -147,16 +149,19 @@ class LoginLayout(QHBoxLayout):
         self.password_entry.setTextMargins(55, 0, 0, 0)
         self.password_entry.setContentsMargins(0, 0, 0, 0)
         self.password_entry.setEchoMode(QLineEdit.Password)
-        
+
         item = QLabel()
         item.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.password_layout.addWidget(self.password_entry)
         self.password_layout.addWidget(item)
 
-
     def create_button_widgets(self):
-        self.send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, color=self.theme.text_color))
-        self.register_icon = QIcon(QIcon_from_svg(Icon.LOGIN.value, color=self.theme.text_color))
+        self.send_icon = QIcon(
+            icon_from_svg(Icon.SEND.value, color=self.theme.text_color)
+        )
+        self.register_icon = QIcon(
+            icon_from_svg(Icon.LOGIN.value, color=self.theme.text_color)
+        )
         self.entry_action = self.password_entry.addAction(
             self.register_icon, QLineEdit.TrailingPosition
         )

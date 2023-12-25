@@ -1,20 +1,29 @@
-import time
+"""BodyScrollArea Layout Module."""
+
 from src.client.core.qt_core import (
-    QScrollArea,
-    Qt,
-    QVBoxLayout,
-    QWidget,
     QHBoxLayout,
     QLabel,
+    QScrollArea,
     QSizePolicy,
-    QTimer
+    Qt,
+    QTimer,
+    QVBoxLayout,
+    QWidget,
 )
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
 from src.tools.utils import Themes, check_str_len
 
 theme = Themes()
 
+
 class BodyScrollArea(QScrollArea):
+    """
+    BodyScrollArea widget class.
+
+    Args:
+        QScrollArea (QScrollArea): the scroll area widget
+    """
+
     def __init__(self, name: str, gui_controller):
         """
         Update the core GUI
@@ -44,7 +53,9 @@ class BodyScrollArea(QScrollArea):
 
         self.scroll_widget = QWidget()
         self.scroll_widget.setContentsMargins(0, 10, 0, 10)
-        self.verticalScrollBar().setStyleSheet(scroll_bar_vertical_stylesheet.format(_background_color=theme.search_color))
+        self.verticalScrollBar().setStyleSheet(
+            scroll_bar_vertical_stylesheet.format(_background_color=theme.search_color)
+        )
         self.setStyleSheet(
             "background-color: transparent;\
             color: white;\
@@ -54,7 +65,9 @@ class BodyScrollArea(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.is_auto_scroll_ = True
         self.verticalScrollBar().actionTriggered.connect(self.is_auto_scroll)
-        self.verticalScrollBar().actionTriggered.connect(self.add_older_messages_on_scroll)
+        self.verticalScrollBar().actionTriggered.connect(
+            self.add_older_messages_on_scroll
+        )
         self.verticalScrollBar().rangeChanged.connect(self.update_scrollbar)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
@@ -62,31 +75,33 @@ class BodyScrollArea(QScrollArea):
         self.scroll_widget.setLayout(self.main_layout)
         self.setWidget(self.scroll_widget)
 
-    def is_auto_scroll(self):
+    def is_auto_scroll(self) -> None:
         """
         Check if the scrollbar is at the bottom
         """
         self.is_auto_scroll_ = (
             self.verticalScrollBar().value() == self.verticalScrollBar().maximum()
         )
-    
-    def add_older_messages_on_scroll(self):
+
+    def add_older_messages_on_scroll(self) -> None:
         """
         Add older messages when the scrollbar is at the top
         """
-        if not self.scrolling_timer.isActive() and self.verticalScrollBar().value() == self.verticalScrollBar().minimum():
+        if (
+            not self.scrolling_timer.isActive()
+            and self.verticalScrollBar().value() == self.verticalScrollBar().minimum()
+        ):
             self.gui_controller.add_older_messages_on_scroll()
             self.scrolling_timer.start(100)
-            
-        
-    def update_scrollbar(self):
+
+    def update_scrollbar(self) -> None:
         """
         If the scrollbar is at the bottom, update it to the bottom
         """
         if self.is_auto_scroll_:
             self.scrollToBottom()
 
-    def scrollToBottom(self):
+    def scrollToBottom(self) -> None:
         """
         Update the scrollbar vertical position to the bottom
         """
@@ -94,7 +109,10 @@ class BodyScrollArea(QScrollArea):
         scroll_bar.updateGeometry()
         scroll_bar.setValue(scroll_bar.maximum())
 
-    def def_upper_widget(self):
+    def def_upper_widget(self) -> None:
+        """
+        Define the upper widget
+        """
         self.upper_widget = QWidget()
         self.upper_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.upper_widget.setStyleSheet(

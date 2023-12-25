@@ -1,5 +1,7 @@
-client:
-	python src/launch_client.py
+run:
+	python -m src
 
-bot:
-	python src/launch_bot.py
+lint:
+	python -m isort . --profile black
+	python -m black .
+	python -m pylint src --disable=import-error --disable=wildcard-import

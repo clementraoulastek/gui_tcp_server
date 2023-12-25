@@ -1,20 +1,26 @@
-from src.client.controller.event_manager import EventManager
+"""Module for the main controller of the client application"""
+
+import re
+
+import src.client.controller.global_variables as global_variables
 from src.client.controller.api_controller import ApiController
+from src.client.controller.event_manager import EventManager
 from src.client.controller.gui_controller import GuiController
 from src.client.controller.tcp_controller import TcpServerController
 from src.client.view.layout.message_layout import MessageLayout
 from src.tools.commands import Commands
 from src.tools.utils import Themes
-import re
-import src.client.controller.global_variables as global_variables
 
 
-        
 class MainController:
+    """
+    Main controller of the client application
+    """
+
     def __init__(self, ui, theme: Themes) -> None:
         self.ui = ui
         self.messages_dict: dict[str, MessageLayout] = {}
-        
+
         self.event_manager = EventManager()
 
         self.tcp_controller = TcpServerController(self.ui)
@@ -26,7 +32,7 @@ class MainController:
             self.api_controller,
             self.tcp_controller,
             self.event_manager,
-            theme
+            theme,
         )
 
     def send_message_to_server(self, *args) -> None:
@@ -56,43 +62,79 @@ class MainController:
             self.ui.footer_widget.entry.clearFocus()
 
     def hide_left_layout(self) -> None:
+        """
+        Hide the left layout
+        """
         self.gui_controller.hide_left_layout()
 
     def hide_right_layout(self) -> None:
+        """
+        Hide the right layout
+        """
         self.gui_controller.hide_right_layout()
 
     def show_left_layout(self) -> None:
+        """
+        Show the left layout
+        """
         self.gui_controller.show_left_layout()
 
     def show_right_layout(self) -> None:
+        """
+        Show the right layout
+        """
         self.gui_controller.show_right_layout()
 
     def show_footer_layout(self) -> None:
+        """
+        Show the footer layout
+        """
         self.gui_controller.show_footer_layout()
 
     def hide_footer_layout(self) -> None:
+        """
+        Hide the footer layout
+        """
         self.gui_controller.hide_footer_layout()
 
     def login(self) -> None:
+        """
+        Login to the server
+        """
         self.gui_controller.login()
         self._hide()
 
     def logout(self) -> None:
+        """
+        Logout from the server
+        """
         self.gui_controller.logout()
         self._hide()
 
     def _hide(self):
+        """
+        Hide the components
+        """
         self.gui_controller.ui.left_nav_widget.scroll_area_avatar.hide()
         self.gui_controller.ui.right_nav_widget.scroll_area_dm.hide()
         self._hide_components()
 
     def _hide_components(self) -> None:
+        """
+        Hide the components
+        """
         self.gui_controller.hide_footer_layout()
         self.gui_controller.hide_left_layouts_buttons()
         self.gui_controller.hide_right_layouts_buttons()
 
     def update_user_icon(self) -> None:
+        """
+        Update the user icon
+        """
         self.gui_controller.update_user_icon()
-        
+
     def show_user_profile(self) -> None:
+        """
+        Show the user profile
+        """
         self.gui_controller.show_user_profile()

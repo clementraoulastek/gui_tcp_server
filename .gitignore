@@ -5,3 +5,5 @@
 monkeytype.sqlite3
 reports/
 .env
+.pytest_cache
+.vscode

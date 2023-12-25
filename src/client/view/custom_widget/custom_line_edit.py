@@ -1,54 +1,31 @@
+"""Module for CustomQLineEdit class.""" ""
+
 from src.client.core.qt_core import (
+    QColor,
+    QGraphicsDropShadowEffect,
     QLineEdit,
     Qt,
-    Signal,
     QToolButton,
-    QGraphicsDropShadowEffect,
-    QColor,
+)
+from src.client.view.stylesheets.stylesheets import (
+    custom_line_edit_style,
+    custom_line_edit_style_rounded,
 )
 from src.tools.utils import Themes
 
-style = """
-QLineEdit {{
-	background-color: {_bg_color};
-	border-radius: {_radius}px;
-	border: {_border_size}px solid {_context_color};
-	padding-left: 5px;
-    padding-right: 5px;
-	selection-background-color: {_context_color};
-    color: {_color};
-    margin-left: 0px;
-    margin-right: 0px;
-}}
-QLineEdit:focus {{
-	border: {_border_size}px solid {_context_color};
-    background-color: {_bg_color_active};
-}}
-"""
-
-style_rounded = """
-QLineEdit {{
-	background-color: {_bg_color};
-	border-radius: {_radius}px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-	border: {_border_size}px solid {_context_color};
-    border-bottom: 0px solid;
-	padding-left: 5px;
-    padding-right: 5px;
-	selection-background-color: {_context_color};
-    color: {_color};
-}}
-QLineEdit:focus {{
-	border: {_border_size}px solid {_context_color};
-    border-bottom: 0px solid;
-    background-color: {_bg_color_active};
-}}
-"""
-
 theme = Themes()
 
+
 class CustomQLineEdit(QLineEdit, QToolButton):
+    """
+    CustomQLineEdit class.
+
+    Args:
+        QLineEdit (QLineEdit): the QLineEdit class
+        QToolButton (QToolButton): the QToolButton class
+    """
+
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         text="",
@@ -80,17 +57,28 @@ class CustomQLineEdit(QLineEdit, QToolButton):
 
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+    # pylint: disable=too-many-arguments
     def set_stylesheet(
         self,
-        radius,
-        border_size,
-        color,
-        bg_color,
-        bg_color_active,
-        context_color,
-    ):
-        # APPLY STYLESHEET
-        self.style_format = style.format(
+        radius: int,
+        border_size: int,
+        color: str,
+        bg_color: str,
+        bg_color_active: str,
+        context_color: str,
+    ) -> None:
+        """
+        Set the stylesheet.
+
+        Args:
+            radius (int): The radius
+            border_size (int): The border size
+            color (str): the color
+            bg_color (str): the background color
+            bg_color_active (str): the background color when active
+            context_color (str): the context color
+        """
+        self.style_format = custom_line_edit_style.format(
             _radius=radius,
             _border_size=border_size,
             _color=color,
@@ -100,16 +88,21 @@ class CustomQLineEdit(QLineEdit, QToolButton):
         )
         self.setStyleSheet(self.style_format)
 
-    def widget_shadow(self):
+    def widget_shadow(self) -> None:
+        """
+        Add a shadow to the widget.
+        """
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setColor(QColor(0, 0, 0, 150))
         shadow.setOffset(0, 2)
         shadow.setBlurRadius(1)
         self.setGraphicsEffect(shadow)
-        
-    def update_layout(self):
-        # APPLY STYLESHEET
-        style_format = style_rounded.format(
+
+    def update_layout(self) -> None:
+        """
+        Update the layout.
+        """
+        style_format = custom_line_edit_style_rounded.format(
             _radius=12,
             _border_size=1,
             _color=theme.title_color,
@@ -118,6 +111,9 @@ class CustomQLineEdit(QLineEdit, QToolButton):
             _context_color=theme.nav_color,
         )
         self.setStyleSheet(style_format)
-        
-    def reset_layout(self):
+
+    def reset_layout(self) -> None:
+        """
+        Reset the layout.
+        """
         self.setStyleSheet(self.style_format)

@@ -1,11 +1,17 @@
+"""This module contains the client class"""
+
 import logging
 import socket
-from typing import Optional, Union, Tuple
+from typing import Optional, Tuple, Union
 
 from src.tools.commands import Commands
 
 
 class Client:
+    """
+    Client class, handle socket connection
+    """
+
     SPECIAL_CHAR = "$replaced$"
 
     def __init__(self, host: str, port: int, name: str) -> None:
@@ -13,7 +19,9 @@ class Client:
         self.port = port
         self.host = host
         self.is_connected = False
+        self.sock = None
 
+    # pylint: disable=broad-exception-caught
     def init_connection(self) -> None:
         """
         Init socket connection
@@ -26,6 +34,7 @@ class Client:
             logging.error(error)
             self.is_connected = False
 
+    # pylint: disable=unused-argument
     def close_connection(self, *args) -> None:
         """
         Socket disconection

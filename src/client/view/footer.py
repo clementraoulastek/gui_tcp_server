@@ -1,26 +1,36 @@
+"""Footer view module."""
+
 from src.client.core.qt_core import (
-    QIcon,
-    QWidget,
     QHBoxLayout,
-    QVBoxLayout,
+    QIcon,
     QLabel,
-    Qt,
     QLineEdit,
+    Qt,
+    QVBoxLayout,
+    QWidget,
 )
-from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
-from src.client.view.customWidget.CustomQLineEdit import CustomQLineEdit
-from src.client.view.customWidget.AvatarQLabel import AvatarLabel
+from src.client.view.custom_widget.custom_avatar_label import AvatarLabel
+from src.client.view.custom_widget.custom_button import CustomQPushButton
+from src.client.view.custom_widget.custom_line_edit import CustomQLineEdit
 from src.tools.constant import SOFT_VERSION
-from src.tools.utils import GenericColor, Themes, Icon, ImageAvatar, QIcon_from_svg
+from src.tools.utils import GenericColor, Icon, ImageAvatar, Themes, icon_from_svg
 
 
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-few-public-methods
 class FooterView:
+    """
+    Footer widget class.
+    """
+
     def __init__(self, controller, version_widget_width, theme: Themes) -> None:
         self.controller = controller
         self.version_widget_width = version_widget_width
         self.theme = theme
         self.set_footer_gui()
 
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     def set_footer_gui(self) -> None:
         """
         Update the footer GUI
@@ -30,16 +40,20 @@ class FooterView:
         self.logout_button.setFixedHeight(30)
         self.logout_button.setFixedWidth(30)
         self.logout_button.clicked.connect(self.controller.logout)
-        self.logout_icon = QIcon(QIcon_from_svg(Icon.LOGOUT.value, color=self.theme.text_color))
+        self.logout_icon = QIcon(
+            icon_from_svg(Icon.LOGOUT.value, color=self.theme.text_color)
+        )
         self.logout_button.setIcon(self.logout_icon)
         self.logout_button.setDisabled(True)
-        
+
         settings_btn = CustomQPushButton()
         settings_btn.setToolTip("Settings")
         settings_btn.setFixedHeight(30)
         settings_btn.setFixedWidth(30)
         settings_btn.clicked.connect(self.controller.gui_controller.show_user_profile)
-        settings_icon = QIcon(QIcon_from_svg(Icon.CONFIG.value, color=self.theme.text_color))
+        settings_icon = QIcon(
+            icon_from_svg(Icon.CONFIG.value, color=self.theme.text_color)
+        )
         settings_btn.setIcon(settings_icon)
 
         self.send_widget = QWidget()
@@ -59,15 +73,23 @@ class FooterView:
             border-radius: 0px;\
             border: 0px;"
         )
-        self.user_icon = QIcon(QIcon_from_svg(Icon.AVATAR.value, color=self.theme.text_color))
+        self.user_icon = QIcon(
+            icon_from_svg(Icon.AVATAR.value, color=self.theme.text_color)
+        )
 
         self.user_widget = QWidget()
-        
+
         self.user_picture = AvatarLabel(content="")
         self.user_picture.setToolTip("Update your avatar")
-        self.user_picture.enterEvent = lambda event: self.user_picture.graphicsEffect().setEnabled(True)
-        self.user_picture.leaveEvent = lambda event: self.user_picture.graphicsEffect().setEnabled(False)
-        self.user_picture.mousePressEvent = lambda e : self.controller.show_user_profile()
+        self.user_picture.enterEvent = (
+            lambda event: self.user_picture.graphicsEffect().setEnabled(True)
+        )
+        self.user_picture.leaveEvent = (
+            lambda event: self.user_picture.graphicsEffect().setEnabled(False)
+        )
+        self.user_picture.mousePressEvent = (
+            lambda e: self.controller.show_user_profile()
+        )
         self.user_picture.set_opacity(0.8)
         self.user_picture.graphicsEffect().setEnabled(False)
         self.user_picture.setStyleSheet("border: 0px")
@@ -98,7 +120,9 @@ class FooterView:
         avatar_layout.addWidget(
             user_widget_status, stretch=1, alignment=Qt.AlignmentFlag.AlignLeft
         )
-        avatar_layout.addWidget(settings_btn, stretch=2, alignment=Qt.AlignmentFlag.AlignLeft)
+        avatar_layout.addWidget(
+            settings_btn, stretch=2, alignment=Qt.AlignmentFlag.AlignLeft
+        )
         avatar_layout.addWidget(self.logout_button)
 
         self.client_information_dashboard_layout.addWidget(self.user_widget)
@@ -111,19 +135,21 @@ class FooterView:
         self.send_layout.addWidget(self.user_info_widget)
         self.send_layout.addWidget(self.entry, alignment=Qt.AlignmentFlag.AlignTop)
 
-        pipe_icon = QIcon(QIcon_from_svg(Icon.SEPARATOR.value, self.theme.title_color))
-        send_icon = QIcon(QIcon_from_svg(Icon.SEND.value, self.theme.title_color))
-        reply_icon = QIcon(QIcon_from_svg(Icon.CLOSE.value, GenericColor.RED.value))
-        file_icon = QIcon(QIcon_from_svg(Icon.FILE.value, self.theme.title_color))
-        
+        pipe_icon = QIcon(icon_from_svg(Icon.SEPARATOR.value, self.theme.title_color))
+        send_icon = QIcon(icon_from_svg(Icon.SEND.value, self.theme.title_color))
+        reply_icon = QIcon(icon_from_svg(Icon.CLOSE.value, GenericColor.RED.value))
+        file_icon = QIcon(icon_from_svg(Icon.FILE.value, self.theme.title_color))
+
         entry_action = self.entry.addAction(send_icon, QLineEdit.TrailingPosition)
         entry_action.setToolTip("Send message")
         self.entry.addAction(pipe_icon, QLineEdit.TrailingPosition)
         entry_action.triggered.connect(self.controller.send_message_to_server)
-        
-        self.file_action = self.entry.addAction(file_icon, QLineEdit.ActionPosition.LeadingPosition)
+
+        self.file_action = self.entry.addAction(
+            file_icon, QLineEdit.ActionPosition.LeadingPosition
+        )
         self.file_action.setToolTip("Send file")
-        
+
         self.reply_entry_action = self.entry.addAction(
             reply_icon, QLineEdit.ActionPosition.LeadingPosition
         )
@@ -155,14 +181,18 @@ class FooterView:
 
         icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value, height=20, width=20)
         theme_label = QLabel()
-        theme_color = QIcon(QIcon_from_svg(Icon.STATUS.value, color=self.theme.color))
+        theme_color = QIcon(icon_from_svg(Icon.STATUS.value, color=self.theme.color))
         theme_label.setPixmap(theme_color.pixmap(20, 20))
         self.switch_theme_button = CustomQPushButton("")
         self.switch_theme_button.setToolTip("Switch theme")
         self.switch_theme_button.setFixedSize(20, 20)
-        self.switch_theme_button.setIcon(QIcon(QIcon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.text_color)))
-        self.switch_theme_button.clicked.connect(lambda: self.controller.gui_controller.display_theme_board())
-        
+        self.switch_theme_button.setIcon(
+            QIcon(icon_from_svg(Icon.SWITCH_COLOR.value, color=self.theme.text_color))
+        )
+        self.switch_theme_button.clicked.connect(
+            self.controller.gui_controller.display_theme_board
+        )
+
         value = QLabel(f"Alpha <strong>{SOFT_VERSION}</strong>")
         theme_name = QLabel(f"<strong>{self.theme.theme_name}</strong")
 

@@ -1,3 +1,6 @@
+"""Module for storing constants."""
+
+
 PORT_SERVER = 9999
 PORT_API = 8000
 

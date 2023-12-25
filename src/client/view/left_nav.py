@@ -1,25 +1,37 @@
+"""Module for the left navigation bar."""
+
 from src.client.core.qt_core import (
+    QEasingCurve,
+    QHBoxLayout,
     QLabel,
-    QWidget,
+    QPropertyAnimation,
     QScrollArea,
+    QSizePolicy,
     Qt,
     QVBoxLayout,
-    QHBoxLayout,
-    QSizePolicy,
-    QPropertyAnimation,
-    QEasingCurve,
+    QWidget,
 )
-from src.tools.utils import Themes, Icon, QIcon_from_svg
 from src.client.view.stylesheets.stylesheets import scroll_bar_vertical_stylesheet
+from src.tools.utils import Icon, Themes, icon_from_svg
 
 
+# pylint: disable=too-many-instance-attributes
 class LeftNavView:
+    """
+    Left navigation widget class.
+    """
+
     def __init__(self, width: int, theme: Themes) -> None:
         self.width = width
         self.theme = theme
         self.set_left_nav()
 
+        self.slide_animation = None
+
     def set_left_nav(self) -> None:
+        """
+        Create a left navigation widget
+        """
         # --- Left layout with scroll area
         self.left_nav_layout = QHBoxLayout()
         self.user_inline = QVBoxLayout()
@@ -32,13 +44,14 @@ class LeftNavView:
         self.scroll_area_avatar.setFixedWidth(self.width)
 
         self.max_width_geometry = self.scroll_area_avatar.geometry()
-        self.animation = QPropertyAnimation(self.scroll_area_avatar, b'geometry')
+        self.animation = QPropertyAnimation(self.scroll_area_avatar, b"geometry")
         self.animation.finished.connect(self.on_animation_finished)
         self.animation.setDuration(150)  # Animation duration in milliseconds
-        self.animation.setEasingCurve(QEasingCurve.OutCubic)  # Easing curve for smooth animation
+        self.animation.setEasingCurve(
+            QEasingCurve.OutCubic
+        )  # Easing curve for smooth animation
 
         self.scroll_widget_avatar = QWidget()
-
 
         self.left_nav_layout.update()
         self.scroll_widget_avatar.setSizePolicy(
@@ -61,11 +74,23 @@ class LeftNavView:
         self.user_inline_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
         self.scroll_area_avatar.verticalScrollBar().setStyleSheet(
-            scroll_bar_vertical_stylesheet.format(_background_color=self.theme.inner_color)
+            scroll_bar_vertical_stylesheet.format(
+                _background_color=self.theme.inner_color
+            )
         )
-        self.scroll_area_avatar.setStyleSheet("background-color: transparent; border: 0px")
-        self.scroll_area_avatar.enterEvent = lambda e: self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_area_avatar.leaveEvent = lambda e: self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area_avatar.setStyleSheet(
+            "background-color: transparent; border: 0px"
+        )
+        self.scroll_area_avatar.enterEvent = (
+            lambda e: self.scroll_area_avatar.setVerticalScrollBarPolicy(
+                Qt.ScrollBarAsNeeded
+            )
+        )
+        self.scroll_area_avatar.leaveEvent = (
+            lambda e: self.scroll_area_avatar.setVerticalScrollBarPolicy(
+                Qt.ScrollBarAlwaysOff
+            )
+        )
         self.scroll_area_avatar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area_avatar.setWidgetResizable(True)
@@ -93,7 +118,9 @@ class LeftNavView:
         self.info_disconnected_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.info_disconnected_label.setContentsMargins(5, 5, 5, 5)
         disconnected_label = QLabel()
-        disconnected_icon = QIcon_from_svg(Icon.USER_DISCONNECTED.value, color=self.theme.text_color).pixmap(20, 20)
+        disconnected_icon = icon_from_svg(
+            Icon.USER_DISCONNECTED.value, color=self.theme.text_color
+        ).pixmap(20, 20)
         disconnected_label.setPixmap(disconnected_icon)
 
         self.info_disconnected_label.hide()
@@ -112,29 +139,40 @@ class LeftNavView:
         self.user_inline_layout.addLayout(self.user_offline)
 
         self.left_nav_layout.addWidget(self.scroll_area_avatar)
-    
-    def slide_out(self):
+
+    def slide_out(self) -> None:
+        """
+        Slide out the left navigation bar
+        """
         self.slide_animation = "out"
         self.scroll_area_avatar.show()
         current_geometry = self.scroll_area_avatar.geometry()
-        target_geometry = self.max_width_geometry.translated(-current_geometry.width(), 0)
+        target_geometry = self.max_width_geometry.translated(
+            -current_geometry.width(), 0
+        )
         self.animation.setEndValue(current_geometry)
         self.animation.setStartValue(target_geometry)
         self.animation.start()
 
-    def slide_in(self):
+    def slide_in(self) -> None:
+        """
+        Slide in the left navigation bar
+        """
         self.slide_animation = "in"
         current_geometry = self.scroll_area_avatar.geometry()
-        target_geometry = current_geometry.translated(-self.max_width_geometry.width(), 0)
+        target_geometry = current_geometry.translated(
+            -self.max_width_geometry.width(), 0
+        )
         self.animation.setStartValue(current_geometry)
         self.animation.setEndValue(target_geometry)
         self.animation.start()
 
-    def on_animation_finished(self):
+    def on_animation_finished(self) -> None:
+        """
+        Hide the scroll area when the animation is finished
+        """
         self.scroll_area_avatar.updateGeometry()
         if self.slide_animation == "in":
             self.scroll_area_avatar.hide()
         else:
             self.scroll_area_avatar.show()
-
-        

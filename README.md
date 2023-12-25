@@ -1,32 +1,47 @@
+# Messenger desktop application
 
-# Messenger 
-
-This project provide:
-- TCP server
-- Backend API
-- **GUI client**
-
-The GUI client (last updated on 14/10/2023):
+The GUI desktop client (last updated on 14/10/2023):
 
 ![Alt text](./resources/images/readme_pic.png?raw=true "Client GUI")
 
-# Init the repository
+This application need to be run with the server application. 
+- The TCP server [here](https://github.com/clementraoulastek/tcp_server)
+- The backend API [here](https://github.com/clementraoulastek/backend_tcp_server)
 
-create virtual env:
- -  mkdir .venv
- -  python3 -m venv .venv
 
-Activate the virtualenv:
-- source .venv/bin/activate
+# Conda env
 
-for installating dependencies (need to be in the venv):
- - pip install -e .
- - pip install -r requirements.txt
+A virtual environment is used to run the project. It is managed by conda.
 
- 
-## Launch project
+## Create the environment
 
-Launch the GUI client:
-- python src/launch_client.py
+```bash
+conda env create -f environment.yml
+```
+
+## Activate the environment
+
+```bash
+conda activate gui-messenger
+```
+
+# Run the app 
+
+## In dev mode
+```bash
+make run
+```
+
+## In prod mode
+
+```bash
+make run
+```
+
+# Run the tests
+
+```bash
+make test
+```
 
 

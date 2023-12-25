@@ -1,32 +1,34 @@
-from enum import Enum, unique
 import datetime
 import functools
+from enum import Enum, unique
 from typing import Optional
+
+import pytz
+from tzlocal import get_localzone
+
 from src.client.core.qt_core import (
+    QColor,
+    QEnterEvent,
+    QEvent,
+    QFrame,
+    QGraphicsDropShadowEffect,
     QHBoxLayout,
     QIcon,
     QLabel,
     QSize,
-    Qt,
-    QWidget,
-    QVBoxLayout,
-    QFrame,
     QSizePolicy,
-    QGraphicsDropShadowEffect,
-    QColor,
-    QEvent,
-    QEnterEvent,
+    Qt,
     QTimer,
+    QVBoxLayout,
+    QWidget,
 )
-from src.client.view.customWidget.CustomQPushButton import CustomQPushButton
+from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
+from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.tools.commands import Commands
-from src.tools.utils import Icon, QIcon_from_svg, check_str_len, Themes
-from src.client.view.customWidget.AvatarQLabel import AvatarLabel
-from src.client.view.customWidget.AvatarQLabel import AvatarStatus
-import pytz
-from tzlocal import get_localzone
+from src.tools.utils import Icon, Themes, check_str_len, icon_from_svg
 
 theme = Themes()
+
 
 @unique
 class EnumReact(Enum):
@@ -44,6 +46,7 @@ class Contener(QFrame):
 
     def leaveEvent(self, event) -> None:
         self.event_button.hide()
+
 
 class MessageLayout(QHBoxLayout):
     def __init__(
@@ -114,9 +117,7 @@ class MessageLayout(QHBoxLayout):
             content=self.content,
             height=38,
             width=38,
-        ), AvatarLabel(
-            content=self.content, status=AvatarStatus.DM
-        )
+        ), AvatarLabel(content=self.content, status=AvatarStatus.DM)
         icon_label.set_opacity(0.8)
         icon_label.graphicsEffect().setEnabled(False)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -140,7 +141,7 @@ class MessageLayout(QHBoxLayout):
             text-align: center;
             """
             if isinstance(event, QEnterEvent):
-                style_+="text-decoration: underline;"
+                style_ += "text-decoration: underline;"
 
             user_widget.setStyleSheet(style_)
 
@@ -148,9 +149,15 @@ class MessageLayout(QHBoxLayout):
             self.sender_btn.clicked.connect(
                 functools.partial(self.add_dm_layout, copy_icon)
             )
-            icon_label.mousePressEvent = lambda e : functools.partial(self.add_dm_layout, copy_icon)()
-            icon_label.leaveEvent = lambda e : functools.partial(icon_label.graphicsEffect().setEnabled, False)()
-            icon_label.enterEvent = lambda e : functools.partial(icon_label.graphicsEffect().setEnabled, True)()
+            icon_label.mousePressEvent = lambda e: functools.partial(
+                self.add_dm_layout, copy_icon
+            )()
+            icon_label.leaveEvent = lambda e: functools.partial(
+                icon_label.graphicsEffect().setEnabled, False
+            )()
+            icon_label.enterEvent = lambda e: functools.partial(
+                icon_label.graphicsEffect().setEnabled, True
+            )()
 
         if message_id and self.sender_ != self.controller.ui.client.user_name:
             self.sender_btn.enterEvent = functools.partial(
@@ -186,10 +193,10 @@ class MessageLayout(QHBoxLayout):
             self.event_layout.setSpacing(0)
             self.event_layout.setContentsMargins(1, 1, 1, 1)
             self.react_buttton = CustomQPushButton(
-                "", 
+                "",
                 bg_color=theme.inner_color,
                 bg_color_active=theme.nav_color,
-                radius=4
+                radius=4,
             )
             self.react_buttton.setToolTip("React to this message")
             retain = self.react_buttton.sizePolicy()
@@ -201,24 +208,24 @@ class MessageLayout(QHBoxLayout):
             self.react_buttton.setFixedWidth(20)
 
             react_icon = QIcon(
-                QIcon_from_svg(Icon.SMILEY.value, color=theme.emoji_color)
+                icon_from_svg(Icon.SMILEY.value, color=theme.emoji_color)
             )
 
             self.react_buttton.setIcon(react_icon)
             self.event_layout.addWidget(self.react_buttton)
 
             self.reply_button = CustomQPushButton(
-                "", 
-                bg_color=theme.inner_color, 
+                "",
+                bg_color=theme.inner_color,
                 bg_color_active=theme.nav_color,
-                radius=4
+                radius=4,
             )
             self.reply_button.setToolTip("Reply to this message")
 
             self.reply_button.clicked.connect(self.add_reply)
             self.reply_button.setFixedSize(20, 20)
             response_icon = QIcon(
-                QIcon_from_svg(Icon.REPLY.value, color=theme.emoji_color)
+                icon_from_svg(Icon.REPLY.value, color=theme.emoji_color)
             )
             self.reply_button.setIcon(response_icon)
             self.event_layout.addWidget(self.reply_button)
@@ -268,7 +275,7 @@ class MessageLayout(QHBoxLayout):
 
         if "admin" in self.username_label:  # TODO: must be a column for user tab
             crown_icon = QIcon(
-                QIcon_from_svg(Icon.CROWN.value, color=theme.emoji_color)
+                icon_from_svg(Icon.CROWN.value, color=theme.emoji_color)
             ).pixmap(QSize(15, 15))
             sender_icon = QLabel()
             sender_icon.setContentsMargins(0, 0, 0, 3)
@@ -303,7 +310,9 @@ class MessageLayout(QHBoxLayout):
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
 
-        top_layout.addWidget(right_widget.event_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight)
+        top_layout.addWidget(
+            right_widget.event_button, stretch=1, alignment=Qt.AlignmentFlag.AlignRight
+        )
 
         # Add response model
         if response_model:
@@ -313,13 +322,13 @@ class MessageLayout(QHBoxLayout):
             response_layout.setSpacing(0)
 
             model_icon = AvatarLabel(
-                content=response_model.content, 
-                height=15, 
+                content=response_model.content,
+                height=15,
                 width=15,
             )
             icon_reply_label = QLabel()
             icon_reply = QIcon(
-                QIcon_from_svg(Icon.LINK.value, color=theme.text_color)
+                icon_from_svg(Icon.LINK.value, color=theme.text_color)
             ).pixmap(QSize(15, 15))
             icon_reply_label.setPixmap(icon_reply)
 
@@ -332,9 +341,7 @@ class MessageLayout(QHBoxLayout):
 
             model_username = QLabel(username_response)
             model_username.setContentsMargins(0, 0, 0, 0)
-            model_username.setStyleSheet(
-                "font-weight: bold;"
-            )
+            model_username.setStyleSheet("font-weight: bold;")
             model_message = CustomQPushButton(
                 model_message,
                 color=theme.title_color,
@@ -346,12 +353,14 @@ class MessageLayout(QHBoxLayout):
             )
             model_message.setFixedHeight(20)
             model_message.enterEvent = lambda e: model_message.setStyleSheet(
-               f"color : {theme.rooms_color};"
+                f"color : {theme.rooms_color};"
             )
             model_message.leaveEvent = lambda e: model_message.setStyleSheet(
-               f"color : {theme.title_color};"
+                f"color : {theme.title_color};"
             )
-            response_layout.addWidget(icon_reply_label, alignment=Qt.AlignmentFlag.AlignHCenter)
+            response_layout.addWidget(
+                icon_reply_label, alignment=Qt.AlignmentFlag.AlignHCenter
+            )
             response_layout.addWidget(model_icon)
             response_layout.addWidget(model_username)
             response_layout.addWidget(model_message)

@@ -1,34 +1,22 @@
-from src.client.core.qt_core import (
-    QPushButton,
-    Signal,
-    QGraphicsDropShadowEffect,
-    QColor,
-)
+"""Module for custom QPushButton class."""
+
+# pylint: disable=duplicate-code
+from src.client.core.qt_core import QColor, QGraphicsDropShadowEffect, QPushButton
+from src.client.view.stylesheets.stylesheets import custom_button_style
 from src.tools.utils import Themes
 
-style = """
-QPushButton {{
-	background-color: {_bg_color};
-	border-radius: {_radius}px;
-	border: {_border_size}px solid {_bg_color_active};
-	selection-color: {_selection_color};
-	selection-background-color: {_context_color};
-    color: {_color};
-}}
-QPushButton:hover {{
-	border: {_border_size}px solid {_color};
-    background-color: {_bg_color_active};
-}}
-QPushButton:disabled {{
-	border: {_border_size}px solid {_disabled_color};
-    background-color: #313338;
-}}
-"""
 theme = Themes()
 
-class CustomQPushButton(QPushButton):
-    signal = Signal()
 
+class CustomQPushButton(QPushButton):
+    """
+    Custom QPushButton class.
+
+    Args:
+        QPushButton (QPushButton): the QPushButton class
+    """
+
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         text="",
@@ -57,19 +45,32 @@ class CustomQPushButton(QPushButton):
             disabled_color,
         )
 
+    # pylint: disable=too-many-arguments
     def set_stylesheet(
         self,
-        radius,
-        border_size,
-        color,
-        selection_color,
-        bg_color,
-        bg_color_active,
-        context_color,
-        disabled_color,
+        radius: int,
+        border_size: int,
+        color: str,
+        selection_color: str,
+        bg_color: str,
+        bg_color_active: str,
+        context_color: str,
+        disabled_color: str,
     ):
-        # APPLY STYLESHEET
-        style_format = style.format(
+        """
+        Set the stylesheet.
+
+        Args:
+            radius (int): radius
+            border_size (int): border size
+            color (str): the color
+            selection_color (str): selection color
+            bg_color (str): background color
+            bg_color_active (str): background color when active
+            context_color (str): context color
+            disabled_color (str): disabled color
+        """
+        style_format = custom_button_style.format(
             _radius=radius,
             _border_size=border_size,
             _color=color,
@@ -81,10 +82,10 @@ class CustomQPushButton(QPushButton):
         )
         self.setStyleSheet(style_format)
 
-    def clicked(self):
-        self.signal.emit()
-
-    def widget_shadow(self):
+    def widget_shadow(self) -> None:
+        """
+        Set the shadow effect.
+        """
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setColor(QColor(0, 0, 0, 150))
         shadow.setOffset(0, 2)
