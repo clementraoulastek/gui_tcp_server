@@ -2,7 +2,7 @@
 
 import re
 
-import src.client.controller.global_variables as global_variables
+from src.client.controller import global_variables
 from src.client.controller.api_controller import ApiController
 from src.client.controller.event_manager import EventManager
 from src.client.controller.gui_controller import GuiController
@@ -35,6 +35,7 @@ class MainController:
             theme,
         )
 
+    # pylint: disable=unused-argument
     def send_message_to_server(self, *args) -> None:
         """
         Send message to the server and update GUI
@@ -44,11 +45,9 @@ class MainController:
         """
         receiver: str = self.ui.scroll_area.objectName()
         if message := self.ui.footer_widget.entry.text():
-            message_model = None
-
+            # pylint: disable=anomalous-backslash-in-string
             if message_id := re.findall("#(\w+)/", global_variables.reply_id):
                 message_id = int(message_id[0])
-                message_model = self.gui_controller.messages_dict[receiver][message_id]
                 global_variables.reply_id = ""
 
             self.ui.client.send_data(

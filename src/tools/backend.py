@@ -33,7 +33,7 @@ class Backend:
         """
         endpoint = f"http://{self.ip}:{self.port}/user/"
         response = requests.get(
-            url=f"{endpoint}{username}?password={password}", timeout=10
+            url=f"{endpoint}{username}?password={password}", timeout=5
         )
         is_connected: bool = False
         if response.status_code == 200 and response.content:
@@ -55,7 +55,7 @@ class Backend:
         endpoint = (
             f"http://{self.ip}:{self.port}/user/{username}/?is_connected={status}"
         )
-        response = requests.patch(url=endpoint, timeout=10)
+        response = requests.patch(url=endpoint, timeout=5)
 
         return response.status_code == 200
 
@@ -76,8 +76,8 @@ class Backend:
             "password": password,
         }
         header = {"Accept": "application/json"}
-        response = requests.post(url=endpoint, headers=header, json=data, timeout=10)
-        
+        response = requests.post(url=endpoint, headers=header, json=data, timeout=5)
+
         return response.status_code, False
 
     def send_user_icon(self, username: str, picture_path: str = None) -> bool:
@@ -104,7 +104,7 @@ class Backend:
 
         with open(temp_image_path, "rb") as file:
             files = {"file": file}
-            response = requests.put(url=endpoint, files=files)
+            response = requests.put(url=endpoint, files=files, timeout=5)
 
         try:
             os.remove(temp_image_path)
@@ -124,7 +124,7 @@ class Backend:
             Union[bool, bytes]: the icon
         """
         endpoint = f"http://{self.ip}:{self.port}/user/"
-        response = requests.get(url=f"{endpoint}{username}/picture", timeout=10)
+        response = requests.get(url=f"{endpoint}{username}/picture", timeout=5)
         if response.status_code == 200 and response.content:
             return response.content
         return False
@@ -137,7 +137,7 @@ class Backend:
             Union[bool, bytes]: the users
         """
         endpoint = f"http://{self.ip}:{self.port}/users"
-        response = requests.get(url=f"{endpoint}/username", timeout=10)
+        response = requests.get(url=f"{endpoint}/username", timeout=5)
         if response.status_code == 200 and response.content:
             return response.json()
         return False
@@ -153,7 +153,7 @@ class Backend:
             Union[bool, bytes]: the users
         """
         endpoint = f"http://{self.ip}:{self.port}/dm"
-        response = requests.get(url=f"{endpoint}?username={username}", timeout=10)
+        response = requests.get(url=f"{endpoint}?username={username}", timeout=5)
         if response.status_code == 200 and response.content:
             return response.json()
         return False
@@ -166,7 +166,7 @@ class Backend:
             int: the last message id
         """
         endpoint = f"http://{self.ip}:{self.port}/last_id"
-        response = requests.get(url=endpoint, timeout=10)
+        response = requests.get(url=endpoint, timeout=5)
         if response.status_code == 200 and response.content:
             return response.json()["last_id"]
         return False
@@ -185,7 +185,7 @@ class Backend:
         endpoint = (
             f"http://{self.ip}:{self.port}/first_id" + f"?user1={user1}&user2={user2}"
         )
-        response = requests.get(url=endpoint, timeout=10)
+        response = requests.get(url=endpoint, timeout=5)
         if response.status_code == 200 and response.content:
             return response.json()["first_id"]
         return False
@@ -209,7 +209,7 @@ class Backend:
             f"http://{self.ip}:{self.port}/messages/"
             + f"?message_id={start}&number={number}&user1={user1}&user2={user2}"
         )
-        response = requests.get(url=endpoint, timeout=10)
+        response = requests.get(url=endpoint, timeout=5)
         if response.status_code == 200 and response.content:
             return response.json()
         return False
@@ -225,7 +225,7 @@ class Backend:
             Union[bool, dict]: the message
         """
         endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}"
-        response = requests.get(url=endpoint, timeout=10)
+        response = requests.get(url=endpoint, timeout=5)
         if response.status_code == 200 and response.content:
             return response.json()
         return False
@@ -257,7 +257,7 @@ class Backend:
             "response_id": response_id,
         }
         header = {"Accept": "application/json"}
-        response = requests.post(url=endpoint, headers=header, json=data, timeout=10)
+        response = requests.post(url=endpoint, headers=header, json=data, timeout=5)
 
         return response.json() if response.status_code == 200 else None
 
@@ -274,7 +274,7 @@ class Backend:
         """
         # pylint: disable=line-too-long
         endpoint = f"http://{self.ip}:{self.port}/messages/{message_id}/reaction/?new_reaction_nb={reaction_nb}"
-        response = requests.patch(url=endpoint, timeout=10)
+        response = requests.patch(url=endpoint, timeout=5)
         return response.status_code
 
     def update_is_readed_status(
@@ -293,7 +293,7 @@ class Backend:
         """
         # pylint: disable=line-too-long
         endpoint = f"http://{self.ip}:{self.port}/messages/readed/?sender={sender}&receiver={receiver}&is_readed={is_readed}"
-        response = requests.patch(url=endpoint, timeout=10)
+        response = requests.patch(url=endpoint, timeout=5)
         return response.status_code
 
     def get_user_creation_date(self, username: str) -> Union[bool, str]:
@@ -307,7 +307,7 @@ class Backend:
             Union[bool, str]: creation date
         """
         endpoint = f"http://{self.ip}:{self.port}/user/{username}/creation-date"
-        response = requests.get(url=endpoint, timeout=10)
+        response = requests.get(url=endpoint, timeout=5)
         if response.status_code == 200 and response.content:
             response = response.json()
             return response["register_date"], response["description"]
@@ -326,5 +326,5 @@ class Backend:
         """
         endpoint = f"http://{self.ip}:{self.port}/user/{username}/description"
         endpoint += f"?description={description}"
-        response = requests.patch(url=endpoint, timeout=10)
+        response = requests.patch(url=endpoint, timeout=5)
         return response.status_code == 200

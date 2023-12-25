@@ -4,7 +4,7 @@ from enum import Enum, unique
 from functools import lru_cache
 from typing import Callable, Optional
 
-import src.client.controller.global_variables as global_variables
+from src.client.controller import global_variables
 from src.client.controller.event_manager import EventManager
 from src.client.view.custom_widget.custom_avatar_label import AvatarStatus
 from src.tools.utils import Themes
@@ -109,7 +109,7 @@ class ApiController:
 
         Args:
             username (Optional[bool], optional): usernameto fetch. Defaults to None.
-            update_personal_avatar (Optional[bool], optional): update the personnal avatar if True. Defaults to False.
+            update_personal_avatar (Optional[bool], optional): Defaults to False.
         """
 
         # If username is None, get the user icon of the current user
@@ -141,7 +141,7 @@ class ApiController:
         """
         if (
             username in self.ui.users_connected.keys()
-            and self.ui.users_connected[username] == True
+            and self.ui.users_connected[username] is True
         ):
             global_variables.user_connected[username] = [content, False]
         else:

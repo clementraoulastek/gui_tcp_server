@@ -4,14 +4,18 @@ from collections import OrderedDict
 from functools import partial
 from threading import Thread
 from typing import List, Optional
-from src.client.controller.connection_controller import ConnectionController
 
-import src.client.controller.global_variables as global_variables
+from src.client.controller import global_variables
 from src.client.controller.api_controller import ApiController
+from src.client.controller.connection_controller import ConnectionController
 from src.client.controller.event_manager import EventManager
 from src.client.controller.messages_controller.avatar_controller import AvatarController
-from src.client.controller.messages_controller.messages_controller import MessagesController
-from src.client.controller.messages_controller.reaction_controller import ReactController
+from src.client.controller.messages_controller.messages_controller import (
+    MessagesController,
+)
+from src.client.controller.messages_controller.reaction_controller import (
+    ReactController,
+)
 from src.client.controller.messages_controller.router_controller import RouterController
 from src.client.controller.tcp_controller import TcpServerController
 from src.client.controller.user_profile_controller import UserProfileController
@@ -44,11 +48,15 @@ from src.tools.utils import (
     icon_from_svg,
 )
 
+
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
 class GuiController:
     """
     GUI controller class.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         ui,
@@ -60,11 +68,18 @@ class GuiController:
     ) -> None:
         self.ui = ui
         self.theme = theme
+        self.theme_board = None
+        self.worker_thread = None
+        self.room_icon = None
+        self.is_focused = None
+
         self.messages_dict: dict[str, List[MessageLayout]] = messages_dict
+        self.dm_avatar_dict: dict[str, AvatarLabel] = {}
+
+        self.event_manager = event_manager
+
         self.api_controller = api_controller
         self.tcp_controller = tcp_controller
-        self.dm_avatar_dict: dict[str, AvatarLabel] = {}
-        self.event_manager = event_manager
         self.messages_controller = MessagesController(self, ui, self.messages_dict)
         self.react_controller = ReactController(self, ui, self.messages_dict)
         self.router_controller = RouterController(self, ui)
@@ -216,9 +231,18 @@ class GuiController:
         self.ui.footer_widget.entry.setDisabled(activate)
         self.ui.footer_widget.entry.setPlaceholderText(lock_message)
 
+    # pylint: disable=line-too-long
     def add_gui_for_mp_layout(
         self, room_name: str, icon, switch_frame: Optional[bool] = False
     ) -> None:
+        """
+        Add GUI for a new room based on the direct message
+
+        Args:
+            room_name (str): room name
+            icon (Icon): icon
+            switch_frame (Optional[bool], optional): switch to direct message layout?. Defaults to False.
+        """
         if room_name not in self.ui.right_nav_widget.room_list:
             # Layout
             direct_message_widget = CustomQPushButton()
@@ -258,6 +282,7 @@ class GuiController:
                 }} 
                 """
                 user_widget.setStyleSheet(style_.format(color=color))
+                # pylint: disable=expression-not-assigned
                 close_button.show() if isinstance(
                     event, QEnterEvent
                 ) else close_button.hide()
@@ -438,9 +463,19 @@ class GuiController:
 
         self.update_stylesheet_with_reply(message)
 
-        def callback(message: MessageLayout, styleSheet_main: str, styleSheet_left):
-            message.main_widget.setStyleSheet(styleSheet_main)
-            message.left_widget.setStyleSheet(styleSheet_left)
+        def callback(
+            message: MessageLayout, style_sheet_main_: str, style_sheet_left_: str
+        ) -> None:
+            """
+            Callback to update stylesheet
+
+            Args:
+                message (MessageLayout): message layout to update
+                style_sheet_main_ (str): style sheet
+                style_sheet_left_ (str): style sheet
+            """
+            message.main_widget.setStyleSheet(style_sheet_main_)
+            message.left_widget.setStyleSheet(style_sheet_left_)
             self.is_focused = False
 
         self.ui.scroll_area.ensureWidgetVisible(message.main_widget)
@@ -450,6 +485,12 @@ class GuiController:
         )
 
     def update_stylesheet_with_reply(self, message: MessageLayout) -> None:
+        """
+        Update stylesheet with reply
+
+        Args:
+            message (MessageLayout): message layout
+        """
         message.main_widget.setStyleSheet(
             f"color: {self.theme.title_color};\
             margin-bottom: 1px;\
@@ -462,6 +503,13 @@ class GuiController:
     def update_stylesheet_with_focus_event(
         self, message: MessageLayout, border_color: str
     ) -> None:
+        """
+        Update stylesheet with focus event
+
+        Args:
+            message (MessageLayout): message layout
+            border_color (str): border color
+        """
         message.main_widget.setStyleSheet(
             f"color: {self.theme.title_color};\
             margin-bottom: 1px;\
@@ -478,6 +526,8 @@ class GuiController:
             }}"""
         )
 
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     def display_users_from_research(self):
         """
         Display users list from research
@@ -593,7 +643,7 @@ class GuiController:
         """
         Display theme board
         """
-        if hasattr(self, "theme_board") and self.theme_board.isVisible():
+        if self.theme_board and self.theme_board.isVisible():
             return
         self.theme_board = QWidget()
 
@@ -697,7 +747,9 @@ class GuiController:
         self.ui.main_layout.addChildWidget(self.theme_board)
         self.theme_board.setFocus()
 
-    def _create_theme_button(self, text: str, w: int, h: int, icon: QIcon) -> CustomQPushButton:
+    def _create_theme_button(
+        self, text: str, w: int, h: int, icon: QIcon
+    ) -> CustomQPushButton:
         """
         Create theme button
 

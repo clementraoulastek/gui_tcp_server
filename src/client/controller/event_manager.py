@@ -16,9 +16,6 @@ class EventManager(QObject):
     users_disconnected_signal = Signal()
     react_message_signal = Signal()
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def event_coming_message(self) -> None:
         """
         Emit a signal when a message is coming.

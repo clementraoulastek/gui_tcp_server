@@ -1,17 +1,25 @@
+"""Module for connection controller"""
+
 import contextlib
 from typing import Callable
+
+from src.client.controller import global_variables
 from src.client.controller.api_controller import ApiStatus
+from src.client.core.qt_core import Qt
 from src.client.view.custom_widget.custom_avatar_label import AvatarStatus
 from src.client.view.layout.login_layout import LoginLayout
-from src.client.core.qt_core import Qt
 from src.tools.commands import Commands
-import src.client.controller.global_variables as global_variables
+
 
 class ConnectionController:
+    """
+    Connection controller class.
+    """
+
     def __init__(self, parent, ui):
         self.ui = ui
         self.parent = parent
-    
+
     def login(self) -> None:
         """
         Display the login form
@@ -24,18 +32,30 @@ class ConnectionController:
 
             # Connect signals
             self.ui.login_form.password_entry.returnPressed.connect(
-                lambda: self.login_form(self.parent.api_controller.send_login_form)
+                lambda: self.login_form(
+                    self.parent.api_controller.send_form,
+                    self.ui.backend.send_login_form,
+                )
             )
             self.ui.login_form.username_entry.returnPressed.connect(
-                lambda: self.login_form(self.parent.api_controller.send_login_form)
+                lambda: self.login_form(
+                    self.parent.api_controller.send_form,
+                    self.ui.backend.send_login_form,
+                )
             )
             self.ui.login_form.send_action.triggered.connect(
-                lambda: self.login_form(self.parent.api_controller.send_form, self.ui.backend.send_login_form)
+                lambda: self.login_form(
+                    self.parent.api_controller.send_form,
+                    self.ui.backend.send_login_form,
+                )
             )
             self.ui.login_form.entry_action.triggered.connect(
-                lambda: self.login_form(self.parent.api_controller.send_form, self.ui.backend.send_register_form)
+                lambda: self.login_form(
+                    self.parent.api_controller.send_form,
+                    self.ui.backend.send_register_form,
+                )
             )
-            
+
     def login_form(self, callback: Callable, backend_callback: Callable) -> None:
         """
         Update the layout if login succeed
@@ -53,7 +73,7 @@ class ConnectionController:
             self.ui.login_form.error_label.setText(
                 "Enable to join the server, please try again later"
             )
-            
+
     def handle_sucess_gui_conn(self):
         """
         Show GUI panels if login succeed
@@ -80,10 +100,10 @@ class ConnectionController:
             self.parent.display_users_from_research
         )
         hide_research = self.ui.header.frame_research.focusOutEvent
-        self.ui.header.frame_research.focusOutEvent = lambda e: self.parent.hide_research(
-            e, hide_research
+        self.ui.header.frame_research.focusOutEvent = (
+            lambda e: self.parent.hide_research(e, hide_research)
         )
-        
+
     def clean_gui_and_connect(self, update_avatar: bool) -> None:
         """
         Clean GUI
@@ -98,13 +118,17 @@ class ConnectionController:
             self.ui.client.send_data(Commands.HELLO_WORLD, Commands.HELLO_WORLD.name)
             self.ui.login_form = None
             self.parent.clear()
-            self.parent.api_controller.get_user_icon(update_personal_avatar=update_avatar)
+            self.parent.api_controller.get_user_icon(
+                update_personal_avatar=update_avatar
+            )
             self.ui.left_nav_widget.info_disconnected_label.show()
             self.parent.fetch_all_users_username()
             self.parent.fetch_all_rooms()
 
             # Get older messages from the server
-            dm_list = self.parent.messages_controller.get_all_dm_users_username()["usernames"]
+            dm_list = self.parent.messages_controller.get_all_dm_users_username()[
+                "usernames"
+            ]
 
             last_message_id = self.parent.api_controller.get_last_message_id()
 
@@ -113,14 +137,14 @@ class ConnectionController:
                 last_message_id = int(last_message_id)
             else:
                 return
-            NB_OF_MESSAGES = 20
+            nb_of_messages = 20
             for dm in dm_list:
                 self.parent.messages_controller.fetch_older_messages(
-                    start=last_message_id + 1, number=NB_OF_MESSAGES, username=dm
+                    start=last_message_id + 1, number=nb_of_messages, username=dm
                 )
 
             self.ui.footer_widget.reply_entry_action.triggered.connect(lambda: None)
-            
+
     def logout(self) -> None:
         """
         Disconnect the client
@@ -148,14 +172,22 @@ class ConnectionController:
 
         # UI update
         self.parent.update_buttons()
-        self.parent.avatar_controller.clear_avatar("user_inline", self.ui.left_nav_widget)
-        self.parent.avatar_controller.clear_avatar("user_offline", self.ui.left_nav_widget)
-        self.parent.avatar_controller.clear_avatar("main_layout", self.ui.rooms_widget, delete_all=True)
-        self.parent.avatar_controller.clear_avatar("direct_message_layout", self.ui.right_nav_widget)
-        
+        self.parent.avatar_controller.clear_avatar(
+            "user_inline", self.ui.left_nav_widget
+        )
+        self.parent.avatar_controller.clear_avatar(
+            "user_offline", self.ui.left_nav_widget
+        )
+        self.parent.avatar_controller.clear_avatar(
+            "main_layout", self.ui.rooms_widget, delete_all=True
+        )
+        self.parent.avatar_controller.clear_avatar(
+            "direct_message_layout", self.ui.right_nav_widget
+        )
+
         with contextlib.suppress(RuntimeError):
             self.ui.footer_widget.reply_entry_action.triggered.disconnect()
-            
+
         self.ui.header.frame_research.hide()
         self.ui.header.welcome_label.hide()
         self.ui.header.separator.hide()
@@ -164,5 +196,5 @@ class ConnectionController:
 
         self.ui.left_nav_widget.info_disconnected_label.hide()
         self.ui.upper_widget.hide()
-        
+
         self.login()

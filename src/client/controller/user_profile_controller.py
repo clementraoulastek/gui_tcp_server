@@ -1,16 +1,36 @@
+"""Module for the user profile controller."""
+
 import datetime
+
 import pytz
 from tzlocal import get_localzone
-from src.client.core.qt_core import QWidget, QSize, QVBoxLayout, QPlainTextEdit, QLabel, QHBoxLayout, QIcon, Qt
+
+from src.client.core.qt_core import (
+    QHBoxLayout,
+    QIcon,
+    QLabel,
+    QPlainTextEdit,
+    QSize,
+    Qt,
+    QVBoxLayout,
+    QWidget,
+)
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel, AvatarStatus
 from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.tools.utils import GenericColor, Icon, icon_from_svg
 
+
 class UserProfileController:
+    """
+    Class that handle the user profile.
+    """
+
     def __init__(self, parent, ui):
         self.parent = parent
         self.ui = ui
-        
+        self.user_profile_widget = None
+        self.status_widget = None
+
     def update_user_icon(self) -> None:
         """
         Update user icon
@@ -22,12 +42,14 @@ class UserProfileController:
             )
             self.parent.api_controller.get_user_icon(update_personal_avatar=True)
             self.user_profile_widget.hide()
-    
+
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     def show_user_profile(self) -> None:
-        if (
-            hasattr(self, "user_profile_widget")
-            and self.user_profile_widget.isVisible()
-        ):
+        """
+        Show user profile
+        """
+        if self.user_profile_widget and self.user_profile_widget.isVisible():
             return
 
         creation_date, description = self.parent.api_controller.get_user_creation_date(
