@@ -1,3 +1,5 @@
+"""Login layout module."""
+
 import os
 
 from dotenv import load_dotenv
@@ -13,17 +15,23 @@ from PySide6.QtWidgets import (
 )
 
 from src.client.view.custom_widget.custom_avatar_label import AvatarLabel
-from src.client.view.custom_widget.custom_button import CustomQPushButton
 from src.client.view.custom_widget.custom_line_edit import CustomQLineEdit
-from src.client.view.tools.graphical_effects import widget_shadow
 from src.tools.utils import Icon, ImageAvatar, Themes, icon_from_svg
 
 load_dotenv()
 
 
+# pylint: disable=too-many-instance-attributes
 class LoginLayout(QHBoxLayout):
+    """
+    LoginLayout widget class.
+
+    Args:
+        QHBoxLayout (QHBoxLayout): the horizontal layout widget
+    """
+
     def __init__(self, theme: Themes):
-        super(LoginLayout, self).__init__()
+        super().__init__()
 
         self.theme = theme
         self.setContentsMargins(0, 0, 0, 0)
@@ -42,7 +50,10 @@ class LoginLayout(QHBoxLayout):
         self.main_layout.addLayout(self.username_layout)
         self.main_layout.addLayout(self.password_layout)
 
-    def create_main_widget(self):
+    def create_main_widget(self) -> None:
+        """
+        Create the main widget.
+        """
         self.main_widget = QWidget()
         self.main_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_widget.setStyleSheet(
@@ -53,7 +64,10 @@ class LoginLayout(QHBoxLayout):
         )
         self.addWidget(self.main_widget)
 
-    def create_main_layouts(self):
+    def create_main_layouts(self) -> None:
+        """
+        Create the main layouts.
+        """
         # --- Main Layout --- #
         self.main_layout = QVBoxLayout(self.main_widget)
         self.main_layout.setAlignment(
@@ -85,7 +99,10 @@ class LoginLayout(QHBoxLayout):
         self.password_layout.setSpacing(15)
         self.password_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-    def create_title_widgets(self):
+    def create_title_widgets(self) -> None:
+        """
+        Create the title widgets.
+        """
         self.icon_soft = AvatarLabel(content=ImageAvatar.SERVER.value)
         self.icon_soft.setStyleSheet(
             "font-weight: bold;\
@@ -103,7 +120,10 @@ class LoginLayout(QHBoxLayout):
         self.title_layout.addWidget(self.icon_soft)
         self.title_layout.addWidget(self.title_label)
 
-    def create_error_widgets(self):
+    def create_error_widgets(self) -> None:
+        """
+        Create the error widgets.
+        """
         self.error_label = QLabel("Please login or register if you havn't account yet")
         self.error_label.setStyleSheet(
             f"color: {self.theme.title_color};\
@@ -111,7 +131,10 @@ class LoginLayout(QHBoxLayout):
         )
         self.error_layout.addWidget(self.error_label)
 
-    def create_username_widgets(self):
+    def create_username_widgets(self) -> None:
+        """
+        Create the username widgets.
+        """
         self.username_label = QLabel("Username: ")
         self.username_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.username_label.setStyleSheet(
@@ -131,7 +154,10 @@ class LoginLayout(QHBoxLayout):
         item.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.username_layout.addWidget(item)
 
-    def create_password_widgets(self):
+    def create_password_widgets(self) -> None:
+        """
+        Create the password widgets.
+        """
         self.password_label = QLabel("Password: ")
         self.password_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.password_label.setStyleSheet(
@@ -154,7 +180,10 @@ class LoginLayout(QHBoxLayout):
         self.password_layout.addWidget(self.password_entry)
         self.password_layout.addWidget(item)
 
-    def create_button_widgets(self):
+    def create_button_widgets(self) -> None:
+        """
+        Create the button widgets.
+        """
         self.send_icon = QIcon(
             icon_from_svg(Icon.SEND.value, color=self.theme.text_color)
         )

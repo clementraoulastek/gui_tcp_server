@@ -16,6 +16,7 @@ from src.tools.utils import Themes, check_str_len
 theme = Themes()
 
 
+# pylint: disable=too-many-instance-attributes
 class BodyScrollArea(QScrollArea):
     """
     BodyScrollArea widget class.
@@ -28,11 +29,12 @@ class BodyScrollArea(QScrollArea):
         """
         Update the core GUI
         """
-        super(BodyScrollArea, self).__init__()
+        super().__init__()
 
         self.name = name
         self.gui_controller = gui_controller
         self.nb_message_displayed = 0
+        self.upper_widget = None
         self.is_adding_older_messages = False
         self.scrolling_timer = QTimer()
         self.scrolling_timer.setSingleShot(True)
@@ -101,6 +103,7 @@ class BodyScrollArea(QScrollArea):
         if self.is_auto_scroll_:
             self.scrollToBottom()
 
+    # pylint: disable=invalid-name
     def scrollToBottom(self) -> None:
         """
         Update the scrollbar vertical position to the bottom
