@@ -91,7 +91,7 @@ class BodyScrollArea(QScrollArea):
             not self.scrolling_timer.isActive()
             and self.verticalScrollBar().value() == self.verticalScrollBar().minimum()
         ):
-            self.gui_controller.add_older_messages_on_scroll()
+            self.gui_controller.messages_controller.add_older_messages_on_scroll()
             self.scrolling_timer.start(100)
 
     def update_scrollbar(self) -> None:

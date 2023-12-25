@@ -101,14 +101,14 @@ class MainController:
         """
         Login to the server
         """
-        self.gui_controller.login()
+        self.gui_controller.connection_controller.login()
         self._hide()
 
     def logout(self) -> None:
         """
         Logout from the server
         """
-        self.gui_controller.logout()
+        self.gui_controller.connection_controller.logout()
         self._hide()
 
     def _hide(self):
@@ -131,10 +131,10 @@ class MainController:
         """
         Update the user icon
         """
-        self.gui_controller.update_user_icon()
+        self.gui_controller.user_profile_controller.update_user_icon()
 
     def show_user_profile(self) -> None:
         """
         Show the user profile
         """
-        self.gui_controller.show_user_profile()
+        self.gui_controller.user_profile_controller.show_user_profile()

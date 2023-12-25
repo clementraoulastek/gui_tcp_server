@@ -227,7 +227,7 @@ class Themes:
             self.config.write(configfile)
 
         # Restart the app
-        controller.logout()
+        controller.connection_controller.logout()
         os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
 
     def create_custom_theme(self, controller, list_theme_line_edit: List) -> None:
