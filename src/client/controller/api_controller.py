@@ -2,7 +2,7 @@
 
 from enum import Enum, unique
 from functools import lru_cache
-from typing import Optional
+from typing import Callable, Optional
 
 import src.client.controller.global_variables as global_variables
 from src.client.controller.event_manager import EventManager
@@ -35,7 +35,7 @@ class ApiController:
         self.is_connected = False
         self.event_manager = event_manager
 
-    def send_login_form(self) -> bool:
+    def send_form(self, callback: Callable) -> bool:
         """
         Backend request for login form
 
@@ -50,7 +50,7 @@ class ApiController:
             return ApiStatus.FORBIDDEN
 
         # Send login form to the server
-        status_code, is_connected = self.ui.backend.send_login_form(username, password)
+        status_code, is_connected = callback(username, password)
 
         # Check if the login is successful and if the user is not already connected
         if status_code != 200 or is_connected:
@@ -76,24 +76,6 @@ class ApiController:
             bool: return True if the login status is successfully sent
         """
         return self.ui.backend.send_login_status(username, status)
-
-    def send_register_form(self) -> bool:
-        """
-        Backend request for register form
-
-        Returns:
-            bool: return True if the register is successful
-        """
-        username, password = self.remove_empty_char_from_entry()
-
-        # Avoid empty username or password
-        if not username or not password:
-            return ApiStatus.FORBIDDEN
-
-        # Send register form to the server
-        if self.ui.backend.send_register_form(username, password):
-            self.ui.client.user_name = username
-            return ApiStatus.SUCCESS
 
     def get_last_message_id(self) -> int:
         """

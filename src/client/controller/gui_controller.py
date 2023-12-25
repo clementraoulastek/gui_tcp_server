@@ -7,7 +7,7 @@ import time
 from collections import OrderedDict
 from functools import partial
 from threading import Thread
-from typing import List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import pytz
 from tzlocal import get_localzone
@@ -1001,17 +1001,17 @@ class GuiController:
                 lambda: self.login_form(self.api_controller.send_login_form)
             )
             self.ui.login_form.send_action.triggered.connect(
-                lambda: self.login_form(self.api_controller.send_login_form)
+                lambda: self.login_form(self.api_controller.send_form, self.ui.backend.send_login_form)
             )
             self.ui.login_form.entry_action.triggered.connect(
-                lambda: self.login_form(self.api_controller.send_register_form)
+                lambda: self.login_form(self.api_controller.send_form, self.ui.backend.send_register_form)
             )
 
-    def login_form(self, callback) -> None:
+    def login_form(self, callback: Callable, backend_callback: Callable) -> None:
         """
         Update the layout if login succeed
         """
-        status = callback()
+        status = callback(backend_callback)
         if status == ApiStatus.SUCCESS:
             self._handle_sucess_gui_conn()
         elif status == ApiStatus.FORBIDDEN:

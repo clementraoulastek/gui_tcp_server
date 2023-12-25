@@ -77,7 +77,8 @@ class Backend:
         }
         header = {"Accept": "application/json"}
         response = requests.post(url=endpoint, headers=header, json=data, timeout=10)
-        return response.status_code == 200
+        
+        return response.status_code, False
 
     def send_user_icon(self, username: str, picture_path: str = None) -> bool:
         """
