@@ -1,3 +1,5 @@
+"""Module for message layout."""
+
 import datetime
 import functools
 from enum import Enum, unique
@@ -27,23 +29,64 @@ theme = Themes()
 
 @unique
 class EnumReact(Enum):
+    """
+    Enum for react.
+
+    Args:
+        Enum (Enum): Enum class.
+    """
+
     REMOVE = 0
     ADD = 1
 
 
 class Contener(QFrame):
+    """
+    Contener class.
+
+    Args:
+        QFrame (QFrame): QFrame class.
+    """
+
     def __init__(self):
-        super(Contener, self).__init__()
+        super().__init__()
         self.event_button = QWidget()
 
+    # pylint: disable=invalid-name
+    # pylint: disable=unused-argument
     def enterEvent(self, event) -> None:
+        """
+        Enter event.
+
+        Args:
+            event (QEvent): Event.
+        """
         self.event_button.show()
 
+    # pylint: disable=invalid-name
+    # pylint: disable=unused-argument
     def leaveEvent(self, event) -> None:
+        """
+        Leave event.
+
+        Args:
+            event (QEvent): Event.
+        """
         self.event_button.hide()
 
 
+# pylint: disable=too-many-instance-attributes
 class MessageLayout(QHBoxLayout):
+    """
+    Message layout for each message.
+
+    Args:
+        QHBoxLayout (QHBoxLayout): QHBoxLayout class.
+    """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-statements
     def __init__(
         self,
         controller,
@@ -54,7 +97,7 @@ class MessageLayout(QHBoxLayout):
         date: Optional[str] = "",
         response_model=False,
     ):
-        super(MessageLayout, self).__init__()
+        super().__init__()
         self.setContentsMargins(0, 0, 0, 0)
         self.setAlignment(Qt.AlignLeft | Qt.AlignCenter)
 
@@ -97,7 +140,7 @@ class MessageLayout(QHBoxLayout):
         right_widget = Contener()
         right_widget.setContentsMargins(0, 0, 0, 0)
         right_widget.setStyleSheet(
-            f"background-color: transparent;\
+            "background-color: transparent;\
             border-radius: 0px;"
         )
         right_layout = QVBoxLayout()
@@ -370,7 +413,10 @@ class MessageLayout(QHBoxLayout):
         if message_id:
             self.update_react(self.nb_react)
 
-    def add_react(self):
+    def add_react(self) -> None:
+        """
+        Add react to message.
+        """
         if self.is_reacted:
             self.nb_react -= 1
             self.is_reacted = False
@@ -391,10 +437,19 @@ class MessageLayout(QHBoxLayout):
         else:
             self.react_widget.show()
 
-    def add_reply(self):
+    def add_reply(self) -> None:
+        """
+        Add reply to message.
+        """
         self.controller.messages_controller.reply_to_message(self)
 
-    def update_react(self, react_nb: int):
+    def update_react(self, react_nb: int) -> None:
+        """
+        Update react.
+
+        Args:
+            react_nb (int): Number of react.
+        """
         self.nb_react = react_nb
         if self.nb_react == 0:
             self.react_widget.hide()
@@ -403,12 +458,24 @@ class MessageLayout(QHBoxLayout):
         self.react_widget.update()
         self.react_nb.setText(f"{self.nb_react}")
 
-    def add_dm_layout(self, icon_label):
+    def add_dm_layout(self, icon_label: QLabel) -> None:
+        """
+        Add dm layout.
+
+        Args:
+            icon_label (QLabel): Icon label.
+        """
         self.controller.add_gui_for_mp_layout(
             self.username_label, icon_label, switch_frame=True
         )
 
     def widget_shadow(self, widget: QWidget) -> None:
+        """
+        Add shadow to widget.
+
+        Args:
+            widget (QWidget): Widget.
+        """
         result = QGraphicsDropShadowEffect()
         result.setColor(QColor(0, 0, 0, 150))
         result.setOffset(0, 1)
