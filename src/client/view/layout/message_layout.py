@@ -379,13 +379,13 @@ class MessageLayout(QHBoxLayout):
         if self.is_reacted:
             self.nb_react -= 1
             self.is_reacted = False
-            self.controller.send_emot_react(
+            self.controller.react_controller.send_emot_react(
                 Commands.RM_REACT, self.message_id, self.nb_react
             )
         else:
             self.nb_react += 1
             self.is_reacted = True
-            self.controller.send_emot_react(
+            self.controller.react_controller.send_emot_react(
                 Commands.ADD_REACT, self.message_id, self.nb_react
             )
 
@@ -397,7 +397,7 @@ class MessageLayout(QHBoxLayout):
             self.react_widget.show()
 
     def add_reply(self):
-        self.controller.reply_to_message(self)
+        self.controller.messages_controller.reply_to_message(self)
 
     def update_react(self, react_nb: int):
         self.nb_react = react_nb
