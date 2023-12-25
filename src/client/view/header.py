@@ -27,12 +27,12 @@ class HeaderView:
         self.controller = controller
         self.parent = parent
         self.theme = theme
-        self.set_header_gui()
         self.close_users = None
         self.close_dm = None
         self.button_layout = None
         self.close_left_nav_button = None
         self.close_right_nav_button = None
+        self.set_header_gui()
 
     # pylint: disable=too-many-statements
     def set_header_gui(self) -> None:
